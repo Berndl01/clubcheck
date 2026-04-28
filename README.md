@@ -1,9 +1,16 @@
 # Humatrix ClubCheck
 
-Stack: Vercel + Supabase + Stripe
+Digitale Vereinsdiagnostik für Amateurvereine.
 
-## Setup
-1. `sql/schema.sql` in Supabase SQL Editor ausführen
-2. Vercel: Repo importieren, Framework = Other
-3. Environment Variables in Vercel setzen
-4. Stripe Webhook: `https://clubcheck.humatrix.cc/api/stripe-webhook`
+## Deploy
+
+1. Repo in Vercel importieren
+2. Framework: **Other**
+3. Build Command: `echo done`
+4. Output Directory: `public`
+5. Deploy
+
+## URLs
+
+- `/` → Landing + Registration + Survey + Dashboard (Single Page App)
+- Domain: `clubcheck.humatrix.cc`
