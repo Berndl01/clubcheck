@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#030B15">
+<title>Humatrix ClubCheck</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#030B15;--bg2:#0A1628;--bg3:#111E33;--cyan:#00D4FF;--cyan2:#0ABFEA;--gold:#FBBF24;--green:#34D399;--red:#F87171;--orange:#FB923C;--purple:#A78BFA;--blue:#60A5FA;--white:#E8F0F8;--muted:#4A6478;--text:#93AABB;--glow:0 0 30px rgba(0,212,255,.12)}
+html,body{min-height:100dvh;background:var(--bg);font-family:'Barlow',Arial,sans-serif;color:var(--white);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,.12)}50%{box-shadow:0 0 40px rgba(0,212,255,.25)}}
+@keyframes scan{0%{top:-1px}100%{top:100%}}
+@keyframes pulse2{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.w{max-width:440px;margin:0 auto;padding:16px 18px;min-height:100dvh}
+/* Glass card */
+.gc{background:linear-gradient(145deg,rgba(10,22,40,.95),rgba(17,30,51,.8));border:1px solid rgba(0,212,255,.07);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.15),transparent)}
+.gc.glow{border-color:rgba(0,212,255,.2);box-shadow:var(--glow)}
+/* Topbar */
+.top{display:flex;justify-content:space-between;align-items:center;padding:6px 0 14px}
+.top-l{font-family:Barlow Condensed,sans-serif;font-size:17px;font-weight:800;letter-spacing:3px}
+.top-r{display:flex;align-items:center;gap:8px}
+.top-pct{font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:900;color:var(--cyan)}
+.top-cnt{font-size:11px;color:var(--muted)}
+/* Progress */
+.pbar{height:2px;background:var(--bg3);border-radius:1px;overflow:hidden;margin-bottom:18px}
+.pfill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--cyan2));transition:width .4s}
+/* Section indicator */
+.sec-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:14px;font-size:9px;font-weight:700;letter-spacing:1.5px;margin-bottom:14px}
+/* Question */
+.qt{font-size:17px;font-weight:600;line-height:1.5;margin-bottom:4px;min-height:52px}
+.qsub{font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.4}
+/* 7-point scale */
+.sc7{display:flex;gap:5px;margin-bottom:5px}
+.s7{flex:1;height:50px;border-radius:10px;border:1.5px solid rgba(255,255,255,.05);background:var(--bg2);color:var(--muted);font-size:17px;font-weight:700;font-family:Barlow Condensed,sans-serif;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.s7.on{border-color:var(--cyan);background:rgba(0,212,255,.1);color:var(--cyan);box-shadow:0 0 14px rgba(0,212,255,.12)}
+.s7:active{transform:scale(.93)}
+.sc-lbl{display:flex;justify-content:space-between;font-size:8px;font-weight:700;letter-spacing:.5px;margin-bottom:14px;padding:0 2px}
+/* NPS 0-10 */
+.nps{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-bottom:5px}
+.np{height:38px;border-radius:8px;border:1.5px solid rgba(255,255,255,.05);background:var(--bg2);font-size:12px;font-weight:700;font-family:Barlow Condensed,sans-serif;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.np.on{box-shadow:0 0 10px rgba(0,212,255,.15)}
+.np.d{color:var(--red)}.np.p{color:var(--gold)}.np.pr{color:var(--green)}
+.np.on.d{border-color:var(--red);background:rgba(248,113,113,.1)}
+.np.on.p{border-color:var(--gold);background:rgba(251,191,36,.1)}
+.np.on.pr{border-color:var(--green);background:rgba(52,211,153,.1)}
+/* Choices */
+.chs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ch{padding:10px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,.06);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;transition:all .12s}
+.ch.on{border-color:var(--cyan);background:rgba(0,212,255,.08);color:var(--cyan);font-weight:700}
+/* Buttons */
+.btn{width:100%;padding:16px;border-radius:12px;border:none;font-family:Barlow Condensed,sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:6px}
+.btn.go{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:var(--bg);animation:glow 3s infinite}
+.btn.off{background:var(--bg3);color:var(--muted);cursor:default}
+.btn2{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(0,212,255,.1);background:transparent;color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;font-family:'Barlow',sans-serif}
+/* Nav */
+.nav{display:flex;gap:8px;margin-top:10px}
+.nb{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(0,212,255,.1);background:transparent;color:var(--cyan);font-size:12px;font-weight:600;cursor:pointer;font-family:Barlow Condensed,sans-serif;letter-spacing:1px}
+.nb.pri{border:none;background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:var(--bg);font-weight:800}
+/* Input */
+.inp{width:100%;padding:14px 16px;background:var(--bg2);border:1.5px solid rgba(0,212,255,.1);border-radius:12px;color:var(--white);font-size:15px;font-family:'Barlow',sans-serif;outline:none;margin-bottom:10px;letter-spacing:.5px}
+.inp:focus{border-color:rgba(0,212,255,.35);box-shadow:0 0 20px rgba(0,212,255,.06)}
+.inp::placeholder{color:var(--muted)}
+.lbl{font-size:11px;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin-bottom:5px}
+/* Textarea */
+.ta{width:100%;min-height:90px;padding:14px;background:var(--bg2);border:1.5px solid rgba(0,212,255,.1);border-radius:12px;color:var(--white);font-size:14px;font-family:'Barlow',sans-serif;resize:vertical;outline:none}
+.ta:focus{border-color:rgba(0,212,255,.3)}
+/* Result bars */
+.dbar{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.dbar-lbl{font-size:10px;color:var(--text);min-width:50px}
+.dbar-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.dbar-fill{height:100%;border-radius:4px;transition:width 1s}
+.dbar-val{font-size:12px;font-weight:800;min-width:32px;text-align:right;font-family:Barlow Condensed,sans-serif}
+/* Score ring */
+.ring{position:relative;width:130px;height:130px;margin:0 auto 14px}
+.ring svg{width:130px;height:130px;transform:rotate(-90deg)}
+.ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+/* Mode cards */
+.mode-card{padding:18px;border-radius:14px;border:1.5px solid rgba(255,255,255,.06);background:var(--bg2);cursor:pointer;transition:all .2s;margin-bottom:10px}
+.mode-card:hover,.mode-card.sel{border-color:var(--cyan);box-shadow:var(--glow)}
+.mode-card .mc-title{font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:800;letter-spacing:1px}
+.mode-card .mc-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.mode-card .mc-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:1px;margin-top:8px}
+/* Footer */
+.foot{text-align:center;padding:20px 0;margin-top:20px}
+@media(max-width:360px){.s7{height:42px;font-size:15px}.qt{font-size:15px}}
+</style>
+</head>
+<body>
+<div id="err" style="position:fixed;top:0;left:0;right:0;padding:10px;background:var(--red);color:#000;font-size:11px;z-index:999;display:none"></div>
+<div id="app" class="w"></div>
+<script>
+window.onerror=function(m,s,l){var e=document.getElementById("err");e.style.display="block";e.textContent="Z."+l+": "+m};
+try{
+var SB_URL="https://qfojdoxrlplmzextjava.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmb2pkb3hybHBsbXpleHRqYXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNzM5NTQsImV4cCI6MjA5Mjk0OTk1NH0.R8LDvCWen16w--iyURxArvbc_p_kBlWsKb3Q57QOv7A";
+var sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+// ═══ SECTIONS ═══
+var SEC=[
+{k:"person",l:"ÜBER DICH",co:"#A78BFA",ic:"👤"},
+{k:"intern",l:"VEREINSINTERN",co:"#00D4FF",ic:"⚙️"},
+{k:"sport",l:"SPORTLICH",co:"#34D399",ic:"⚽"},
+{k:"extern",l:"VEREINSEXTERN",co:"#FB923C",ic:"🌍"},
+{k:"zukunft",l:"ZUKUNFT",co:"#FBBF24",ic:"🚀"},
+{k:"custom",l:"DEIN VEREIN",co:"#F472B6",ic:"🏠"}
+];
+
+// ═══ QUESTIONS ═══
+// Person questions (always shown)
+var QP=[
+{i:1,t:"Wie zufrieden bist du generell mit deinem Leben?",sub:"Kalibrierungsfrage — dient der wissenschaftlichen Einordnung.",type:"scale"},
+{i:2,t:"Seit wann bist du im Verein?",type:"choice",opts:["< 1 Jahr","1–3 Jahre","3–5 Jahre","5–10 Jahre","10+ Jahre"]},
+{i:3,t:"Deine Rolle im Verein?",type:"choice",opts:["Spieler·in","Trainer·in","Vorstand","Funktionär·in","Elternteil","Mitglied"]},
+{i:4,t:"Wie aktiv bist du im Vereinsleben?",sub:"1 = kaum · 7 = sehr engagiert",type:"scale"},
+{i:5,t:"Würdest du den Verein einem Freund empfehlen?",sub:"0 = auf keinen Fall · 10 = absolut",type:"nps"}
+];
+
+// Vereinsintern: PULSE=8, CORE=15
+var QI=[
+{i:10,t:"Die Vereinsführung handelt transparent und nachvollziehbar.",p:1},
+{i:11,t:"Rollen und Zuständigkeiten sind klar definiert.",p:1},
+{i:12,t:"Informationen erreichen mich rechtzeitig und vollständig.",p:1},
+{i:13,t:"Konflikte werden fair und konstruktiv gelöst.",p:1},
+{i:14,t:"Ich fühle mich wertgeschätzt und ernst genommen.",p:1},
+{i:15,t:"Entscheidungen werden demokratisch und nachvollziehbar getroffen.",p:1},
+{i:16,t:"Die Finanzen werden transparent und verantwortungsvoll geführt.",p:1},
+{i:17,t:"Der Verein nutzt zeitgemäße digitale Werkzeuge.",p:1},
+{i:18,t:"Neue Mitglieder werden aktiv willkommen geheißen und integriert.",c:1},
+{i:19,t:"Der Verein lebt seine Werte auch im täglichen Miteinander.",c:1},
+{i:20,t:"Es gibt klare Regeln und alle halten sich daran — auch die Führung.",c:1},
+{i:21,t:"Ich kann Probleme offen ansprechen ohne Konsequenzen zu befürchten.",c:1},
+{i:22,t:"Es gibt ein funktionierendes Beschwerdemanagement.",c:1},
+{i:23,t:"Ehrenamtliche werden ausreichend unterstützt und entlastet.",c:1},
+{i:24,t:"Die Sitzungs- und Meetingkultur ist effizient und ergebnisorientiert.",c:1}
+];
+
+// Sportlich: PULSE=8, CORE=15
+var QS=[
+{i:30,t:"Die Trainingsqualität ist hoch und methodisch zeitgemäß.",p:1},
+{i:31,t:"Spielerentwicklung wird individuell und gezielt gefördert.",p:1},
+{i:32,t:"Der Zusammenhalt im Team ist stark ausgeprägt.",p:1},
+{i:33,t:"Die Nachwuchsarbeit ist professionell und zukunftsorientiert.",p:1},
+{i:34,t:"Der sportliche Staff ist kompetent und motiviert.",p:1},
+{i:35,t:"Es gibt klare sportliche Ziele für jede Saison.",p:1},
+{i:36,t:"Zwischen Mannschaften und Abteilungen wird gut zusammengearbeitet.",p:1},
+{i:37,t:"Infrastruktur und Ausstattung entsprechen den Anforderungen.",p:1},
+{i:38,t:"Trainingszeiten und Hallenkapazitäten sind fair verteilt.",c:1},
+{i:39,t:"Es gibt ein strukturiertes Scouting oder Spielerrekrutierung.",c:1},
+{i:40,t:"Leistungsdiagnostik oder -tests werden regelmäßig eingesetzt.",c:1},
+{i:41,t:"Der Übergang vom Nachwuchs zur Kampfmannschaft funktioniert gut.",c:1},
+{i:42,t:"Verletzungsprävention und Regeneration werden ernst genommen.",c:1},
+{i:43,t:"Die Kommunikation zwischen Trainer und Spielern ist offen und ehrlich.",c:1},
+{i:44,t:"Es gibt klare Kriterien für Aufstellungen und Einsatzzeiten.",c:1}
+];
+
+// Extern: PULSE=8, CORE=15
+var QE=[
+{i:50,t:"Der Verein ist in der Gemeinde und Region gut verankert.",p:1},
+{i:51,t:"Die Außendarstellung (Website, Social Media) ist professionell.",p:1},
+{i:52,t:"Sponsoren und Partner werden gut betreut.",p:1},
+{i:53,t:"Fans und Zuschauer fühlen sich willkommen und eingebunden.",p:1},
+{i:54,t:"Der Verein pflegt gute Beziehungen zum Verband.",p:1},
+{i:55,t:"Veranstaltungen und Events sind gut organisiert.",p:1},
+{i:56,t:"Der Verein hat ein positives Image in der Öffentlichkeit.",p:1},
+{i:57,t:"Medienarbeit und Pressearbeit werden aktiv betrieben.",p:1},
+{i:58,t:"Es gibt ein aktives Mitglieder-CRM oder eine Mitgliederverwaltung.",c:1},
+{i:59,t:"Sponsoring-Pakete sind attraktiv und professionell gestaltet.",c:1},
+{i:60,t:"Der Verein engagiert sich gesellschaftlich in der Region.",c:1},
+{i:61,t:"Alumni und ehemalige Spieler werden aktiv gepflegt.",c:1},
+{i:62,t:"Die Merchandising-Angebote sind attraktiv und verfügbar.",c:1},
+{i:63,t:"Es gibt Kooperationen mit Schulen, Unternehmen oder anderen Vereinen.",c:1},
+{i:64,t:"Der Verein reagiert schnell und professionell auf Krisen.",c:1}
+];
+
+// Zukunft: PULSE=8, CORE=15
+var QZ=[
+{i:70,t:"Der Verein ist gut aufgestellt für die nächsten 3–5 Jahre.",p:1},
+{i:71,t:"Es gibt eine klare Strategie und Vision für die Zukunft.",p:1},
+{i:72,t:"Es wird ausreichend in Zukunftsbereiche investiert.",p:1},
+{i:73,t:"Ich sehe mich auch in 3 Jahren noch als aktives Mitglied.",p:1},
+{i:74,t:"Der Verein ist innovativ und offen für Veränderungen.",p:1},
+{i:75,t:"Nachfolgeplanung für Schlüsselpositionen ist vorhanden.",p:1},
+{i:76,t:"Der Verein entwickelt sich sportlich in die richtige Richtung.",p:1},
+{i:77,t:"Ich bin zuversichtlich was die finanzielle Zukunft des Vereins betrifft.",p:1},
+{i:78,t:"Der Verein ist auf demografische Veränderungen vorbereitet.",c:1},
+{i:79,t:"Digitalisierung wird als Chance erkannt und aktiv vorangetrieben.",c:1},
+{i:80,t:"Der Verein hat eine klare Positionierung gegenüber Mitbewerbern.",c:1},
+{i:81,t:"Es gibt ein Konzept für Mitgliedergewinnung und -bindung.",c:1},
+{i:82,t:"Die Infrastrukturplanung ist langfristig und vorausschauend.",c:1},
+{i:83,t:"Der Verein hat Zugang zu genügend ehrenamtlichen Ressourcen.",c:1},
+{i:84,t:"Es gibt regelmäßige Zufriedenheitsmessungen und Feedback-Runden.",c:1},
+{i:90,t:"Was muss sich im Verein am dringendsten ändern?",type:"text",sub:"Deine wichtigste Empfehlung an den Vorstand. (Optional — wird anonym weitergegeben)"}
+];
+
+// ═══ VEREINSSPEZIFISCHE FRAGEN ═══
+// Default-Fragen — werden durch clubspezifische Fragen ersetzt wenn im Sheet konfiguriert
+var QCUSTOM_DEFAULT=[
+{i:95,s:"custom",t:"Kennst du den Slogan oder das Motto deines Vereins?",type:"choice",opts:["Ja, kenne ich","Teilweise","Nein, kenne ich nicht"],sub:"Wie stark ist die Vereinsidentität verankert?"},
+{i:96,s:"custom",t:"Wie stark identifizierst du dich mit den Werten des Vereins?",type:"scale",sub:"1 = gar nicht · 7 = voll und ganz"},
+{i:97,s:"custom",t:"Welches Projekt oder welche Initiative des Vereins findest du am wichtigsten?",type:"choice",opts:["Nachwuchsarbeit","Infrastruktur","Breitensport","Soziales Engagement","Leistungssport","Digitalisierung"]},
+{i:98,s:"custom",t:"Wie bewertest du das Preis-Leistungs-Verhältnis der Mitgliedschaft?",type:"scale",sub:"1 = schlecht · 7 = ausgezeichnet"},
+{i:99,s:"custom",t:"Was macht deinen Verein besonders? Was darf nie verloren gehen?",type:"text",sub:"Deine persönliche Sicht — was ist die Seele des Vereins?"}
+];
+var QCUSTOM=QCUSTOM_DEFAULT.slice();
+var CLUB_NAME="";
+var CLUB_LOADED=false;
+
+// Load club config from Sheet (custom questions, club name)
+function loadClubConfig(code,callback){
+  try{
+    sb.from("clubs").select("*").eq("code",code.toUpperCase()).single()
+    .then(function(res){
+      if(res.data){
+        var cfg=res.data;
+        if(cfg.name)CLUB_NAME=cfg.name;
+        if(cfg.payment_status!=="paid"){CLUB_NAME="(Nicht freigeschaltet)"}
+        QCUSTOM=[];
+        for(var i=1;i<=3;i++){
+          if(cfg["q"+i+"_text"]){
+            var q={i:94+i,s:"custom",t:cfg["q"+i+"_text"],type:cfg["q"+i+"_type"]||"scale"};
+            if(cfg["q"+i+"_opts"])q.opts=cfg["q"+i+"_opts"].split("|").map(function(s){return s.trim()});
+            QCUSTOM.push(q);
+          }
+        }
+      }
+      CLUB_LOADED=true;
+      if(callback)callback();
+    })
+    .catch(function(){CLUB_LOADED=true;if(callback)callback()});
+  }catch(e){CLUB_LOADED=true;if(callback)callback()}
+  setTimeout(function(){if(!CLUB_LOADED){CLUB_LOADED=true;if(callback)callback()}},5000);
+}
+
+// ═══ STATE ═══
+var V="start",MODE="",CODE="",NM="",ANON=false,ANS={},QI_IDX=0,ALLQ=[];
+var REG={name:"",contact:"",email:"",questions:[{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]}]};
+function genCode(n){var w=n.toUpperCase().replace(/[^A-Z]/g,"").substring(0,3);if(w.length<2)w="CC";return w+String(Math.floor(Math.random()*900)+100)}
+// Read code from URL parameter ?c=CODE
+try{var up=new URLSearchParams(window.location.search);var uc=up.get("c");if(uc)CODE=uc.toUpperCase().replace(/[^A-Z0-9]/g,"")}catch(e){}
+var $=document.getElementById("app");
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+// Build question list based on mode
+function buildQ(){
+  ALLQ=QP.slice();
+  var add=function(arr){for(var i=0;i<arr.length;i++){if(MODE==="core"||arr[i].p)ALLQ.push(arr[i])}};
+  var qzNoText=QZ.filter(function(q){return q.type!=="text"});
+  var qzText=QZ.filter(function(q){return q.type==="text"});
+  add(QI);add(QS);add(QE);add(qzNoText);
+  // Add custom questions (always shown)
+  for(var i=0;i<QCUSTOM.length;i++)ALLQ.push(QCUSTOM[i]);
+  // Always add freitext at end
+  for(var i=0;i<qzText.length;i++)ALLQ.push(qzText[i]);
+}
+
+function getSec(q){
+  if(q.s==="custom")return SEC[5];
+  if(q.i<=5)return SEC[0];
+  if(q.i<=29)return SEC[1];
+  if(q.i<=49)return SEC[2];
+  if(q.i<=69)return SEC[3];
+  return SEC[4];
+}
+
+// ═══ SCORING ═══
+function calcSec(secKey){
+  var ranges={intern:[10,29],sport:[30,49],extern:[50,69],zukunft:[70,89],custom:[95,98]};
+  var r=ranges[secKey];if(!r)return{pct:0,n:0};
+  var sum=0,n=0;
+  for(var i=r[0];i<=r[1];i++){if(typeof ANS[i]==="number"){sum+=ANS[i];n++}}
+  if(!n)return{pct:0,n:0};
+  return{avg:Math.round(sum/n*10)/10,pct:Math.round(((sum/n-1)/6)*100),n:n};
+}
+function calcTotal(){
+  var keys=["intern","sport","extern","zukunft"],t=0,c=0;
+  for(var i=0;i<keys.length;i++){var s=calcSec(keys[i]);if(s.n>0){t+=s.pct;c++}}
+  return c?Math.round(t/c):0;
+}
+
+// ═══ SEND ═══
+function send(d){
+  try{
+    // Get club_id
+    sb.from("clubs").select("id").eq("code",d.code||CODE).single().then(function(res){
+      var clubId=res.data?res.data.id:null;
+      sb.from("responses").insert({
+        club_id:clubId,code:d.code||CODE,name:d.name||"Anonym",
+        is_anonymous:d.name==="Anonym",role:d.role||"",tenure:d.tenure||"",
+        mode:d.mode||MODE,score_total:d.scores?d.scores.total:0,
+        score_intern:d.scores?d.scores.intern:0,score_sport:d.scores?d.scores.sport:0,
+        score_extern:d.scores?d.scores.extern:0,score_zukunft:d.scores?d.scores.zukunft:0,
+        score_custom:d.scores?d.scores.custom:0,nps:d.nps,
+        cal_life:d.calibration?d.calibration.life:null,
+        cal_active:d.calibration?d.calibration.active:null,
+        cal_bias:d.calibration?d.calibration.bias:null,
+        answers:d.answers||{},freitext:d.freitext||""
+      }).then(function(r){if(r.error)console.log("Save error:",r.error)});
+    });
+  }catch(x){console.log("Send error:",x)}
+}
+
+// ═══ RADAR SVG ═══
+function radar(scores){
+  var dims=[{k:"intern",l:"Intern",co:"#00D4FF"},{k:"sport",l:"Sport",co:"#34D399"},{k:"extern",l:"Extern",co:"#FB923C"},{k:"zukunft",l:"Zukunft",co:"#FBBF24"},{k:"custom",l:"Verein",co:"#F472B6"}];
+  var cx=140,cy=125,R=85,n=dims.length;
+  var o='<svg viewBox="0 0 280 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;margin:0 auto;display:block">';
+  [.25,.5,.75,1].forEach(function(s){var p='';for(var i=0;i<n;i++){var a=Math.PI*2*i/n-Math.PI/2;p+=(cx+s*R*Math.cos(a)).toFixed(1)+','+(cy+s*R*Math.sin(a)).toFixed(1)+' '}o+='<polygon points="'+p+'" fill="none" stroke="rgba(0,212,255,.05)"/>'});
+  for(var i=0;i<n;i++){var a=Math.PI*2*i/n-Math.PI/2;o+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R*Math.cos(a)).toFixed(1)+'" y2="'+(cy+R*Math.sin(a)).toFixed(1)+'" stroke="rgba(0,212,255,.04)"/>'}
+  var pts='',dots='';
+  for(var i=0;i<n;i++){var d=dims[i];var pct=(scores[d.k]||0)/100;var a=Math.PI*2*i/n-Math.PI/2;
+    var px=cx+pct*R*Math.cos(a),py=cy+pct*R*Math.sin(a);
+    pts+=px.toFixed(1)+','+py.toFixed(1)+' ';
+    dots+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" fill="'+d.co+'" stroke="var(--bg)" stroke-width="2"/>';
+    var lx=cx+(R+16)*Math.cos(a),ly=cy+(R+16)*Math.sin(a);
+    dots+='<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" fill="'+d.co+'" font-size="10" text-anchor="middle" font-family="Barlow Condensed" font-weight="700">'+d.l+'</text>';
+    dots+='<text x="'+lx.toFixed(1)+'" y="'+(ly+14).toFixed(1)+'" fill="#4A6478" font-size="9" text-anchor="middle" font-family="Barlow">'+(scores[d.k]||0)+'%</text>'}
+  o+='<polygon points="'+pts+'" fill="rgba(0,212,255,.08)" stroke="var(--cyan)" stroke-width="2"/>'+dots+'</svg>';
+  return o;
+}
+
+// ═══ RENDER ═══
+function R(){
+var o='';
+
+// ═══ START ═══
+if(V==="start"){
+  o+='<div style="animation:fadeUp .5s ease;padding-top:6vh;text-align:center">';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:900;letter-spacing:4px;margin-bottom:4px">HUMATRIX</div>';
+  o+='<div style="font-size:10px;color:var(--cyan);font-weight:700;letter-spacing:3px;margin-bottom:24px">CLUBCHECK</div>';
+  o+='<div style="text-align:left;max-width:340px;margin:0 auto">';
+  o+='<div class="lbl">CLUB-CODE</div>';
+  o+='<input id="i_code" class="inp" value="'+esc(CODE)+'" placeholder="z.B. HCT2026" maxlength="12" style="text-transform:uppercase;text-align:center;font-size:20px;font-weight:700;letter-spacing:4px;font-family:Barlow Condensed,sans-serif">';
+  o+='<div class="lbl">DEIN NAME</div>';
+  o+='<input id="i_nm" class="inp" value="'+esc(ANON?"":NM)+'" placeholder="Vor- und Nachname"'+(ANON?' disabled style="opacity:.3;padding:14px 16px;background:var(--bg2);border:1.5px solid rgba(0,212,255,.1);border-radius:12px;color:var(--white);font-size:15px;font-family:Barlow,sans-serif;outline:none;width:100%;margin-bottom:10px"':'')+'>';
+  o+='<div id="anonToggle" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 14px;background:var(--bg2);border:1.5px solid '+(ANON?'#00D4FF':'rgba(0,212,255,.1)')+';border-radius:12px;margin-bottom:18px">';
+  o+='<div id="anonSw" style="position:relative;width:40px;height:22px;flex-shrink:0"><div style="width:40px;height:22px;border-radius:11px;background:'+(ANON?'#00D4FF':'#111E33')+'"></div>';
+  o+='<div style="position:absolute;top:2px;'+(ANON?'right:2px':'left:2px')+';width:18px;height:18px;border-radius:50%;background:#E8F0F8;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div></div>';
+  o+='<div><div id="anonLbl" style="font-size:13px;font-weight:600;color:'+(ANON?'#00D4FF':'#93AABB')+'">'+(ANON?'Anonym aktiviert':'Anonym teilnehmen')+'</div>';
+  o+='<div id="anonSub" style="font-size:10px;color:#4A6478">'+(ANON?'Name wird NICHT gespeichert':'Name wird gespeichert')+'</div></div></div>';
+  o+='<button id="btnSurvey" class="btn off" style="margin-bottom:8px">CODE EINGEBEN</button>';
+  o+='<div style="display:flex;gap:8px;margin-top:4px">';
+  o+='<button id="btnDash" class="btn2" style="flex:1;border-color:rgba(251,191,36,.3);color:#FBBF24;font-size:11px">\ud83d\udcca Dashboard</button>';
+  o+='<button id="btnReg" class="btn2" style="flex:1;border-color:rgba(167,139,250,.2);color:#A78BFA;font-size:11px">\ud83c\udfe0 Verein anlegen</button>';
+  o+='</div>';
+  o+='</div></div>';
+  $.innerHTML=o;
+  var codeEl=document.getElementById("i_code");
+  var nmEl=document.getElementById("i_nm");
+  var btnS=document.getElementById("btnSurvey");
+  function updBtn(){var ok=CODE.length>=3&&(ANON||NM.length>=2);btnS.className="btn "+(ok?"go":"off");btnS.textContent=ok?"UMFRAGE STARTEN \u2192":"CODE"+(ANON?"":" + NAME")+" EINGEBEN"}
+  updBtn();
+  codeEl.oninput=function(){CODE=this.value.toUpperCase().replace(/[^A-Z0-9]/g,"");this.value=CODE;updBtn()};
+  if(!CODE)codeEl.focus();
+  nmEl.oninput=function(){NM=this.value;updBtn()};
+  document.getElementById("anonToggle").onclick=function(e){
+    e.stopPropagation();ANON=!ANON;
+    if(ANON){NM="Anonym";nmEl.value="";nmEl.disabled=true;nmEl.style.opacity=".3"}
+    else{NM="";nmEl.disabled=false;nmEl.style.opacity="1";setTimeout(function(){nmEl.focus()},50)}
+    document.getElementById("anonSw").innerHTML='<div style="width:40px;height:22px;border-radius:11px;background:'+(ANON?'#00D4FF':'#111E33')+'"></div><div style="position:absolute;top:2px;'+(ANON?'right:2px':'left:2px')+';width:18px;height:18px;border-radius:50%;background:#E8F0F8;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>';
+    document.getElementById("anonLbl").textContent=ANON?"Anonym aktiviert":"Anonym teilnehmen";
+    document.getElementById("anonLbl").style.color=ANON?"#00D4FF":"#93AABB";
+    document.getElementById("anonSub").textContent=ANON?"Name wird NICHT gespeichert":"Name wird gespeichert";
+    document.getElementById("anonToggle").style.borderColor=ANON?"#00D4FF":"rgba(0,212,255,.1)";
+    updBtn();
+  };
+  btnS.onclick=function(){if(CODE.length>=3&&(ANON||NM.length>=2)){V="loading";R();loadClubConfig(CODE,function(){V="mode";R()})}};
+  document.getElementById("btnDash").onclick=function(){window.open("dashboard/"+(CODE.length>=3?"?c="+CODE:""),"_blank")};
+  document.getElementById("btnReg").onclick=function(){
+    var pw=prompt("Humatrix Zugangscode eingeben:");
+    if(pw&&pw.trim().toLowerCase()==="humatrix"){V="register";R()}
+    else if(pw!==null){alert("Falscher Zugangscode.")}
+  };
+  return;
+}
+
+// ═══ REGISTER ═══
+if(V==="register"){
+  o+='<div style="animation:fadeUp .4s ease;padding-top:4vh">';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:18px;font-weight:900;letter-spacing:3px;margin-bottom:4px;text-align:center">HUMATRIX</div>';
+  o+='<div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;text-align:center;margin-bottom:20px">VEREIN REGISTRIEREN</div>';
+  o+='<div style="max-width:340px;margin:0 auto;text-align:left">';
+  o+='<div class="lbl">VEREINSNAME *</div>';
+  o+='<input id="r_name" class="inp" value="'+esc(REG.name)+'" placeholder="z.B. HC Tirol">';
+  o+='<div class="lbl">KONTAKTPERSON</div>';
+  o+='<input id="r_contact" class="inp" value="'+esc(REG.contact)+'" placeholder="Vor- und Nachname">';
+  o+='<div class="lbl">E-MAIL</div>';
+  o+='<input id="r_email" class="inp" value="'+esc(REG.email)+'" placeholder="vorstand@verein.at">';
+  o+='<div style="margin-top:12px;padding:12px;background:var(--bg2);border:1px solid rgba(251,191,36,.15);border-radius:10px;margin-bottom:14px">';
+  o+='<div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px">5 VEREINSSPEZIFISCHE FRAGEN (OPTIONAL)</div>';
+  o+='<p style="font-size:10px;color:var(--muted);margin-bottom:8px">Eigene Fragen die nur f\u00fcr deinen Verein gestellt werden. Leer = Standard.</p>';
+  for(var qi=0;qi<5;qi++){
+    var q=REG.questions[qi];
+    o+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+    o+='<span style="font-size:10px;color:'+(q.text?'var(--cyan)':'var(--muted)')+'">Frage '+(qi+1)+'</span>';
+    o+='<div style="display:flex;gap:3px">';
+    var types=[{k:"scale",l:"Skala",c:"var(--cyan)"},{k:"choice",l:"Auswahl",c:"var(--gold)"},{k:"text",l:"Text",c:"var(--green)"}];
+    for(var ti=0;ti<types.length;ti++){var t=types[ti];var sel=q.type===t.k;o+='<button data-act="rqt_'+qi+'_'+t.k+'" style="padding:2px 8px;border-radius:6px;border:1px solid '+(sel?t.c:'rgba(255,255,255,.06)')+';background:'+(sel?t.c+'15':'transparent')+';color:'+(sel?t.c:'var(--muted)')+';font-size:8px;font-weight:'+(sel?700:400)+';cursor:pointer">'+t.l+'</button>'}
+    o+='</div></div>';
+    o+='<input id="rq_'+qi+'" class="inp" value="'+esc(q.text)+'" placeholder="z.B. Wie findest du unser neues Trikot?" style="font-size:12px;margin-bottom:4px">';
+    if(q.type==="choice"){
+      for(var oi=0;oi<q.opts.length;oi++){o+='<div style="display:flex;gap:3px;margin-bottom:3px"><input id="ro_'+qi+'_'+oi+'" class="inp" value="'+esc(q.opts[oi]||"")+'" placeholder="Option '+(oi+1)+'" style="font-size:11px;margin-bottom:0;flex:1">'+(q.opts.length>2?'<button data-act="rDelOpt_'+qi+'_'+oi+'" style="width:28px;border-radius:6px;border:1px solid rgba(248,113,113,.2);background:transparent;color:var(--red);font-size:12px;cursor:pointer">\u2212</button>':'')+'</div>'}
+      if(q.opts.length<6)o+='<button data-act="rAddOpt_'+qi+'" style="width:100%;padding:5px;border-radius:6px;border:1px dashed rgba(0,212,255,.15);background:transparent;color:var(--cyan);font-size:9px;cursor:pointer">+ Option</button>';
+    }
+    o+='</div>';
+  }
+  o+='</div>';
+  o+='<button id="btnDoReg" class="btn '+(REG.name.length>=2?'go':'off')+'">'+(REG.name.length>=2?'CODE GENERIEREN \u2192':'VEREINSNAME EINGEBEN')+'</button>';
+  o+='<button data-act="goStart" class="btn2">\u2190 ZUR\u00dcCK</button>';
+  o+='</div></div>';
+  $.innerHTML=o;
+  var rn=document.getElementById("r_name");if(rn){rn.oninput=function(){REG.name=this.value;var b=document.getElementById("btnDoReg");b.className="btn "+(REG.name.length>=2?"go":"off");b.textContent=REG.name.length>=2?"CODE GENERIEREN \u2192":"VEREINSNAME EINGEBEN"};rn.focus()}
+  var rc=document.getElementById("r_contact");if(rc)rc.oninput=function(){REG.contact=this.value};
+  var re=document.getElementById("r_email");if(re)re.oninput=function(){REG.email=this.value};
+  for(var qi2=0;qi2<5;qi2++){(function(idx){
+    var el=document.getElementById("rq_"+idx);if(el)el.oninput=function(){REG.questions[idx].text=this.value};
+    for(var oi2=0;oi2<REG.questions[idx].opts.length;oi2++){(function(oIdx){
+      var oel=document.getElementById("ro_"+idx+"_"+oIdx);if(oel)oel.oninput=function(){REG.questions[idx].opts[oIdx]=this.value};
+    })(oi2)}
+  })(qi2)}
+  document.getElementById("btnDoReg").onclick=function(){
+    if(REG.name.length<2)return;
+    CODE=genCode(REG.name);
+    var payload={type:"club_register",code:CODE,name:REG.name,contact:REG.contact,email:REG.email};
+    for(var qi=0;qi<5;qi++){var cq=REG.questions[qi];if(cq.text){payload["q"+(qi+1)+"_text"]=cq.text;payload["q"+(qi+1)+"_type"]=cq.type;if(cq.type==="choice"){var vo=cq.opts.filter(function(o){return o.trim().length>0});if(vo.length>0)payload["q"+(qi+1)+"_opts"]=vo.join("|")}}}
+    send(payload);V="created";R();
+  };
+  return;
+}
+
+// ═══ CREATED ═══
+if(V==="created"){
+  var link=window.location.origin+window.location.pathname+"?c="+CODE;
+  o+='<div style="animation:fadeUp .5s ease;text-align:center;padding-top:8vh">';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:18px;font-weight:900;letter-spacing:3px;margin-bottom:20px">HUMATRIX</div>';
+  o+='<div class="gc" style="max-width:340px;margin:0 auto;padding:24px;border-color:rgba(52,211,153,.2)">';
+  o+='<div style="font-size:11px;color:var(--green);font-weight:700;letter-spacing:2px;margin-bottom:6px">\u2705 REGISTRIERUNG ERFOLGREICH</div>';
+  o+='<div style="font-size:18px;font-weight:800;margin-bottom:12px">'+esc(REG.name)+'</div>';
+  o+='<div style="font-size:9px;color:var(--muted);margin-bottom:4px">DEIN CLUB-CODE:</div>';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:44px;font-weight:900;color:var(--cyan);letter-spacing:8px;margin-bottom:14px">'+CODE+'</div>';
+  // QR with fallback
+  o+='<div id="qrWrap" style="margin-bottom:10px"><img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(link)+'&format=png" style="width:160px;height:160px;border-radius:10px;border:2px solid rgba(0,212,255,.15)" alt="QR Code" onerror="this.style.display=\'none\';document.getElementById(\'qrFail\').style.display=\'block\'"><div id="qrFail" style="display:none;padding:12px;background:var(--bg);border-radius:10px;border:1px solid rgba(0,212,255,.1)"><div style="font-size:10px;color:var(--muted)">QR-Code konnte nicht geladen werden.</div><div style="font-size:10px;color:var(--cyan);margin-top:4px">Link manuell kopieren:</div></div></div>';
+  // Link as selectable input
+  o+='<input id="linkField" value="'+link+'" readonly style="width:100%;padding:10px;background:var(--bg);border:1px solid rgba(0,212,255,.15);border-radius:8px;color:var(--cyan);font-size:11px;text-align:center;margin-bottom:8px;outline:none;cursor:text" onclick="this.select()">';
+  o+='<button id="cpBtn" class="btn2" style="margin-bottom:12px">\ud83d\udccb Link kopieren</button>';
+  o+='<p style="font-size:10px;color:var(--text);line-height:1.5">Sende diesen Link an alle Mitglieder.<br>Jeder der ihn \u00f6ffnet kann sofort die Umfrage starten.</p>';
+  o+='</div>';
+  o+='<button data-act="goStart" class="btn2" style="max-width:340px;margin:12px auto 0">\u2190 ZUR\u00dcCK ZUM START</button>';
+  o+='</div>';
+  $.innerHTML=o;
+  document.getElementById("cpBtn").onclick=function(){
+    var lf=document.getElementById("linkField");
+    try{
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(link).then(function(){document.getElementById("cpBtn").textContent="\u2713 Kopiert!";document.getElementById("cpBtn").style.color="var(--green)";setTimeout(function(){document.getElementById("cpBtn").textContent="\ud83d\udccb Link kopieren";document.getElementById("cpBtn").style.color=""},2000)});return}
+    }catch(e){}
+    // Fallback
+    lf.select();lf.setSelectionRange(0,99999);
+    try{document.execCommand("copy");document.getElementById("cpBtn").textContent="\u2713 Kopiert!";document.getElementById("cpBtn").style.color="var(--green)";setTimeout(function(){document.getElementById("cpBtn").textContent="\ud83d\udccb Link kopieren";document.getElementById("cpBtn").style.color=""},2000)}catch(e2){document.getElementById("cpBtn").textContent="Bitte manuell kopieren (Feld oben anklicken)";document.getElementById("cpBtn").style.color="var(--gold)"}
+  };
+  return;
+}
+
+// ═══ LOADING ═══
+if(V==="loading"){
+  o+='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;animation:fadeUp .3s ease">';
+  o+='<div style="width:40px;height:40px;border:3px solid var(--bg3);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px"></div>';
+  o+='<div style="font-size:12px;color:var(--muted);letter-spacing:1px">VEREIN WIRD GELADEN...</div>';
+  o+='</div>';
+  $.innerHTML=o;return;
+}
+
+// ═══ MODE SELECT ═══
+if(V==="mode"){
+  o+='<div style="animation:fadeUp .4s ease">';
+  o+='<div class="top"><span class="top-l">HUMATRIX</span><span style="font-size:9px;color:var(--cyan);font-weight:700;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(0,212,255,.2);border-radius:10px">'+CODE+'</span></div>';
+  o+='<div style="font-size:20px;font-weight:800;margin-bottom:4px">'+(CLUB_NAME?esc(CLUB_NAME):'Analyse wählen')+'</div>';
+  if(CLUB_NAME)o+='<p style="font-size:11px;color:var(--cyan);margin-bottom:4px">Willkommen bei der Vereinsanalyse</p>';
+  o+='<p style="font-size:12px;color:var(--muted);margin-bottom:20px">Beide Versionen liefern einen vollständigen ClubScore.</p>';
+  // PULSE
+  o+='<div class="mode-card'+(MODE==="pulse"?" sel":"")+'" data-act="selPulse">';
+  o+='<div style="display:flex;justify-content:space-between;align-items:center"><div class="mc-title" style="color:var(--cyan)">⚡ PULSE</div>';
+  o+='<span style="font-size:11px;color:var(--muted)">~5 min</span></div>';
+  o+='<div class="mc-sub">~40 Fragen · 8 pro Bereich + Vereinsfragen</div>';
+  o+='<div class="mc-badge" style="background:rgba(0,212,255,.08);color:var(--cyan);border:1px solid rgba(0,212,255,.2)">QUICK CHECK</div></div>';
+  // CORE
+  o+='<div class="mode-card'+(MODE==="core"?" sel":"")+'" data-act="selCore">';
+  o+='<div style="display:flex;justify-content:space-between;align-items:center"><div class="mc-title" style="color:var(--gold)">🔬 CORE</div>';
+  o+='<span style="font-size:11px;color:var(--muted)">~12 min</span></div>';
+  o+='<div class="mc-sub">~70 Fragen · 15 pro Bereich + Vereinsfragen</div>';
+  o+='<div class="mc-badge" style="background:rgba(251,191,36,.08);color:var(--gold);border:1px solid rgba(251,191,36,.2)">VOLLSTÄNDIG</div></div>';
+  o+='<button data-act="goSurvey" class="btn '+(MODE?'go':'off')+'">'+(MODE?'STARTEN →':'MODUS WÄHLEN')+'</button>';
+  o+='<button data-act="goStart" class="btn2">← ZURÜCK</button>';
+  o+='</div>';
+  $.innerHTML=o;
+  return;
+}
+
+// ═══ SURVEY ═══
+if(V==="survey"){
+  var q=ALLQ[QI_IDX];
+  var sec=getSec(q);
+  var done=0;for(var qi=0;qi<ALLQ.length;qi++){if(ANS[ALLQ[qi].i]!==undefined)done++}
+  var pct=Math.round((done/ALLQ.length)*100);
+  o+='<div style="animation:fadeUp .25s ease">';
+  o+='<div class="top"><span class="top-l">HUMATRIX</span><div class="top-r"><span class="top-cnt">'+(QI_IDX+1)+'/'+ALLQ.length+'</span><span class="top-pct">'+pct+'%</span></div></div>';
+  o+='<div class="pbar"><div class="pfill" style="width:'+pct+'%"></div></div>';
+  // Section tag
+  o+='<div class="sec-tag" style="background:'+sec.co+'0D;border:1px solid '+sec.co+'20;color:'+sec.co+'"><span style="width:5px;height:5px;border-radius:50%;background:'+sec.co+';animation:pulse2 2s infinite"></span>'+sec.l+'</div>';
+  // Question
+  o+='<div class="gc glow">';
+  o+='<div class="qt">'+q.t+'</div>';
+  if(q.sub)o+='<div class="qsub">'+q.sub+'</div>';
+  else o+='<div style="height:6px"></div>';
+
+  if(q.type==="nps"){
+    o+='<div class="nps">';
+    for(var s=0;s<=10;s++){var cls=s<=6?"d":s<=8?"p":"pr";o+='<button data-act="a_'+q.i+'_'+s+'" class="np '+cls+(ANS[q.i]===s?' on':'')+'">'+s+'</button>'}
+    o+='</div><div class="sc-lbl"><span style="color:var(--red)">Nie</span><span style="color:var(--gold)">Vielleicht</span><span style="color:var(--green)">Sicher</span></div>';
+  }else if(q.type==="choice"){
+    o+='<div class="chs">';
+    for(var ci=0;ci<q.opts.length;ci++){o+='<button data-act="c_'+q.i+'_'+ci+'" class="ch'+(ANS[q.i]===q.opts[ci]?' on':'')+'">'+q.opts[ci]+'</button>'}
+    o+='</div>';
+  }else if(q.type==="text"){
+    o+='<textarea id="ta_'+q.i+'" class="ta" placeholder="Deine Antwort...">'+(ANS[q.i]||'')+'</textarea>';
+  }else{
+    o+='<div class="sc7">';
+    for(var s=1;s<=7;s++){o+='<button data-act="a_'+q.i+'_'+s+'" class="s7'+(ANS[q.i]===s?' on':'')+'">'+s+'</button>'}
+    o+='</div><div class="sc-lbl"><span style="color:var(--red)">Stimme nicht zu</span><span style="color:var(--green)">Stimme voll zu</span></div>';
+  }
+  o+='</div>';
+  // Nav
+  o+='<div class="nav">';
+  if(QI_IDX>0)o+='<button data-act="prev" class="nb">← ZURÜCK</button>';
+  var has=ANS[q.i]!==undefined||(q.type==="text");
+  if(QI_IDX<ALLQ.length-1&&has)o+='<button data-act="next" class="nb pri">WEITER →</button>';
+  if(QI_IDX===ALLQ.length-1)o+='<button data-act="goResult" class="btn go">AUSWERTEN →</button>';
+  o+='</div></div>';
+  $.innerHTML=o;
+  if(q.type==="text"){var ta=document.getElementById("ta_"+q.i);if(ta)ta.oninput=function(){ANS[q.i]=this.value}}
+  return;
+}
+
+// ═══ RESULT ═══
+if(V==="result"){
+  var total=calcTotal();
+  var sc={intern:calcSec("intern").pct,sport:calcSec("sport").pct,extern:calcSec("extern").pct,zukunft:calcSec("zukunft").pct,custom:calcSec("custom").pct};
+  var nps=ANS[5];var npsType=nps>=9?"Promoter":nps>=7?"Passiv":"Kritiker";
+  var npsCol=nps>=9?"var(--green)":nps>=7?"var(--gold)":"var(--red)";
+  var sCol=total>=70?"var(--green)":total>=45?"var(--gold)":"var(--red)";
+  var status=total>=70?"GESUND":total>=45?"ENTWICKLUNG":"HANDLUNGSBEDARF";
+
+  // Calibration
+  var life=ANS[1]||4;var active=ANS[4]||4;
+  var bias=life<=2&&active<=2?"negativ":life>=6&&active>=6?"positiv":"neutral";
+
+  // Send
+  if(!window._s){window._s=true;
+    send({type:"clubcheck",mode:MODE,code:CODE,name:NM||"Anonym",team:CODE,role:ANS[3]||"",tenure:ANS[2]||"",nps:nps,calibration:{life:life,active:active,bias:bias},scores:{total:total,intern:sc.intern,sport:sc.sport,extern:sc.extern,zukunft:sc.zukunft,custom:sc.custom},answers:ANS,freitext:ANS[90]||""})
+  }
+
+  o+='<div style="animation:fadeUp .5s ease">';
+  o+='<div class="top"><span class="top-l">HUMATRIX</span><span style="font-size:9px;color:var(--cyan);font-weight:700;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(0,212,255,.2);border-radius:10px">ERGEBNIS · '+CODE+'</span></div>';
+
+  // Score card
+  o+='<div class="gc glow" style="text-align:center;padding:24px 18px;position:relative">';
+  o+='<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);animation:scan 4s linear infinite"></div>';
+  o+='<div style="font-size:9px;font-weight:700;letter-spacing:3px;color:'+sCol+';margin-bottom:10px">STATUS: '+status+'</div>';
+  // Ring
+  var circ=2*Math.PI*54;var dash=circ*total/100;
+  o+='<div class="ring"><svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="54" fill="none" stroke="var(--bg3)" stroke-width="7"/>';
+  o+='<circle cx="65" cy="65" r="54" fill="none" stroke="'+sCol+'" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+dash.toFixed(1)+' '+circ.toFixed(1)+'"/>';
+  o+='</svg><div class="ring-c"><span style="font-family:Barlow Condensed,sans-serif;font-size:40px;font-weight:900;color:'+sCol+'">'+total+'</span><span style="font-size:8px;color:var(--muted)">/100 ClubScore</span></div></div>';
+  o+='<div style="font-size:10px;color:var(--muted)">'+esc(CODE)+' · '+(NM||'Anonym')+' · '+(ANS[3]||'')+' · '+MODE.toUpperCase()+'</div>';
+  o+='</div>';
+
+  // NPS
+  if(nps!==undefined){
+    o+='<div class="gc" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px">';
+    o+='<div><div style="font-size:8px;font-weight:700;color:var(--muted);letter-spacing:1.5px">WEITEREMPFEHLUNG</div></div>';
+    o+='<div style="text-align:right"><span style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:900;color:'+npsCol+'">'+nps+'/10</span>';
+    o+='<div style="font-size:9px;font-weight:700;color:'+npsCol+'">'+npsType+'</div></div></div>';
+  }
+
+  // Calibration
+  if(bias!=="neutral"){
+    var bCol=bias==="negativ"?"var(--orange)":"var(--blue)";
+    o+='<div class="gc" style="border-color:'+bCol+';padding:12px 14px">';
+    o+='<div style="font-size:8px;font-weight:700;color:'+bCol+';letter-spacing:1.5px;margin-bottom:3px">⚡ KALIBRIERUNG</div>';
+    o+='<p style="font-size:10px;color:var(--text)">'+(bias==="negativ"?"Niedrige Lebenszufriedenheit + geringes Engagement — Antworten könnten systematisch kritischer sein.":"Hohe Zufriedenheit + starkes Engagement — Antworten könnten systematisch positiver ausfallen.")+'</p></div>';
+  }
+
+  // Radar
+  o+='<div class="gc" style="text-align:center"><div style="font-size:9px;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:10px">VEREINSPROFIL</div>'+radar(sc)+'</div>';
+
+  // Dimensions
+  o+='<div class="gc"><div style="font-size:9px;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:12px">📊 BEREICHSANALYSE</div>';
+  var dims=[{k:"intern",l:"Vereinsintern",co:"#00D4FF",ic:"⚙️"},{k:"sport",l:"Sportlich",co:"#34D399",ic:"⚽"},{k:"extern",l:"Vereinsextern",co:"#FB923C",ic:"🌍"},{k:"zukunft",l:"Zukunft",co:"#FBBF24",ic:"🚀"}];
+  dims.sort(function(a,b){return (sc[a.k]||0)-(sc[b.k]||0)});
+  for(var di=0;di<dims.length;di++){
+    var d=dims[di];var v=sc[d.k]||0;var c2=v>=70?"var(--green)":v>=45?"var(--gold)":"var(--red)";
+    var lb=v>=70?"Stark":v>=45?"Ausbaufähig":"Kritisch";
+    o+='<div style="padding:10px;background:var(--bg);border-radius:10px;margin-bottom:6px;border-left:3px solid '+d.co+'">';
+    o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">';
+    o+='<span style="font-size:12px;font-weight:600">'+d.ic+' '+d.l+'</span>';
+    o+='<span style="font-family:Barlow Condensed,sans-serif;font-size:16px;font-weight:900;color:'+c2+'">'+v+'%</span></div>';
+    o+='<div class="dbar"><div class="dbar-track"><div class="dbar-fill" style="width:'+v+'%;background:'+d.co+'"></div></div>';
+    o+='<span style="font-size:9px;font-weight:700;color:'+c2+'">'+lb+'</span></div></div>';
+  }
+  o+='</div>';
+
+  // Freitext
+  if(ANS[90]){o+='<div class="gc" style="border-color:rgba(251,191,36,.15)"><div style="font-size:8px;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:5px">💬 EMPFEHLUNG AN DEN VORSTAND</div><p style="font-size:12px;color:var(--text);line-height:1.6;font-style:italic">"'+esc(ANS[90])+'"</p></div>'}
+
+  // CTA
+  o+='<div class="gc glow" style="text-align:center;padding:18px">';
+  o+='<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:4px">Vertiefte Analyse gewünscht?</div>';
+  o+='<p style="font-size:11px;color:var(--text);margin-bottom:8px">12 spezialisierte Matrix-Analysen · Professionelle Begleitung</p>';
+  o+='<div style="font-size:11px;color:var(--cyan);font-weight:600">bernhard@humatrix.cc · sales.humatrix.cc</div></div>';
+
+  o+='<button data-act="goReset" class="btn2">← NEUER TEST</button>';
+  o+='<div class="foot"><div style="font-size:7px;color:var(--muted);letter-spacing:1px;margin-bottom:3px">POWERED BY</div>';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:15px;font-weight:900;color:var(--cyan);letter-spacing:3px">HUMATRIX</div>';
+  o+='<div style="font-size:7px;color:var(--muted);margin-top:2px">The Mind Club Company</div></div>';
+  o+='</div>';
+  $.innerHTML=o;return;
+}
+$.innerHTML='';
+}
+
+// ═══ EVENTS ═══
+document.addEventListener("click",function(e){
+  var el=e.target;while(el&&!el.dataset.act)el=el.parentElement;if(!el)return;
+  var act=el.dataset.act;
+  if(act==="goStart"){V="start";R();return}
+  if(act==="selPulse"){MODE="pulse";R();return}
+  if(act==="selCore"){MODE="core";R();return}
+  if(act==="goSurvey"&&MODE){buildQ();QI_IDX=0;V="survey";R();return}
+  if(act==="goResult"){V="result";R();return}
+  if(act==="goStart"){V="start";R();return}
+  if(act.indexOf("rqt_")===0){var pp=act.split("_");REG.questions[parseInt(pp[1])].type=pp[2];R();return}
+  if(act.indexOf("rAddOpt_")===0){var qi3=parseInt(act.split("_")[1]);if(REG.questions[qi3].opts.length<6)REG.questions[qi3].opts.push("");R();return}
+  if(act.indexOf("rDelOpt_")===0){var pp2=act.split("_");var qi4=parseInt(pp2[1]);var oi3=parseInt(pp2[2]);if(REG.questions[qi4].opts.length>2)REG.questions[qi4].opts.splice(oi3,1);R();return}
+  if(act==="goReset"){V="start";MODE="";CODE="";NM="";ANON=false;ANS={};QI_IDX=0;window._s=false;R();return}
+  if(act==="prev"){QI_IDX=Math.max(0,QI_IDX-1);R();return}
+  if(act==="next"){QI_IDX=Math.min(ALLQ.length-1,QI_IDX+1);R();return}
+  if(act.indexOf("a_")===0){var p=act.split("_");ANS[parseInt(p[1])]=parseInt(p[2]);if(QI_IDX<ALLQ.length-1)setTimeout(function(){QI_IDX++;R()},200);else R();return}
+  if(act.indexOf("c_")===0){var p=act.split("_");var qi=parseInt(p[1]);var ci=parseInt(p[2]);var q=ALLQ.filter(function(x){return x.i===qi})[0];if(q&&q.opts)ANS[qi]=q.opts[ci];if(QI_IDX<ALLQ.length-1)setTimeout(function(){QI_IDX++;R()},200);else R();return}
+});
+R();
+}catch(e){document.getElementById("err").style.display="block";document.getElementById("err").textContent=e.message}
+</script>
+</body>
+</html>

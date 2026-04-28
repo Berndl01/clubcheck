@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030B15">
+<title>Humatrix ClubCheck — Registrierung</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#030B15;--bg2:#0A1628;--bg3:#111E33;--cyan:#00D4FF;--gold:#FBBF24;--green:#34D399;--red:#F87171;--white:#E8F0F8;--muted:#4A6478;--text:#93AABB}
+body{background:var(--bg);font-family:'Barlow',sans-serif;color:var(--white);min-height:100dvh}
+.w{max-width:480px;margin:0 auto;padding:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,.1)}50%{box-shadow:0 0 40px rgba(0,212,255,.2)}}
+.gc{background:linear-gradient(145deg,rgba(10,22,40,.95),rgba(17,30,51,.8));border:1px solid rgba(0,212,255,.07);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.15),transparent)}
+.inp{width:100%;padding:14px 16px;background:var(--bg2);border:1.5px solid rgba(0,212,255,.1);border-radius:12px;color:var(--white);font-size:15px;font-family:'Barlow',sans-serif;outline:none;margin-bottom:10px}
+.inp:focus{border-color:rgba(0,212,255,.35)}
+.lbl{font-size:11px;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin-bottom:5px}
+.btn{width:100%;padding:16px;border-radius:12px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;cursor:pointer;margin-top:8px;transition:all .2s}
+.btn.go{background:linear-gradient(135deg,var(--cyan),#0ABFEA);color:var(--bg);animation:glow 3s infinite}
+.btn.off{background:var(--bg3);color:var(--muted);cursor:default}
+.btn2{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(0,212,255,.1);background:transparent;color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;font-family:'Barlow',sans-serif}
+.step-bar{display:flex;gap:4px;margin-bottom:20px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:var(--bg3);transition:background .3s}
+.step-dot.done{background:var(--cyan)}
+.step-dot.active{background:var(--gold)}
+.plan-card{padding:16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.05);background:var(--bg2);cursor:pointer;margin-bottom:8px;transition:all .2s}
+.plan-card:hover,.plan-card.sel{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,212,255,.08)}
+.err{color:var(--red);font-size:11px;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="app" class="w"></div>
+<script>
+var SB_URL="https://qfojdoxrlplmzextjava.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmb2pkb3hybHBsbXpleHRqYXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNzM5NTQsImV4cCI6MjA5Mjk0OTk1NH0.R8LDvCWen16w--iyURxArvbc_p_kBlWsKb3Q57QOv7A";
+var sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+var $=document.getElementById("app");
+var STEP=1,ERR="";
+var REG={first:"",last:"",email:"",phone:"",pw:"",pw2:"",pkg:"plus",clubName:"",code:"",q:[{t:"",type:"scale",opts:["",""]},{t:"",type:"scale",opts:["",""]},{t:"",type:"scale",opts:["",""]}]};
+
+// Read URL params
+var up=new URLSearchParams(window.location.search);
+if(up.get("pkg"))REG.pkg=up.get("pkg");
+if(up.get("step"))STEP=parseInt(up.get("step"));
+if(up.get("code"))REG.code=up.get("code");
+if(up.get("status")==="success"&&REG.code)STEP=5;
+
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function genCode(n){var w=n.toUpperCase().replace(/[^A-Z]/g,"").substring(0,3);if(w.length<2)w="CC";return w+String(Math.floor(Math.random()*900)+100)}
+
+function R(){
+var o='';
+// Header
+o+='<div style="text-align:center;margin-bottom:6px"><span style="font-family:Barlow Condensed,sans-serif;font-size:18px;font-weight:900;letter-spacing:3px">HUMATRIX</span> <span style="font-size:10px;color:var(--cyan);letter-spacing:1px">CLUBCHECK</span></div>';
+o+='<div style="text-align:center;font-size:10px;color:var(--muted);margin-bottom:14px">Schritt '+STEP+' / 5</div>';
+// Step bar
+o+='<div class="step-bar">';
+for(var i=1;i<=5;i++)o+='<div class="step-dot'+(i<STEP?' done':i===STEP?' active':'')+'"></div>';
+o+='</div>';
+
+// ═══ STEP 1: KONTO ═══
+if(STEP===1){
+  o+='<div style="animation:fadeUp .3s ease"><div class="gc">';
+  o+='<div style="font-size:16px;font-weight:800;margin-bottom:4px">Konto anlegen</div>';
+  o+='<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Zugangsdaten fuer die Vereinsadministration.</div>';
+  o+='<div class="lbl">VORNAME</div><input id="f_first" class="inp" value="'+esc(REG.first)+'" placeholder="Max">';
+  o+='<div class="lbl">NACHNAME</div><input id="f_last" class="inp" value="'+esc(REG.last)+'" placeholder="Mustermann">';
+  o+='<div class="lbl">E-MAIL</div><input id="f_email" class="inp" value="'+esc(REG.email)+'" placeholder="obmann@verein.at" type="email">';
+  o+='<div class="lbl">TELEFON</div><input id="f_phone" class="inp" value="'+esc(REG.phone)+'" placeholder="+43 ...">';
+  o+='<div class="lbl">PASSWORT (mind. 6 Zeichen)</div><input id="f_pw" class="inp" type="password" value="'+esc(REG.pw)+'" placeholder="••••••••">';
+  o+='<div class="lbl">PASSWORT WIEDERHOLEN</div><input id="f_pw2" class="inp" type="password" value="'+esc(REG.pw2)+'">';
+  if(ERR)o+='<div class="err">'+ERR+'</div>';
+  o+='</div>';
+  o+='<button id="btnNext" class="btn go">WEITER</button>';
+  o+='<a href="/" class="btn2" style="display:block;text-align:center;text-decoration:none">Abbrechen</a>';
+  o+='</div>';
+  $.innerHTML=o;
+  ["f_first","f_last","f_email","f_phone","f_pw","f_pw2"].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.oninput=function(){REG[id.replace("f_","")]=this.value}
+  });
+  document.getElementById("btnNext").onclick=function(){
+    ERR="";
+    if(!REG.first||!REG.last){ERR="Vor- und Nachname erforderlich";R();return}
+    if(!REG.email||!REG.email.includes("@")){ERR="Gueltige E-Mail erforderlich";R();return}
+    if(REG.pw.length<6){ERR="Passwort mind. 6 Zeichen";R();return}
+    if(REG.pw!==REG.pw2){ERR="Passwoerter stimmen nicht ueberein";R();return}
+    STEP=2;ERR="";R();
+  };
+  return;
+}
+
+// ═══ STEP 2: PAKET ═══
+if(STEP===2){
+  var pkgs=[
+    {k:"basic",n:"BASIC",p:"199",d:"bis 100 Mitglieder",feats:["1 Umfrage-Durchlauf","12 Wochen Laufzeit","8-seitiger Report","Rollenvergleich","NPS-Auswertung","10+ Empfehlungen","CSV-Export","3 eigene Fragen"]},
+    {k:"plus",n:"PLUS",p:"299",d:"bis 250 Mitglieder",feats:["1 Umfrage-Durchlauf","12 Wochen Laufzeit","Erweiterter Report","Rollenvergleich & Gaps","Kommentar-Analyse","NPS-Auswertung","10+ Empfehlungen","CSV-Export","3 eigene Fragen"],pop:true},
+    {k:"premium",n:"PREMIUM",p:"499",d:"bis 500 Mitglieder",feats:["1 Umfrage-Durchlauf","12 Wochen Laufzeit","Premium Report","Rollenvergleich & Gaps","Kommentar-Analyse","NPS + Tiefenanalyse","Cross-Korrelationen","Risiko-Szenarien","CSV-Export","3 eigene Fragen"]}
+  ];
+  o+='<div style="animation:fadeUp .3s ease">';
+  o+='<div style="font-size:16px;font-weight:800;margin-bottom:4px;text-align:center">Paket waehlen</div>';
+  o+='<div style="font-size:11px;color:var(--muted);margin-bottom:14px;text-align:center">Alle Pakete beinhalten die vollstaendige Analyse.</div>';
+  for(var pi=0;pi<pkgs.length;pi++){
+    var pk=pkgs[pi];var sel=REG.pkg===pk.k;
+    o+='<div class="plan-card'+(sel?' sel':'')+'" data-act="pkg_'+pk.k+'">';
+    o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+    o+='<span style="font-family:Barlow Condensed,sans-serif;font-size:18px;font-weight:800;letter-spacing:1px;color:'+(sel?'var(--cyan)':'var(--white)')+'">'+pk.n+(pk.pop?' \u2b50':'')+'</span>';
+    o+='<span style="font-family:Barlow Condensed,sans-serif;font-size:24px;font-weight:900;color:'+(sel?'var(--cyan)':'var(--white)')+'">'+pk.p+'\u20ac</span></div>';
+    o+='<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+pk.d+'</div>';
+    o+='<div style="display:flex;flex-wrap:wrap;gap:4px">';
+    for(var fi=0;fi<pk.feats.length;fi++)o+='<span style="font-size:9px;padding:2px 8px;border-radius:6px;background:rgba(0,212,255,.04);color:var(--text)">'+pk.feats[fi]+'</span>';
+    o+='</div></div>';
+  }
+  o+='<button id="btnNext" class="btn go">WEITER ZUR ZAHLUNG</button>';
+  o+='<button data-act="back1" class="btn2">\u2190 Zurueck</button>';
+  o+='</div>';
+  $.innerHTML=o;
+  document.getElementById("btnNext").onclick=function(){STEP=3;R()};
+  return;
+}
+
+// ═══ STEP 3: ZAHLUNG ═══
+if(STEP===3){
+  o+='<div style="animation:fadeUp .3s ease;text-align:center">';
+  o+='<div class="gc" style="padding:28px">';
+  o+='<div style="font-size:16px;font-weight:800;margin-bottom:6px">Zahlung</div>';
+  o+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px">Du wirst zu Stripe weitergeleitet fuer die sichere Bezahlung.</div>';
+  var prices={basic:"199",plus:"299",premium:"499"};
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:36px;font-weight:900;color:var(--cyan);margin-bottom:4px">'+prices[REG.pkg]+'\u20ac</div>';
+  o+='<div style="font-size:12px;color:var(--muted);margin-bottom:20px">'+REG.pkg.toUpperCase()+' Paket \u00b7 Einmalzahlung</div>';
+  o+='<div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px">';
+  o+='<img src="https://cdn.brandfolder.io/KGT2DTA4/at/8vbr8k4mr5rjwk4hxq4t9vs/Visa-logo.png" style="height:24px;border-radius:4px;background:#fff;padding:2px 6px" alt="Visa">';
+  o+='<img src="https://cdn.brandfolder.io/KGT2DTA4/at/nbk42prtvh5wb6r59kbf/Mastercard-logo.svg" style="height:24px;border-radius:4px;background:#fff;padding:2px 6px" alt="MC">';
+  o+='</div>';
+  if(ERR)o+='<div class="err">'+ERR+'</div>';
+  o+='<button id="btnPay" class="btn go">\ud83d\udd12 JETZT BEZAHLEN</button>';
+  o+='</div>';
+  o+='<button data-act="back2" class="btn2">\u2190 Zurueck</button>';
+  o+='</div>';
+  $.innerHTML=o;
+  document.getElementById("btnPay").onclick=async function(){
+    this.textContent="Wird geladen...";this.disabled=true;
+    // First create club in Supabase (pending status)
+    if(!REG.code)REG.code=genCode(REG.first+REG.last);
+    try{
+      await sb.from("clubs").insert({
+        code:REG.code,name:REG.first+" "+REG.last,
+        contact_name:REG.first+" "+REG.last,contact_email:REG.email,contact_phone:REG.phone,
+        package:REG.pkg,payment_status:"pending"
+      });
+    }catch(e){console.log("Insert error (may exist):",e)}
+    // Create Stripe checkout
+    try{
+      var res=await fetch("/api/create-checkout",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({package:REG.pkg,clubName:REG.first+" "+REG.last,email:REG.email,code:REG.code})
+      });
+      var data=await res.json();
+      if(data.url)window.location.href=data.url;
+      else{ERR="Stripe-Fehler: "+(data.error||"Unbekannt");R()}
+    }catch(e){ERR="Verbindungsfehler: "+e.message;R()}
+  };
+  return;
+}
+
+// ═══ STEP 4: VEREIN ═══
+if(STEP===4){
+  o+='<div style="animation:fadeUp .3s ease"><div class="gc">';
+  o+='<div style="font-size:16px;font-weight:800;margin-bottom:4px">Vereinsdaten</div>';
+  o+='<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Name und optionale Zusatzfragen.</div>';
+  o+='<div class="lbl">VEREINSNAME *</div>';
+  o+='<input id="f_club" class="inp" value="'+esc(REG.clubName)+'" placeholder="z.B. HC Tirol, SC Schwaz">';
+  o+='<div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px">3 EIGENE ZUSATZFRAGEN (OPTIONAL)</div>';
+  for(var qi=0;qi<3;qi++){
+    var q=REG.q[qi];
+    o+='<div style="margin-bottom:10px;padding:10px;background:var(--bg);border-radius:8px">';
+    o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+    o+='<span style="font-size:10px;color:var(--muted)">Frage '+(qi+1)+'</span>';
+    o+='<div style="display:flex;gap:3px">';
+    ["scale","choice","text"].forEach(function(t){
+      var sel=q.type===t;var lbl=t==="scale"?"Skala":t==="choice"?"Auswahl":"Text";
+      var co=t==="scale"?"var(--cyan)":t==="choice"?"var(--gold)":"var(--green)";
+      o+='<button data-act="qt_'+qi+'_'+t+'" style="padding:2px 8px;border-radius:6px;border:1px solid '+(sel?co:'rgba(255,255,255,.06)')+';background:'+(sel?co+'15':'transparent')+';color:'+(sel?co:'var(--muted)')+';font-size:8px;cursor:pointer">'+lbl+'</button>';
+    });
+    o+='</div></div>';
+    o+='<input id="qq_'+qi+'" class="inp" value="'+esc(q.t)+'" placeholder="z.B. Wie findest du unser neues Trikot?" style="font-size:12px;margin-bottom:4px">';
+    if(q.type==="choice"){
+      for(var oi=0;oi<q.opts.length;oi++){
+        o+='<div style="display:flex;gap:3px;margin-bottom:3px">';
+        o+='<input id="qo_'+qi+'_'+oi+'" class="inp" value="'+esc(q.opts[oi]||"")+'" placeholder="Option '+(oi+1)+'" style="font-size:11px;margin-bottom:0;flex:1">';
+        if(q.opts.length>2)o+='<button data-act="delO_'+qi+'_'+oi+'" style="width:28px;border-radius:6px;border:1px solid rgba(248,113,113,.2);background:transparent;color:var(--red);font-size:12px;cursor:pointer">\u2212</button>';
+        o+='</div>';
+      }
+      if(q.opts.length<5)o+='<button data-act="addO_'+qi+'" style="width:100%;padding:4px;border-radius:6px;border:1px dashed rgba(0,212,255,.15);background:transparent;color:var(--cyan);font-size:9px;cursor:pointer">+ Option</button>';
+    }
+    o+='</div>';
+  }
+  if(ERR)o+='<div class="err">'+ERR+'</div>';
+  o+='</div>';
+  o+='<button id="btnFinish" class="btn go">ABSCHLIESSEN</button>';
+  o+='</div>';
+  $.innerHTML=o;
+  document.getElementById("f_club").oninput=function(){REG.clubName=this.value};
+  for(var qi2=0;qi2<3;qi2++){(function(i){
+    var el=document.getElementById("qq_"+i);if(el)el.oninput=function(){REG.q[i].t=this.value};
+    for(var oi2=0;oi2<REG.q[i].opts.length;oi2++){(function(j){
+      var oel=document.getElementById("qo_"+i+"_"+j);if(oel)oel.oninput=function(){REG.q[i].opts[j]=this.value};
+    })(oi2)}
+  })(qi2)}
+  document.getElementById("btnFinish").onclick=async function(){
+    if(!REG.clubName){ERR="Vereinsname erforderlich";R();return}
+    this.textContent="Wird gespeichert...";this.disabled=true;
+    // Update club in Supabase
+    var upd={name:REG.clubName};
+    for(var qi=0;qi<3;qi++){
+      var q=REG.q[qi];
+      if(q.t){
+        upd["q"+(qi+1)+"_text"]=q.t;
+        upd["q"+(qi+1)+"_type"]=q.type;
+        if(q.type==="choice")upd["q"+(qi+1)+"_opts"]=q.opts.filter(function(o){return o.trim()}).join("|");
+      }
+    }
+    await sb.from("clubs").update(upd).eq("code",REG.code);
+    STEP=5;R();
+  };
+  return;
+}
+
+// ═══ STEP 5: ABSCHLUSS ═══
+if(STEP===5){
+  var surveyUrl=window.location.origin+"/survey?c="+REG.code;
+  var dashUrl=window.location.origin+"/dashboard?c="+REG.code;
+  o+='<div style="animation:fadeUp .5s ease;text-align:center">';
+  o+='<div class="gc" style="padding:28px;border-color:rgba(52,211,153,.2)">';
+  o+='<div style="font-size:11px;color:var(--green);font-weight:700;letter-spacing:2px;margin-bottom:8px">\u2705 REGISTRIERUNG ABGESCHLOSSEN</div>';
+  o+='<div style="font-size:9px;color:var(--muted);margin-bottom:4px">DEIN CLUB-CODE:</div>';
+  o+='<div style="font-family:Barlow Condensed,sans-serif;font-size:48px;font-weight:900;color:var(--cyan);letter-spacing:8px;margin-bottom:14px">'+REG.code+'</div>';
+  o+='<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(surveyUrl)+'&format=png" style="width:160px;height:160px;border-radius:10px;border:2px solid rgba(0,212,255,.15);margin-bottom:10px" alt="QR" onerror="this.style.display=\'none\'">';
+  o+='<input id="linkField" value="'+surveyUrl+'" readonly onclick="this.select()" style="width:100%;padding:10px;background:var(--bg);border:1px solid rgba(0,212,255,.15);border-radius:8px;color:var(--cyan);font-size:11px;text-align:center;margin:8px 0;outline:none;cursor:text">';
+  o+='<button id="cpBtn" class="btn2">\ud83d\udccb Umfrage-Link kopieren</button>';
+  o+='<div style="margin-top:14px;font-size:11px;color:var(--text);line-height:1.5">Sende diesen Link an alle Vereinsmitglieder.<br>Die Ergebnisse siehst du im Dashboard.</div>';
+  o+='</div>';
+  o+='<a href="'+dashUrl+'" class="btn go" style="display:block;text-align:center;text-decoration:none;margin-top:8px">\ud83d\udcca ZUM DASHBOARD</a>';
+  o+='<a href="'+surveyUrl+'" class="btn2" style="display:block;text-align:center;text-decoration:none;margin-top:6px">Umfrage selbst testen</a>';
+  o+='</div>';
+  $.innerHTML=o;
+  document.getElementById("cpBtn").onclick=function(){
+    try{navigator.clipboard.writeText(surveyUrl).then(function(){document.getElementById("cpBtn").textContent="\u2713 Kopiert!";document.getElementById("cpBtn").style.color="var(--green)";setTimeout(function(){document.getElementById("cpBtn").textContent="\ud83d\udccb Link kopieren";document.getElementById("cpBtn").style.color=""},2000)})}catch(e){document.getElementById("linkField").select()}
+  };
+  return;
+}
+$.innerHTML='';
+}
+
+// Events
+document.addEventListener("click",function(e){
+  var el=e.target;while(el&&!el.dataset.act)el=el.parentElement;if(!el)return;
+  var act=el.dataset.act;
+  if(act==="back1"){STEP=1;R();return}
+  if(act==="back2"){STEP=2;R();return}
+  if(act.indexOf("pkg_")===0){REG.pkg=act.split("_")[1];R();return}
+  if(act.indexOf("qt_")===0){var pp=act.split("_");REG.q[parseInt(pp[1])].type=pp[2];R();return}
+  if(act.indexOf("addO_")===0){var qi=parseInt(act.split("_")[1]);if(REG.q[qi].opts.length<5)REG.q[qi].opts.push("");R();return}
+  if(act.indexOf("delO_")===0){var pp2=act.split("_");var qi2=parseInt(pp2[1]);var oi=parseInt(pp2[2]);if(REG.q[qi2].opts.length>2)REG.q[qi2].opts.splice(oi,1);R();return}
+});
+R();
+</script>
+</body>
+</html>
