@@ -3,6 +3,8 @@
   "outputDirectory": "public",
   "framework": null,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/survey", "destination": "/survey.html" }
   ]
 }

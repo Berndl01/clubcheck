@@ -2374,7 +2374,13 @@ function renderComparisonTable(){
 // ═══ ROUTING ═══
 const el=document.getElementById('app');
 const $=id=>document.getElementById(id);
-function go(s){S.scr=s;S.err=null;R();window.scrollTo(0,0);}
+function go(s){
+  if(s==='register'){
+    window.location.href='/register.html';
+    return;
+  }
+  S.scr=s;S.err=null;R();window.scrollTo(0,0);
+}
 
 // Entfernt die Fehlermeldung ohne komplettes Re-Render — wichtig damit Input-Fokus erhalten bleibt
 function clearErr(){
@@ -3015,23 +3021,54 @@ async function regNext(step){
 }
 async function doRegister(){
   const r=S.reg;
-  const customQs=(r.customQs||[]).filter(q=>q&&q.trim()).slice(0,maxCustomQs(r.plan));
-  const res=await api('register',{clubName:r.vereinsname,sport:r.sport,email:r.email,password:r.pw,members:r.mitglieder,plan:r.plan,vorname:r.vorname,nachname:r.nachname,telefon:r.telefon,groesse:r.groesse,rname:r.rname,ansp:r.ansp,adr:r.adr,plz:r.plz,ort:r.ort,land:r.land,uid:r.uid,customQs:customQs});
-  if(!res.success){S.err=res.error||t('reg_err_failed');R();return;}
-  
-  // Token schon mal speichern, damit nach Stripe-Rückkehr Login nicht nötig ist
-  S.token=res.token;localStorage.setItem('cc_t',res.token);
-  S.club={code:res.clubCode,name:r.vereinsname,sport:r.sport,plan:r.plan,members:r.mitglieder,exp:res.expiresAt,customQs:customQs,round:1,surveysUsed:1,status:'pending'};
-  
-  // Zu Stripe Checkout weiterleiten — ClubCode als client_reference_id,
-  // damit der Webhook die Zahlung dem richtigen Club zuordnen kann.
-  const plan=planCfg(r.plan);
-  if(!plan.stripeUrl){
-    // Fallback: kein Stripe-Link konfiguriert → wie bisher direkt ins Management
-    await loadR();go('manage');return;
+
+  const customQs=(r.customQs||[])
+    .map(q=>{
+      if(typeof q==='string')return {text:q.trim(),type:'scale',opts:[]};
+      return {
+        text:String((q&&q.text)||'').trim(),
+        type:(q&&q.type)==='yesno'?'choice':'scale',
+        opts:(q&&q.type)==='yesno'?['Ja','Nein']:[]
+      };
+    })
+    .filter(q=>q.text.length>0)
+    .slice(0,maxCustomQs(r.plan));
+
+  const pkg = r.plan==='starter' ? 'basic' : r.plan==='standard' ? 'plus' : 'premium';
+
+  showLoading('Stripe wird vorbereitet…');
+
+  try{
+    const response = await fetch('/api/create-checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        package:pkg,
+        email:r.email,
+        phone:r.telefon,
+        password:r.pw,
+        clubName:r.vereinsname,
+        contactName:((r.vorname||'')+' '+(r.nachname||'')).trim(),
+        questions:customQs
+      })
+    });
+
+    const data = await response.json();
+    hideLoading();
+
+    if(!response.ok || !data.success || !data.url){
+      S.err = data.error || 'Stripe konnte nicht gestartet werden.';
+      R();
+      return;
+    }
+
+    window.location.href = data.url;
+  }catch(e){
+    hideLoading();
+    console.error('Checkout Error:',e);
+    S.err = e.message || 'Stripe konnte nicht gestartet werden.';
+    R();
   }
-  const url=plan.stripeUrl+'?client_reference_id='+encodeURIComponent(res.clubCode)+'&prefilled_email='+encodeURIComponent(r.email);
-  window.location.href=url;
 }
 async function loadR(){const r=await api('getResults',{token:S.token});if(r.success){S.responses=r.responses||[];S.roundsData=r.roundsData||{};if(r.round)S.club.round=r.round;}}
 async function doLogout(){await api('logout',{token:S.token});S.token=null;S.club=null;S.responses=[];localStorage.removeItem('cc_t');go('landing');}
