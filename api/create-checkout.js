@@ -1,210 +1,114 @@
 const Stripe = require("stripe");
-const { createClient } = require("@supabase/supabase-js");
-const crypto = require("crypto");
+const {
+  PLANS,
+  requireEnv,
+  getSupabase,
+  getOrigin,
+  cleanCode,
+  cleanString,
+  normalizePlan,
+  hashPassword,
+  parseBody,
+  sendJson,
+  methodNotAllowed,
+  createUniqueCode,
+  questionToFields
+} = require("./_lib");
+const { sendRegistrationStartedEmail } = require("./_email");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"));
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+async function insertClub(supabase, payload) {
+  const { data, error } = await supabase
+    .from("clubs")
+    .insert(payload)
+    .select("id,code,name,contact_name,contact_email,package")
+    .single();
 
-const PLANS = {
-  basic: {
-    amount: 19900,
-    name: "ClubCheck Basic",
-    desc: "Bis 100 Mitglieder · 12 Wochen",
-    maxMembers: 100
-  },
-  plus: {
-    amount: 29900,
-    name: "ClubCheck Plus",
-    desc: "Bis 250 Mitglieder · 12 Wochen",
-    maxMembers: 250
-  },
-  premium: {
-    amount: 49900,
-    name: "ClubCheck Premium",
-    desc: "Bis 500 Mitglieder · 12 Wochen",
-    maxMembers: 500
-  }
-};
-
-function normalizePlan(value) {
-  const v = String(value || "").toLowerCase();
-
-  if (v === "starter") return "basic";
-  if (v === "standard") return "plus";
-  if (v === "basic") return "basic";
-  if (v === "plus") return "plus";
-  if (v === "premium") return "premium";
-
-  return null;
-}
-
-function cleanCode(value) {
-  return String(value || "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 12);
-}
-
-function makePasswordHash(password) {
-  if (!password) return null;
-
-  const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto
-    .createHash("sha256")
-    .update(salt + String(password))
-    .digest("hex");
-
-  return `${salt}:${hash}`;
-}
-
-function makeCodeSeed(name) {
-  const base = String(name || "CLUB")
-    .toUpperCase()
-    .replace(/[^A-Z]/g, "")
-    .slice(0, 3);
-
-  return base.length >= 2 ? base : "CC";
-}
-
-async function createUniqueCode(clubName) {
-  const seed = makeCodeSeed(clubName);
-
-  for (let i = 0; i < 10; i++) {
-    const code = `${seed}${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const { data, error } = await supabase
-      .from("clubs")
-      .select("id")
-      .eq("code", code)
-      .maybeSingle();
-
-    if (error) throw error;
-    if (!data) return code;
-  }
-
-  return `${seed}${Date.now().toString().slice(-6)}`;
-}
-
-function questionToFields(index, q) {
-  const out = {};
-  const n = index + 1;
-
-  if (!q || !q.text) return out;
-
-  out[`q${n}_text`] = String(q.text).trim();
-  out[`q${n}_type`] = q.type === "choice" ? "choice" : q.type === "text" ? "text" : "scale";
-
-  if (Array.isArray(q.opts)) {
-    out[`q${n}_opts`] = q.opts
-      .map(x => String(x || "").trim())
-      .filter(Boolean)
-      .join("|");
-  }
-
-  return out;
+  if (error) throw error;
+  return data;
 }
 
 module.exports = async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      success: false,
-      error: "Method not allowed"
-    });
-  }
+  if (req.method !== "POST") return methodNotAllowed(res);
 
   try {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error("STRIPE_SECRET_KEY fehlt in Vercel.");
-    }
+    const supabase = getSupabase();
+    const body = await parseBody(req);
 
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-      throw new Error("Supabase Environment Variables fehlen in Vercel.");
-    }
-
-    const body = req.body || {};
-
-    const pkg = normalizePlan(body.package || body.pkg || body.plan);
-    const plan = PLANS[pkg];
+    const planKey = normalizePlan(body.package || body.pkg || body.plan);
+    const plan = PLANS[planKey];
 
     if (!plan) {
-      return res.status(400).json({
-        success: false,
-        error: "Ungültiges Paket. Erlaubt: basic, plus, premium."
-      });
+      return sendJson(res, 400, { ok: false, error: "Bitte ein gültiges Paket auswählen." });
     }
 
-    const email = String(body.email || "").trim().toLowerCase();
-    const clubName = String(body.clubName || "").trim();
-    const contactName = String(body.contactName || "").trim();
-    const phone = String(body.phone || "").trim();
+    const email = cleanString(body.email, 200).toLowerCase();
+    const clubName = cleanString(body.clubName, 200);
+    const contactName = cleanString(body.contactName, 200);
+    const phone = cleanString(body.phone, 50);
+    const password = String(body.password || "");
 
-    if (!email || !email.includes("@")) {
-      return res.status(400).json({
-        success: false,
-        error: "Gültige E-Mail-Adresse fehlt."
-      });
+    if (!clubName) return sendJson(res, 400, { ok: false, error: "Bitte den Vereinsnamen eingeben." });
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return sendJson(res, 400, { ok: false, error: "Bitte eine gültige E-Mail-Adresse eingeben." });
     }
-
-    if (!clubName) {
-      return res.status(400).json({
-        success: false,
-        error: "Vereinsname fehlt."
-      });
+    if (password.length < 8) {
+      return sendJson(res, 400, { ok: false, error: "Das Passwort muss mindestens 8 Zeichen haben." });
     }
 
     let code = cleanCode(body.code);
+    if (!code) code = await createUniqueCode(supabase, clubName);
 
-    if (!code) {
-      code = await createUniqueCode(clubName);
-    }
+    const questionsRaw = Array.isArray(body.questions) ? body.questions : [];
+    const questions = questionsRaw
+      .map(q => ({
+        text: cleanString(q && q.text, 180),
+        type: String((q && q.type) || "scale").toLowerCase(),
+        opts: Array.isArray(q && q.opts) ? q.opts : []
+      }))
+      .filter(q => q.text)
+      .slice(0, plan.maxCustomQuestions);
+
+    const qFields = questionToFields(questions);
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 84);
 
-    const questions = Array.isArray(body.questions) ? body.questions.slice(0, 3) : [];
-
-    const qFields = questions.reduce((acc, q, i) => {
-      return Object.assign(acc, questionToFields(i, q));
-    }, {});
-
-    const passwordHash = makePasswordHash(body.password);
-
-    const clubPayload = {
+    const payload = {
       code,
       name: clubName,
       contact_name: contactName || null,
       contact_email: email,
       contact_phone: phone || null,
-      package: pkg,
+      password_hash: hashPassword(password),
+      package: plan.key,
       max_members: plan.maxMembers,
+      max_custom_questions: plan.maxCustomQuestions,
       payment_status: "pending",
       expires_at: expiresAt.toISOString(),
       ...qFields
     };
 
-    if (passwordHash) {
-      clubPayload.password_hash = passwordHash;
+    let club;
+    try {
+      club = await insertClub(supabase, payload);
+    } catch (insertError) {
+      if (insertError && insertError.code === "23505") {
+        payload.code = await createUniqueCode(supabase, clubName);
+        club = await insertClub(supabase, payload);
+      } else {
+        throw insertError;
+      }
     }
 
-    const { error: upsertError } = await supabase
-      .from("clubs")
-      .upsert(clubPayload, { onConflict: "code" });
-
-    if (upsertError) {
-      throw new Error(`Supabase-Fehler: ${upsertError.message}`);
-    }
-
-    const origin = req.headers.origin || `https://${req.headers.host}`;
+    const origin = getOrigin(req);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: email,
-      client_reference_id: code,
+      client_reference_id: club.code,
       allow_promotion_codes: true,
       billing_address_collection: "required",
       line_items: [
@@ -220,28 +124,34 @@ module.exports = async function handler(req, res) {
           quantity: 1
         }
       ],
-      success_url: `${origin}/register.html?status=success&code=${encodeURIComponent(code)}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/register.html?status=cancelled&code=${encodeURIComponent(code)}`,
+      success_url: `${origin}/register.html?status=success&code=${encodeURIComponent(club.code)}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/register.html?status=cancelled&code=${encodeURIComponent(club.code)}`,
       metadata: {
-        code,
-        package: pkg,
+        code: club.code,
+        package: plan.key,
         clubName,
         email
       }
     });
 
-    return res.status(200).json({
-      success: true,
+    // E-Mail ist bewusst nicht zahlungskritisch: Checkout darf nicht scheitern, wenn Resend kurz nicht erreichbar ist.
+    try {
+      await sendRegistrationStartedEmail(supabase, club, { plan, checkoutUrl: session.url });
+    } catch (emailErr) {
+      console.error("registration email failed:", emailErr.message);
+    }
+
+    return sendJson(res, 200, {
+      ok: true,
       url: session.url,
       sessionId: session.id,
-      code
+      code: club.code
     });
   } catch (err) {
-    console.error("create-checkout error:", err);
-
-    return res.status(500).json({
-      success: false,
-      error: err.message || "Unbekannter Stripe-Fehler"
+    console.error("create-checkout failed:", err);
+    return sendJson(res, 500, {
+      ok: false,
+      error: "Die Zahlung konnte nicht vorbereitet werden. Bitte versuche es später erneut."
     });
   }
 };

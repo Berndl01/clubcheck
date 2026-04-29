@@ -2,1216 +2,345 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#010C1A">
-<title>Humatrix ClubCheck — Vorstand-Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f3ee">
+<title>ClubCheck Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#010C1A;--bg2:#061828;--bg3:#0b2236;--cyan:#2FA7BC;--gold:#FBBF24;--green:#34D399;--red:#F87171;--orange:#FB923C;--purple:#A78BFA;--blue:#60A5FA;--white:#E8F0F8;--muted:#4A6478;--text:#93AABB;--pink:#F472B6}
-html,body{min-height:100dvh;background:var(--bg);font-family:'Barlow',Arial,sans-serif;color:var(--white)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(47,167,188,.1)}50%{box-shadow:0 0 40px rgba(47,167,188,.2)}}
-@keyframes scan{0%{top:-1px}100%{top:100%}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes countUp{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-.w{max-width:720px;margin:0 auto;padding:16px 18px}
-.gc{background:linear-gradient(145deg,rgba(10,22,40,.95),rgba(17,30,51,.8));border:1px solid rgba(47,167,188,.07);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
-.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(47,167,188,.15),transparent)}
-.gc.glow{border-color:rgba(47,167,188,.2);box-shadow:0 0 30px rgba(47,167,188,.08)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:6px 0 14px}
-.inp{padding:14px 16px;background:var(--bg2);border:1.5px solid rgba(47,167,188,.1);border-radius:12px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;width:100%;margin-bottom:10px}
-.inp:focus{border-color:rgba(47,167,188,.35)}
-.btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;cursor:pointer;margin-top:8px}
-.btn.go{background:linear-gradient(135deg,var(--cyan),#2FA7BC);color:var(--bg);animation:glow 3s infinite}
-.btn.off{background:var(--bg3);color:var(--muted);cursor:default}
-.btn2{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(47,167,188,.1);background:transparent;color:var(--cyan);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;font-family:'DM Sans',sans-serif}
-.lbl{font-size:11px;color:var(--cyan);font-weight:600;letter-spacing:.5px;margin-bottom:5px}
-.stag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:14px;font-size:9px;font-weight:700;letter-spacing:1.5px;margin-bottom:10px}
-.ring{position:relative;width:160px;height:160px;margin:0 auto 14px}
-.ring svg{width:160px;height:160px;transform:rotate(-90deg)}
-.ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
-.stat{text-align:center;padding:14px;background:var(--bg);border-radius:10px}
-.stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:900}
-.stat-lbl{font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:2px}
-.dim-row{padding:12px;background:var(--bg);border-radius:10px;margin-bottom:6px}
-.dim-bar{height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:6px}
-.dim-fill{height:100%;border-radius:4px;transition:width 1.5s ease}
-.qbar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:4px}
-.qbar-text{flex:1;font-size:11px;color:var(--text);line-height:1.3}
-.qbar-track{width:100px;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;flex-shrink:0}
-.qbar-fill{height:100%;border-radius:3px}
-.qbar-val{font-size:11px;font-weight:700;min-width:32px;text-align:right;font-family:'Syne',sans-serif}
-.role-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.role-lbl{font-size:10px;min-width:70px;color:var(--text)}
-.role-bars{flex:1;display:flex;gap:3px}
-.role-seg{height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;transition:width 1s}
-.ft-card{padding:12px;background:var(--bg);border-radius:10px;margin-bottom:6px;border-left:3px solid var(--gold)}
-.ft-card p{font-size:12px;color:var(--text);line-height:1.6;font-style:italic}
-.ft-meta{font-size:9px;color:var(--muted);margin-top:4px}
-.tab-row{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.tab-btn{padding:8px 14px;border-radius:10px;border:1px solid rgba(47,167,188,.1);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .15s}
-.tab-btn.on{border-color:var(--cyan);background:rgba(47,167,188,.08);color:var(--cyan)}
-.share-box{background:var(--bg);border:1px solid rgba(47,167,188,.15);border-radius:10px;padding:14px;text-align:center;margin-bottom:10px}
-.share-link{font-size:13px;color:var(--cyan);word-break:break-all;font-weight:600;padding:8px;background:var(--bg2);border-radius:6px;margin:8px 0;display:block;cursor:pointer}
-.foot{text-align:center;padding:20px 0;margin-top:20px}
-@media(max-width:500px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.qbar-track{width:70px}}
+:root{
+  --bg:#f5f3ee;--bg2:#edeae3;--card:#fff;--card2:#fafaf7;--brd:#e5e2da;--brd2:#efece5;
+  --tx:#1a1a1a;--tm:#5a5650;--tl:#9c978d;--ac:#1a1a1a;--ac2:#2d2d2d;
+  --gold:#8a6d3b;--gold2:#f5efe3;--green:#3d6b4a;--green2:#eaefe8;--red:#9c3030;--red2:#f3e8e6;
+  --blue:#2a4a6b;--fd:'Fraunces','Georgia',serif;--fn:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--r:2px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+h1,h2,h3,h4{font-family:var(--fd);font-weight:500;letter-spacing:-.025em}
+p{color:var(--tm);line-height:1.75}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}.narrow{max-width:980px}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(245,243,238,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd)}
+.hdr-in{max-width:1180px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
+.logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
+.logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
+.nav{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:10px 18px;border-radius:999px;border:1px solid var(--brd);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);font-weight:500;cursor:pointer;background:transparent}
+.pill:hover{border-color:var(--ac);color:var(--ac)}.pill.ac{background:var(--ac);color:#fff;border-color:var(--ac)}
+.hero{padding:54px 0 30px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+.eyebrow{display:inline-block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tm);margin-bottom:16px;font-weight:500}
+h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-size:17px;max-width:680px;margin-bottom:20px}
+.meta{display:flex;gap:10px;flex-wrap:wrap}.chip{background:var(--card2);border:1px solid var(--brd);padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm)}
+.card{background:var(--card);border:1px solid var(--brd)}.card-p{padding:32px}.soft{background:linear-gradient(180deg,#fafaf7 0%,#f7f4ee 100%)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+.section{padding:34px 0}.section-head{margin-bottom:24px}.section-head h2{font-size:34px;margin-bottom:8px}.section-head p{max-width:760px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:14px 26px;border-radius:var(--r);border:1px solid transparent;font-family:var(--fn);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:.2s ease}
+.btn:disabled{opacity:.4;pointer-events:none}.bp{background:var(--ac);color:#fff}.bp:hover:not(:disabled){background:var(--ac2)}.bo{background:transparent;color:var(--tx);border-color:var(--tx)}.bo:hover:not(:disabled){background:var(--tx);color:#fff}.bw{background:var(--gold);color:#fff}.bw:hover:not(:disabled){background:#735a30}.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.full{width:100%}
+.field{margin-bottom:22px}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.label{display:block;font-size:10px;font-weight:500;color:var(--tm);margin-bottom:8px;letter-spacing:.14em;text-transform:uppercase}
+.input,.textarea,.select{width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--brd);border-radius:0;background:transparent;color:var(--tx);font-family:var(--fn);font-size:15px;outline:none}
+.textarea{min-height:88px;resize:vertical}.input:focus,.textarea:focus,.select:focus{border-bottom-color:var(--ac)}.input::placeholder,.textarea::placeholder{color:var(--tl)}
+.err,.ok,.note{padding:14px 18px;border-left:2px solid;margin-bottom:18px;font-size:13px;line-height:1.65}.err{background:var(--red2);color:var(--red);border-color:var(--red)}.ok{background:var(--green2);color:var(--green);border-color:var(--green)}.note{background:var(--gold2);color:var(--gold);border-color:var(--gold)}
+.stepper{display:flex;border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-bottom:28px}.step{padding:14px 18px;border:0;background:transparent;border-bottom:2px solid transparent;color:var(--tl);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}.step.active{color:var(--ac);border-bottom-color:var(--ac)}.step.done{color:var(--tm);cursor:pointer}.step.disabled{opacity:.45}
+.price-card{border:1px solid var(--brd);background:var(--card);padding:22px 24px;cursor:pointer;transition:.2s}.price-card:hover{border-color:var(--ac)}.price-card.selected{background:var(--ac);border-color:var(--ac);color:#fff}.price-card.selected p,.price-card.selected .muted{color:rgba(255,255,255,.78)}
+.price-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px}.price-name{font-family:var(--fd);font-size:25px}.price-value{font-family:var(--fd);font-size:32px;letter-spacing:-.04em}.muted{color:var(--tm)}.mini{font-size:12px;color:var(--tl);line-height:1.6}
+.summary-list{border-top:1px solid var(--brd);margin-top:10px}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--brd);padding:14px 0}.summary-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);min-width:110px}.summary-value{text-align:right;line-height:1.55}
+.kpi{padding:22px;border:1px solid var(--brd);background:var(--card)}.kpi .num{font-family:var(--fd);font-size:40px;line-height:1}.kpi .lbl{font-size:11px;color:var(--tm);letter-spacing:.12em;text-transform:uppercase;margin-top:8px}.bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
+.footer{background:var(--card2);border-top:1px solid var(--brd);padding:38px 0;margin-top:48px}.footer-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--tm);font-size:13px}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
+@media(max-width:980px){.hero-grid,.layout,.grid2,.grid3{grid-template-columns:1fr}.sticky{position:static!important}}
+@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav{display:none}}
+
+@media print{.hdr,.footer,.btn-row,aside{display:none!important}.layout{display:block}body{background:#fff}.card{break-inside:avoid}}
 </style>
 </head>
 <body>
-<div id="app" class="w"></div>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/">Startseite</a><a class="pill" href="/register.html">Registrierung</a><a class="pill ac" href="/dashboard.html">Dashboard</a></nav></div></header>
+
+<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p><div class="meta"><div class="chip">Auswertung</div><div class="chip">Mitglieder-Link</div><div class="chip">PDF-Bericht</div></div></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px">Auswertung</h3><p>Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
+
+<main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
+<footer class="footer"><div class="wrap footer-in"><div>Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/">Startseite</a><a href="/register.html">Registrierung</a></div></div></footer>
 <script>
-try{
-var SH="https://script.google.com/macros/s/AKfycbx65LPaGvJMnMcO7KyeLojWV_bSH5pbpmChHokE_EpGfK9cXzZtmOS7-bdUq40GnRHM-w/exec";
-var SURVEY_URL="https://check.humatrix.cc";
-var V="home",CODE="",DATA=null,TAB="overview",REG={name:"",contact:"",email:"",questions:[{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]},{text:"",type:"scale",opts:["",""]}]};
-var $=document.getElementById("app");
-function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+const app = document.getElementById("app");
+const side = document.getElementById("side");
+const storeKey = "clubcheck_dashboard_token";
+let token = localStorage.getItem(storeKey) || "";
+let dashboard = null;
+let error = "";
+const params = new URLSearchParams(location.search);
+const resetToken = params.get("reset") || "";
+const initialCode = (params.get("c") || "").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12);
 
-// Generate code from name
-function genCode(name){
-  var w=name.toUpperCase().replace(/[^A-Z]/g,"").substring(0,3);
-  if(w.length<2)w="CC";
-  var n=Math.floor(Math.random()*900)+100;
-  return w+n;
+if (resetToken) renderResetPassword();
+else if (token) loadDashboard();
+else renderLogin();
+
+function esc(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+function fmt(v){return v === null || v === undefined ? "—" : String(v);}
+function pct(v){return v === null || v === undefined ? "—" : `${v}/7`;}
+
+function setHero(title, lead){
+  document.getElementById("heroTitle").textContent = title;
+  document.getElementById("heroLead").textContent = lead;
 }
 
-// QR Code as SVG (simple version using API)
-function qrImg(url){
-  return '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url)+'&format=png" style="width:180px;height:180px;border-radius:10px;border:2px solid rgba(47,167,188,.15)" alt="QR Code" onerror="this.style.display=\'none\'">';
+function renderLogin(){
+  setHero("Dashboard öffnen.", "Melde dich mit Club-Code und Passwort an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.");
+  app.innerHTML = `
+    ${error ? `<div class="err">${esc(error)}</div>` : ""}
+    <div class="card card-p">
+      <div class="section-head"><h2>Anmelden</h2><p>Verwende den Club-Code und das Passwort aus der Registrierung.</p></div>
+      <div class="field"><label class="label">Club-Code</label><input class="input" id="code" value="${esc(initialCode)}" placeholder="z. B. SVW9791"></div>
+      <div class="field"><label class="label">Passwort</label><input class="input" id="password" type="password" placeholder="Passwort"></div>
+      <div class="btn-row"><button class="btn bp" onclick="login()">Dashboard öffnen</button><button class="btn bo" onclick="renderForgot()">Passwort vergessen</button></div>
+    </div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Dashboard</h3><p>Nach der Anmeldung siehst du die Beteiligung, Bewertungsbereiche, Rollenverteilung und den PDF-Export.</p></div>`;
 }
 
-function send(d){
-  try{var j=JSON.stringify(d);var e=encodeURIComponent(j);
-  new Image().src=SH+"?data="+e+"&t="+Date.now();
-  try{fetch(SH,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+e}).catch(function(){})}catch(x){}
-  }catch(x){}
-}
-
-function loadDash(code,cb){
-  DATA=null;
-  fetch(SH+"?action=getDashboard&code="+encodeURIComponent(code))
-  .then(function(r){return r.json()})
-  .then(function(d){DATA=d;cb()})
-  .catch(function(e){DATA={error:e.message,count:0};cb()});
-  setTimeout(function(){if(!DATA){DATA={error:"Timeout",count:0};cb()}},8000);
-}
-
-// ═══ HELPERS ═══
-function radar(sc){
-  var dims=[{k:"intern",l:"Intern",co:"#2FA7BC"},{k:"sport",l:"Sport",co:"#34D399"},{k:"extern",l:"Extern",co:"#FB923C"},{k:"zukunft",l:"Zukunft",co:"#FBBF24"}];
-  var cx=140,cy=130,MR=90,n=4;
-  var o='<svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:340px;margin:0 auto;display:block">';
-  [.25,.5,.75,1].forEach(function(s){var p='';for(var i=0;i<n;i++){var a=Math.PI*2*i/n-Math.PI/2;p+=(cx+s*MR*Math.cos(a)).toFixed(1)+','+(cy+s*MR*Math.sin(a)).toFixed(1)+' '}o+='<polygon points="'+p+'" fill="none" stroke="rgba(47,167,188,.05)"/>'});
-  for(var i=0;i<n;i++){var a=Math.PI*2*i/n-Math.PI/2;o+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+MR*Math.cos(a)).toFixed(1)+'" y2="'+(cy+MR*Math.sin(a)).toFixed(1)+'" stroke="rgba(47,167,188,.04)"/>'}
-  var pts='',dots='';
-  for(var i=0;i<n;i++){var d=dims[i];var pct=(sc[d.k]||0)/100;var a=Math.PI*2*i/n-Math.PI/2;
-    var px=cx+pct*MR*Math.cos(a),py=cy+pct*MR*Math.sin(a);
-    pts+=px.toFixed(1)+','+py.toFixed(1)+' ';
-    dots+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="5" fill="'+d.co+'" stroke="var(--bg)" stroke-width="2"/>';
-    var lx=cx+(MR+20)*Math.cos(a),ly=cy+(MR+20)*Math.sin(a);
-    dots+='<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" fill="'+d.co+'" font-size="11" text-anchor="middle" font-family="Barlow Condensed" font-weight="700">'+d.l+'</text>';
-    dots+='<text x="'+lx.toFixed(1)+'" y="'+(ly+16).toFixed(1)+'" fill="#4A6478" font-size="10" text-anchor="middle" font-family="Barlow">'+(sc[d.k]||0)+'%</text>'}
-  o+='<polygon points="'+pts+'" fill="rgba(47,167,188,.1)" stroke="var(--cyan)" stroke-width="2.5"/>'+dots+'</svg>';
-  return o;
-}
-
-function sCol(v){return v>=70?"var(--green)":v>=45?"var(--gold)":"var(--red)"}
-function sLbl(v){return v>=70?"Stark":v>=45?"Ausbaufähig":"Kritisch"}
-function logo(){return '<div style="display:flex;align-items:center;gap:8px"><span style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;letter-spacing:3px">HUMATRIX</span><span style="font-size:9px;color:var(--cyan);font-weight:700;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(47,167,188,.2);border-radius:10px">DASHBOARD</span></div>'}
-function foot(){return '<div class="foot"><div style="font-size:7px;color:var(--muted);letter-spacing:1px;margin-bottom:3px">POWERED BY</div><div style="font-family:Syne,sans-serif;font-size:15px;font-weight:900;color:var(--cyan);letter-spacing:3px">HUMATRIX</div><div style="font-size:7px;color:var(--muted);margin-top:2px">The Mind Club Company</div></div>'}
-
-// ═══ SIMULATED DATA for demo (remove when live) ═══
-function demoData(){
-  return {
-    name:"HC Tirol (Demo)",code:"DEMO",count:24,
-    avgScores:{total:48,intern:42,sport:71,extern:35,zukunft:38},
-    npsAvg:5.4,npsDistribution:{promoter:5,passiv:7,kritiker:12},
-    roles:{"Spieler\u00b7in":12,"Trainer\u00b7in":3,"Vorstand":4,"Elternteil":3,"Mitglied":2},
-    roleScores:{
-      "Spieler\u00b7in":{intern:32,sport:78,extern:28,zukunft:30},
-      "Trainer\u00b7in":{intern:48,sport:82,extern:42,zukunft:45},
-      "Vorstand":{intern:65,sport:58,extern:52,zukunft:58}
-    },
-    questionScores:[
-      {i:10,s:"intern",t:"Vereinsf\u00fchrung handelt transparent",avg:3.2,pct:37},
-      {i:11,s:"intern",t:"Rollen und Zust\u00e4ndigkeiten klar",avg:3.8,pct:47},
-      {i:12,s:"intern",t:"Informationen rechtzeitig",avg:2.9,pct:32},
-      {i:13,s:"intern",t:"Konflikte fair gel\u00f6st",avg:3.5,pct:42},
-      {i:14,s:"intern",t:"Wertsch\u00e4tzung und Respekt",avg:4.2,pct:53},
-      {i:15,s:"intern",t:"Entscheidungen nachvollziehbar",avg:3.1,pct:35},
-      {i:16,s:"intern",t:"Finanzen transparent",avg:2.8,pct:30},
-      {i:17,s:"intern",t:"Digitale Werkzeuge",avg:3.0,pct:33},
-      {i:30,s:"sport",t:"Trainingsqualit\u00e4t hoch",avg:5.1,pct:68},
-      {i:31,s:"sport",t:"Spielerentwicklung individuell",avg:4.8,pct:63},
-      {i:32,s:"sport",t:"Zusammenhalt stark",avg:5.5,pct:75},
-      {i:33,s:"sport",t:"Nachwuchsarbeit professionell",avg:5.2,pct:70},
-      {i:34,s:"sport",t:"Staff kompetent",avg:5.4,pct:73},
-      {i:35,s:"sport",t:"Klare sportliche Ziele",avg:4.6,pct:60},
-      {i:36,s:"sport",t:"Zusammenarbeit Abteilungen",avg:4.0,pct:50},
-      {i:37,s:"sport",t:"Infrastruktur angemessen",avg:3.8,pct:47},
-      {i:50,s:"extern",t:"In Gemeinde verankert",avg:3.9,pct:48},
-      {i:51,s:"extern",t:"Au\u00dfendarstellung professionell",avg:2.6,pct:27},
-      {i:52,s:"extern",t:"Sponsoren gut betreut",avg:3.2,pct:37},
-      {i:53,s:"extern",t:"Fans willkommen",avg:3.5,pct:42},
-      {i:54,s:"extern",t:"Beziehung Verband",avg:4.1,pct:52},
-      {i:55,s:"extern",t:"Events gut organisiert",avg:3.4,pct:40},
-      {i:56,s:"extern",t:"Positives Image",avg:4.3,pct:55},
-      {i:70,s:"zukunft",t:"Aufstellung 3-5 Jahre",avg:3.3,pct:38},
-      {i:71,s:"zukunft",t:"Klare Strategie und Vision",avg:2.8,pct:30},
-      {i:72,s:"zukunft",t:"Investition Zukunft",avg:3.1,pct:35},
-      {i:73,s:"zukunft",t:"In 3 Jahren noch aktiv",avg:4.5,pct:58},
-      {i:74,s:"zukunft",t:"Innovativ und offen",avg:3.4,pct:40},
-      {i:75,s:"zukunft",t:"Nachfolgeplanung vorhanden",avg:2.4,pct:23},
-      {i:76,s:"zukunft",t:"Sportliche Richtung stimmt",avg:4.8,pct:63},
-      {i:77,s:"zukunft",t:"Finanzielle Zukunft positiv",avg:3.0,pct:33}
-    ],
-    freitexts:[
-      {text:"Kommunikation vom Vorstand muss besser werden. Wir erfahren alles zu sp\u00e4t.",role:"Spieler\u00b7in"},
-      {text:"Hallenzeiten sind unfair verteilt. Damen und Nachwuchs kommen zu kurz.",role:"Trainer\u00b7in"},
-      {text:"Brauchen dringend eine Website und Social Media Strategie.",role:"Mitglied"},
-      {text:"Der Verein braucht eine klare Vision f\u00fcr die n\u00e4chsten 5 Jahre.",role:"Vorstand"},
-      {text:"Mehr Teamevents au\u00dferhalb des Sports. Zusammenhalt f\u00f6rdern!",role:"Spieler\u00b7in"},
-      {text:"Nachfolge f\u00fcr den Obmann muss JETZT gekl\u00e4rt werden.",role:"Funktionär\u00b7in"}
-    ]
-  };
-}
-
-
-// ═══ PREMIUM INTERPRETATION ENGINE ═══
-function interpret(data){
-  var sc=data.avgScores||{};var t=sc.total||0;var cnt=data.count||0;
-  var club=data.name||"Verein";
-  var dims=[{k:"intern",l:"Vereinsintern"},{k:"sport",l:"Sportlich"},{k:"extern",l:"Vereinsextern"},{k:"zukunft",l:"Zukunft"}];
-  dims.sort(function(a,b){return(sc[a.k]||0)-(sc[b.k]||0)});
-  var weakest=dims[0];var wv=sc[weakest.k]||0;
-  var second=dims[1];var sv2=sc[second.k]||0;
-  var strongest=dims[dims.length-1];var stv=sc[strongest.k]||0;
-  var nps=data.npsDistribution||{};var nTotal=(nps.promoter||0)+(nps.passiv||0)+(nps.kritiker||0);
-  var npsScore=nTotal?Math.round(((nps.promoter||0)-(nps.kritiker||0))/nTotal*100):0;
-  var qs=data.questionScores||[];qs.sort(function(a,b){return a.pct-b.pct});
-  var rs=data.roleScores||{};
-  var I={};
-
-  // ─── EXECUTIVE BRIEFING ───
-  I.briefing="";
-  if(t>=70)I.briefing="Der "+club+" befindet sich in einer starken Position. Mit einem ClubScore von "+t+"/100 zeigt die Analyse, dass die Grundstrukturen funktionieren und die Mitglieder ueberwiegend zufrieden sind. "+strongest.l+" ("+stv+"%) ist besonders stark. Dennoch gibt es Optimierungspotenzial in "+weakest.l+" ("+wv+"%). Empfehlung: Bestehende Staerken bewusst pflegen und gezielt in die Weiterentwicklung der schwaeche Bereiche investieren.";
-  else if(t>=55)I.briefing="Der "+club+" steht vor einer entscheidenden Phase. Der ClubScore von "+t+"/100 zeigt eine solide Basis, aber auch deutliche Entwicklungsfelder. "+strongest.l+" ("+stv+"%) ist ein Pfeiler auf den der Verein bauen kann. Gleichzeitig sendet "+weakest.l+" ("+wv+"%) ein klares Warnsignal: Ohne gezielte Massnahmen droht hier eine Verschlechterung. Die Analyse von "+cnt+" Teilnehmern zeigt ein konsistentes Bild \u2014 die Ergebnisse sind belastbar.";
-  else if(t>=45)I.briefing="Der "+club+" befindet sich in einer Entwicklungsphase mit deutlichem Handlungsbedarf. Der ClubScore von "+t+"/100 liegt unter dem Durchschnitt vergleichbarer Vereine (54%). "+weakest.l+" ("+wv+"%) und "+second.l+" ("+sv2+"%) sind die dringendsten Baustellen. Positiv: "+strongest.l+" ("+stv+"%) zeigt, dass Leistungsfaehigkeit vorhanden ist. Der Vorstand sollte in den naechsten 90 Tagen konkrete Massnahmen beschliessen.";
-  else I.briefing="Der "+club+" befindet sich in einer kritischen Situation. Mit einem ClubScore von "+t+"/100 liegt der Verein deutlich unter dem Durchschnitt (54%). "+weakest.l+" ("+wv+"%) ist alarmierend niedrig. Die Forschung zeigt: Vereine mit Werten unter 40% verlieren ohne Intervention innerhalb von 24 Monaten durchschnittlich 20-30% ihrer aktiven Mitglieder (McKinsey Organizational Health Index). Sofortiges Handeln ist dringend empfohlen.";
-
-  // ─── DIMENSION DEEP TEXTS ───
-  I.dimTexts={};
-  var dtBase={
-    intern:{
-      low:"Die internen Strukturen des Vereins zeigen erhebliche Defizite. Besonders besorgniserregend: Die wahrgenommene Transparenz und Kommunikation liegen im kritischen Bereich. Die Forschung von Welch & Jackson (2007) belegt: Organisationen mit systematischen Kommunikationsdefiziten erleben Vertrauensverlust, sinkende Motivation und erhoehte Fluktuation. Fuer den "+club+" bedeutet das konkret: Ehrenamtliche werden frustriert aufhoeren, Mitglieder treten aus, Sponsoren verlieren Vertrauen.",
-      mid:"Die interne Organisation funktioniert in Grundzuegen, zeigt aber Luecken in Transparenz und Rollenklarheit. Das ist typisch fuer gewachsene Vereinsstrukturen \u2014 Zustaendigkeiten wurden nie formal geklaert, Informationswege sind informell. Die gute Nachricht: Diese Probleme sind mit klaren Massnahmen gut loesbar.",
-      high:"Die internen Strukturen sind solide. Mitglieder fuehlen sich informiert, eingebunden und wertgeschaetzt. Das ist ein wichtiges Fundament fuer alle weiteren Entwicklungen."
-    },
-    sport:{
-      low:"Die sportliche Dimension \u2014 das Kerngeschaeft eines Vereins \u2014 wird kritisch bewertet. Das betrifft nicht nur Training und Spielbetrieb, sondern auch Nachwuchsarbeit, Infrastruktur und sportliche Planung. Carron et al. (2002) zeigen: Sportliche Unzufriedenheit ist der staerkste Praediktor fuer Vereinsaustritt bei aktiven Mitgliedern.",
-      mid:"Die sportliche Basis ist vorhanden, aber es gibt Optimierungsbedarf bei einzelnen Aspekten. Typische Hebel: Individuelle Spielerentwicklung, Trainingsplanung und Infrastruktur.",
-      high:"Der sportliche Bereich ist die Staerke des Vereins. Die Mitglieder schaetzen Trainingsqualitaet, Zusammenhalt und Kompetenz des Staff. Diese Staerke kann als Zugpferd fuer andere Bereiche genutzt werden."
-    },
-    extern:{
-      low:"Die Aussenwahrnehmung des Vereins ist problematisch. Website, Social Media, Sponsoring und Medienarbeit werden durchgaengig schlecht bewertet. In Zeiten digitaler Kommunikation ist das ein strategisches Risiko: Neue Mitglieder finden den Verein nicht, Sponsoren sehen keine Professionalitaet, die Gemeinde nimmt den Verein nicht wahr. Ohne professionelle Aussendarstellung wird Wachstum nahezu unmoeglich.",
-      mid:"Die externe Wahrnehmung ist gemischt. Der Verein hat in der Gemeinde eine gewisse Praesenz, aber die professionelle Darstellung (Website, Social Media, Sponsoring) hat deutliches Potenzial.",
-      high:"Der Verein geniesst ein positives Image und ist gut in der Gemeinde verankert. Die Aussendarstellung ist professionell. Das schafft gute Voraussetzungen fuer Mitgliedergewinnung und Sponsoring."
-    },
-    zukunft:{
-      low:"Die Zukunftsfaehigkeit wird von den Mitgliedern kritisch bewertet. Besonders alarmierend: Fehlende Strategie, ungeloeste Nachfolge und zu geringe Investitionen in Zukunftsbereiche. Ohne eine klare Vision droht der Verein in 3-5 Jahren vor existenziellen Problemen zu stehen. Die Bereitschaft der Mitglieder langfristig zu bleiben sinkt messbar.",
-      mid:"Die Zukunftsaussichten werden als durchschnittlich bewertet. Es gibt Ansaetze fuer langfristiges Denken, aber die Strategie ist nicht klar genug kommuniziert und Nachfolge nicht geklaert.",
-      high:"Der Verein ist gut aufgestellt fuer die Zukunft. Mitglieder sehen eine klare Richtung und planen langfristig dabei zu bleiben. Das ist eine starke Basis fuer nachhaltiges Wachstum."
-    }
-  };
-  for(var dk in dtBase){
-    var v=sc[dk]||0;
-    I.dimTexts[dk]=v<45?dtBase[dk].low:v<70?dtBase[dk].mid:dtBase[dk].high;
-  }
-
-  // ─── CROSS-CORRELATIONS ───
-  I.crossCorr=[];
-  if((sc.intern||0)<50&&npsScore<15)I.crossCorr.push({t:"Transparenz \u2194 Weiterempfehlung",d:"Die niedrige interne Transparenz ("+sc.intern+"%) erklaert direkt den schwachen NPS ("+npsScore+"). Mitglieder die nicht wissen was im Verein passiert, empfehlen nicht weiter. Erste Massnahme: Regelmaessige Vorstand-Updates.",c:"var(--red)"});
-  if((sc.extern||0)<45&&(sc.zukunft||0)<50)I.crossCorr.push({t:"Image \u2194 Zukunft",d:"Schwache Aussendarstellung ("+sc.extern+"%) und niedrige Zukunftswerte ("+sc.zukunft+"%) verstaerken sich gegenseitig. Ohne sichtbare Professionalitaet glauben Mitglieder nicht an eine positive Entwicklung.",c:"var(--orange)"});
-  if((sc.intern||0)<55&&(sc.sport||0)>60)I.crossCorr.push({t:"Sportlich stark, organisatorisch schwach",d:"Klassisches Muster: Der sportliche Bereich ("+sc.sport+"%) wird von engagierten Trainern getragen, aber die Organisation ("+sc.intern+"%) haelt nicht mit. Risiko: Gute Trainer verlassen frustriert den Verein wenn die Rahmenbedingungen nicht stimmen.",c:"var(--gold)"});
-  var rolesExist=rs&&Object.keys(rs).length>1;
-  if(rolesExist){
-    var rVals=[];for(var rk in rs){if(rs[rk].intern!==undefined)rVals.push({r:rk,v:rs[rk].intern})}
-    if(rVals.length>1){rVals.sort(function(a,b){return a.v-b.v});var rGap=rVals[rVals.length-1].v-rVals[0].v;
-    if(rGap>25)I.crossCorr.push({t:"Wahrnehmungskluft intern",d:rVals[rVals.length-1].r+" bewertet Intern mit "+rVals[rVals.length-1].v+"%, "+rVals[0].r+" nur mit "+rVals[0].v+"%. Diese "+rGap+"-Punkte-Kluft zeigt: Die Fuehrung hat ein anderes Bild vom Verein als die Basis. Das ist ein typischer blinder Fleck der zu Fehlentscheidungen fuehrt.",c:"var(--red)"})}
-  }
-
-  // ─── RISK SCENARIOS ───
-  I.risks=[];
-  if(t<50)I.risks.push({l:"HOCH",t:"Mitgliederverlust",d:"Bei einem ClubScore unter 45% ist mit 20-30% Mitgliederverlust in 24 Monaten zu rechnen. Primaerer Treiber: Unzufriedenheit mit "+weakest.l+".",c:"var(--red)"});
-  if(npsScore<0)I.risks.push({l:"HOCH",t:"Reputationsschaden",d:"Ein negativer NPS ("+npsScore+") bedeutet: Mehr Mitglieder raten vom Verein ab als ihn empfehlen. Das schadet der Mitgliedergewinnung direkt.",c:"var(--red)"});
-  if((sc.zukunft||0)<45)I.risks.push({l:"MITTEL",t:"Fuehrungsvakuum",d:"Nachfolgeplanung ist die schwaechste Einzelfrage. Wenn Schluesselpersonen abtreten, droht ein Organisationskollaps.",c:"var(--orange)"});
-  if((sc.extern||0)<45)I.risks.push({l:"MITTEL",t:"Sponsor-Abwanderung",d:"Unprofessionelle Aussendarstellung und schwaches Sponsorenmanagement gefaehrden bestehende und potenzielle Partnerschaften.",c:"var(--orange)"});
-  if(cnt<15)I.risks.push({l:"NIEDRIG",t:"Datenbasis schmal",d:"Mit "+cnt+" Teilnehmern ist die Stichprobe klein. Ab 20+ werden die Ergebnisse deutlich belastbarer. Empfehlung: Teilnahme erneut bewerben.",c:"var(--gold)"});
-
-  // ─── VORSTANDSBRIEFING (ready-to-read) ───
-  var topQ=qs.length>=3?qs.slice(0,3):qs;
-  var topStr=qs.length>=3?qs.slice(-3).reverse():[];
-  I.vorstandBrief="Liebe Vorstandskolleginnen und -kollegen,\n\ndie ClubCheck-Analyse mit "+cnt+" Teilnehmern liegt vor. Der "+club+" erreicht einen ClubScore von "+t+"/100. ";
-  if(t>=70)I.vorstandBrief+="Das ist ein sehr gutes Ergebnis. Unser Verein steht gut da.";
-  else if(t>=50)I.vorstandBrief+="Das zeigt eine solide Basis mit Verbesserungspotenzial.";
-  else I.vorstandBrief+="Das zeigt deutlichen Handlungsbedarf in mehreren Bereichen.";
-  I.vorstandBrief+="\n\nUnsere groesste Staerke ist "+strongest.l+" ("+stv+"%) \u2014 darauf koennen wir stolz sein und aufbauen.";
-  I.vorstandBrief+="\n\nDringendster Handlungsbedarf besteht in "+weakest.l+" ("+wv+"%)";
-  if(sv2<60)I.vorstandBrief+=" und "+second.l+" ("+sv2+"%)";
-  I.vorstandBrief+=".";
-  if(topQ.length>0){
-    I.vorstandBrief+="\n\nDie drei kritischsten Einzelpunkte sind:\n";
-    for(var qi=0;qi<topQ.length;qi++)I.vorstandBrief+=(qi+1)+". "+topQ[qi].t+" ("+topQ[qi].pct+"%)\n";
-  }
-  I.vorstandBrief+="\nIch schlage vor, dass wir in der naechsten Sitzung konkrete Massnahmen fuer "+weakest.l+" beschliessen. ";
-  I.vorstandBrief+="Als Sofortmassnahme empfehle ich "+(wv<40?"eine Transparenz-Offensive mit woechentlichen Updates an alle Mitglieder.":"einen Workshop mit den Beteiligten um gemeinsam Loesungen zu erarbeiten.");
-  I.vorstandBrief+="\n\nDie vollstaendigen Ergebnisse sind im Dashboard einsehbar.\n\nMit sportlichen Gruessen";
-
-  return I;
-}
-
-// ═══ RENDER ═══
-function R(){
-var o='';
-
-// ═══ HOME ═══
-if(V==="home"){
-  o+='<div style="animation:fadeUp .5s ease;padding-top:14vh;text-align:center">';
-  o+='<div style="font-family:Syne,sans-serif;font-size:24px;font-weight:900;letter-spacing:4px;margin-bottom:4px">HUMATRIX</div>';
-  o+='<div style="font-size:10px;color:var(--cyan);font-weight:700;letter-spacing:3px;margin-bottom:30px">VORSTAND-DASHBOARD</div>';
-  o+='<div style="max-width:340px;margin:0 auto">';
-  o+='<button data-act="goLogin" class="btn go" style="margin-bottom:10px">📊 MIT CODE EINLOGGEN</button>';
-  o+='<button data-act="goRegister" class="btn2" style="border-color:var(--gold);color:var(--gold)">🆕 NEUEN VEREIN REGISTRIEREN</button>';
-  o+='<button data-act="goDemo" class="btn2" style="margin-top:16px;font-size:11px;color:var(--muted);border-color:rgba(255,255,255,.05)">Demo-Dashboard ansehen</button>';
-  o+='</div></div>';
-  $.innerHTML=o;return;
-}
-
-// ═══ LOGIN ═══
-if(V==="login"){
-  o+='<div style="animation:fadeUp .4s ease;padding-top:14vh;text-align:center">';
-  o+='<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;margin-bottom:20px">EINLOGGEN</div>';
-  o+='<div style="max-width:320px;margin:0 auto;text-align:left">';
-  o+='<div class="lbl">CLUB-CODE</div>';
-  o+='<input id="i_code" class="inp" value="'+esc(CODE)+'" placeholder="z.B. HCT426" style="text-transform:uppercase;text-align:center;font-size:22px;font-weight:700;letter-spacing:5px;font-family:Syne,sans-serif">';
-  o+='<button data-act="goLoad" class="btn '+(CODE.length>=3?'go':'off')+'">'+(CODE.length>=3?'DASHBOARD LADEN →':'CODE EINGEBEN')+'</button>';
-  o+='<button data-act="goHome" class="btn2">← ZURÜCK</button>';
-  o+='</div></div>';
-  $.innerHTML=o;
-  var el=document.getElementById("i_code");if(el){el.oninput=function(){CODE=this.value.toUpperCase().replace(/[^A-Z0-9]/g,"");this.value=CODE;var btn=document.querySelector('[data-act="goLoad"]');if(btn){btn.className="btn "+(CODE.length>=3?"go":"off");btn.textContent=CODE.length>=3?"DASHBOARD LADEN \u2192":"CODE EINGEBEN"}};el.focus()}
-  return;
-}
-
-// ═══ REGISTER ═══
-if(V==="register"){
-  var ok=REG.name.length>=2;
-  o+='<div style="animation:fadeUp .4s ease">';
-  o+='<div class="top">'+logo()+'</div>';
-  o+='<div class="stag" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);color:var(--gold)">SCHRITT 1 VON 2</div>';
-  o+='<div style="font-size:18px;font-weight:800;margin-bottom:4px">Verein registrieren</div>';
-  o+='<p style="font-size:12px;color:var(--muted);margin-bottom:18px">Grunddaten deines Vereins eingeben.</p>';
-  o+='<div class="lbl">VEREINSNAME *</div>';
-  o+='<input id="i_rn" class="inp" value="'+esc(REG.name)+'" placeholder="z.B. HC Tirol, SC Schwaz">';
-  o+='<div class="lbl">KONTAKTPERSON</div>';
-  o+='<input id="i_rc" class="inp" value="'+esc(REG.contact)+'" placeholder="Vor- und Nachname">';
-  o+='<div class="lbl">E-MAIL</div>';
-  o+='<input id="i_re" class="inp" value="'+esc(REG.email)+'" placeholder="vorstand@verein.at" type="email">';
-  o+='<button data-act="goQuestions" class="btn '+(ok?'go':'off')+'">'+(ok?'WEITER — FRAGEN FESTLEGEN →':'VEREINSNAME EINGEBEN')+'</button>';
-  o+='<button data-act="goHome" class="btn2">← ZURÜCK</button>';
-  o+='</div>';
-  $.innerHTML=o;
-  document.getElementById("i_rn").oninput=function(){REG.name=this.value;var btn=document.querySelector('[data-act="goQuestions"]');if(btn){var ok=REG.name.length>=2;btn.className="btn "+(ok?"go":"off");btn.textContent=ok?"WEITER \u2014 FRAGEN FESTLEGEN \u2192":"VEREINSNAME EINGEBEN"}};
-  document.getElementById("i_rc").oninput=function(){REG.contact=this.value};
-  document.getElementById("i_re").oninput=function(){REG.email=this.value};
-  return;
-}
-
-// ═══ CUSTOM QUESTIONS ═══
-if(V==="questions"){
-  o+='<div style="animation:fadeUp .4s ease">';
-  o+='<div class="top">'+logo()+'</div>';
-  o+='<div class="stag" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);color:var(--gold)">SCHRITT 2 VON 2</div>';
-  o+='<div style="font-size:18px;font-weight:800;margin-bottom:4px">Vereinsspezifische Fragen</div>';
-  o+='<p style="font-size:12px;color:var(--muted);margin-bottom:6px">Bis zu 5 eigene Fragen die NUR f\u00fcr deinen Verein gestellt werden. Leer lassen = Standard-Fragen.</p>';
-  o+='<div class="gc" style="padding:12px;margin-bottom:14px"><div style="font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:1px;margin-bottom:6px">FRAGETYPEN</div>';
-  o+='<div style="display:flex;gap:12px;flex-wrap:wrap">';
-  o+='<span style="font-size:11px;color:var(--text)"><strong style="color:var(--cyan)">Skala</strong> = Bewertung 1-7</span>';
-  o+='<span style="font-size:11px;color:var(--text)"><strong style="color:var(--gold)">Auswahl</strong> = Multiple Choice</span>';
-  o+='<span style="font-size:11px;color:var(--text)"><strong style="color:var(--green)">Freitext</strong> = offene Antwort</span>';
-  o+='</div></div>';
-  // 5 question slots
-  for(var qi=0;qi<5;qi++){
-    var q=REG.questions[qi];
-    var qNum=qi+1;
-    var hasText=q.text.length>0;
-    o+='<div class="gc" style="padding:14px;border-color:'+(hasText?'rgba(47,167,188,.2)':'rgba(255,255,255,.03)')+'">';
-    o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-    o+='<span style="font-size:12px;font-weight:700;color:'+(hasText?'var(--cyan)':'var(--muted)')+'">Frage '+qNum+(hasText?' \u2713':' (optional)')+'</span>';
-    // Type selector
-    o+='<div style="display:flex;gap:4px">';
-    var types=[{k:"scale",l:"Skala",co:"var(--cyan)"},{k:"choice",l:"Auswahl",co:"var(--gold)"},{k:"text",l:"Freitext",co:"var(--green)"}];
-    for(var ti=0;ti<types.length;ti++){
-      var t=types[ti];var sel=q.type===t.k;
-      o+='<button data-act="qt_'+qi+'_'+t.k+'" style="padding:4px 10px;border-radius:8px;border:1px solid '+(sel?t.co:'rgba(255,255,255,.06)')+';background:'+(sel?t.co+'15':'transparent')+';color:'+(sel?t.co:'var(--muted)')+';font-size:10px;font-weight:'+(sel?700:400)+';cursor:pointer">'+t.l+'</button>';
-    }
-    o+='</div></div>';
-    // Question text
-    o+='<input id="qq_'+qi+'" class="inp" value="'+esc(q.text)+'" placeholder="z.B. Wie findest du unser neues Trikot?" style="margin-bottom:6px">';
-    // Options (only for choice type)
-    if(q.type==="choice"){
-      o+='<div style="margin-top:4px"><div class="lbl" style="font-size:9px">ANTWORTOPTIONEN</div>';
-      for(var oi=0;oi<q.opts.length;oi++){
-        o+='<div style="display:flex;gap:4px;margin-bottom:4px"><input id="qo_'+qi+'_'+oi+'" class="inp" value="'+esc(q.opts[oi]||'')+'" placeholder="Option '+(oi+1)+'" style="font-size:12px;margin-bottom:0;flex:1">';
-        if(q.opts.length>2)o+='<button data-act="delOpt_'+qi+'_'+oi+'" style="width:32px;border-radius:8px;border:1px solid rgba(248,113,113,.2);background:transparent;color:var(--red);font-size:14px;cursor:pointer">\u2212</button>';
-        o+='</div>';
-      }
-      if(q.opts.length<6)o+='<button data-act="addOpt_'+qi+'" style="width:100%;padding:8px;border-radius:8px;border:1px dashed rgba(47,167,188,.2);background:transparent;color:var(--cyan);font-size:11px;cursor:pointer;margin-top:2px">+ Option hinzuf\u00fcgen</button>';
-      o+='</div>';
-    }
-    o+='</div>';
-  }
-  o+='<button data-act="doRegister" class="btn go">CODE GENERIEREN \u2192</button>';
-  o+='<button data-act="goRegister" class="btn2">\u2190 ZUR\u00dcCK ZU GRUNDDATEN</button>';
-  o+='</div>';
-  $.innerHTML=o;
-  // Bind all question inputs
-  for(var qi2=0;qi2<5;qi2++){
-    (function(idx){
-      var el=document.getElementById("qq_"+idx);
-      if(el)el.oninput=function(){REG.questions[idx].text=this.value};
-      // Bind option inputs
-      for(var oi2=0;oi2<REG.questions[idx].opts.length;oi2++){
-        (function(oIdx){
-          var oel=document.getElementById("qo_"+idx+"_"+oIdx);
-          if(oel)oel.oninput=function(){REG.questions[idx].opts[oIdx]=this.value};
-        })(oi2);
-      }
-    })(qi2);
-  }
-  return;
-}
-
-// ═══ CODE CREATED ═══
-if(V==="created"){
-  var link=SURVEY_URL+"?c="+CODE;
-  o+='<div style="animation:fadeUp .5s ease;text-align:center">';
-  o+='<div class="top">'+logo()+'</div>';
-  o+='<div class="gc glow" style="padding:28px;text-align:center">';
-  o+='<div style="font-size:12px;color:var(--green);font-weight:700;letter-spacing:2px;margin-bottom:6px">✅ REGISTRIERUNG ERFOLGREICH</div>';
-  o+='<div style="font-size:20px;font-weight:800;margin-bottom:14px">'+esc(REG.name)+'</div>';
-  o+='<div style="font-size:10px;color:var(--muted);margin-bottom:6px">DEIN CLUB-CODE:</div>';
-  o+='<div style="font-family:Syne,sans-serif;font-size:48px;font-weight:900;color:var(--cyan);letter-spacing:8px;margin-bottom:18px;animation:countUp .5s ease">'+CODE+'</div>';
-  // QR
-  o+='<div style="margin-bottom:14px">'+qrImg(link)+'</div>';
-  // Link
-  o+='<input class="share-link" id="shareLink" readonly onclick="this.select()" data-act="copyLink" value="'+link+'" style="width:100%;text-align:center">';
-  o+='<button data-act="copyLink" class="btn2" id="copyBtn" style="margin-bottom:16px">📋 LINK KOPIEREN</button>';
-  o+='<p style="font-size:11px;color:var(--text);line-height:1.6">Sende diesen Link oder QR-Code an alle Mitglieder.<br>Jeder der den Code eingibt wird deinem Verein zugeordnet.</p>';
-  o+='</div>';
-  o+='<button data-act="goLoad" class="btn go" style="margin-top:12px">📊 ZUM DASHBOARD →</button>';
-  o+='</div>';
-  $.innerHTML=o;return;
-}
-
-// ═══ LOADING ═══
-if(V==="loading"){
-  o+='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh">';
-  o+='<div style="width:44px;height:44px;border:3px solid var(--bg3);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px"></div>';
-  o+='<div style="font-size:12px;color:var(--muted);letter-spacing:1px">DATEN WERDEN GELADEN...</div>';
-  o+='<div style="font-size:10px;color:var(--muted);margin-top:4px">'+CODE+'</div></div>';
-  $.innerHTML=o;return;
-}
-
-// ═══ DASHBOARD ═══
-if(V==="dash"&&DATA){
-  var sc=DATA.avgScores||{};
-  var total=sc.total||0;
-  var cnt=DATA.count||0;
-
-  o+='<div style="animation:fadeUp .4s ease">';
-  // Header
-  o+='<div class="top">'+logo()+'<div style="text-align:right"><div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--cyan)">'+CODE+'</div><div style="font-size:9px;color:var(--muted)">'+cnt+' Teilnehmer</div></div></div>';
-
-  // Empty state
-  if(cnt===0){
-    var link=SURVEY_URL+"?c="+CODE;
-    o+='<div class="gc" style="text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">📭</div>';
-    o+='<div style="font-size:18px;font-weight:700;margin-bottom:8px">Noch keine Antworten</div>';
-    o+='<p style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:18px">Teile diesen Link mit deinen Mitgliedern:</p>';
-    o+='<input class="share-link" id="shareLink" readonly onclick="this.select()" data-act="copyLink" value="'+link+'" style="width:100%;text-align:center">';
-    o+='<button data-act="copyLink" class="btn2" id="copyBtn">📋 LINK KOPIEREN</button>';
-    o+='<div style="margin-top:16px">'+qrImg(link)+'</div>';
-    o+='</div>';
-    o+='<button data-act="goHome" class="btn2">← ZURÜCK</button>';
-    o+='</div>';$.innerHTML=o;return;
-  }
-
-  var IX=interpret(DATA);
-
-  // ═══ TABS ═══
-  o+='<div class="tab-row">';
-  var tabs=[{k:"overview",l:"📊 Übersicht"},{k:"roles",l:"👥 Rollen"},{k:"questions",l:"📋 Fragen"},{k:"nps",l:"⭐ NPS"},{k:"texts",l:"💬 Freitext"},{k:"actions",l:"🎯 Empfehlungen"},{k:"report",l:"📄 Report"},{k:"share",l:"📤 Teilen"}];
-  for(var ti=0;ti<tabs.length;ti++){o+='<button data-act="tab_'+tabs[ti].k+'" class="tab-btn'+(TAB===tabs[ti].k?' on':'')+'">'+tabs[ti].l+'</button>'}
-  o+='</div>';
-
-  // ═══ TAB: OVERVIEW ═══
-  if(TAB==="overview"){
-    // Score card
-    o+='<div class="gc glow" style="text-align:center;padding:24px;position:relative">';
-    o+='<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(47,167,188,.3),transparent);animation:scan 4s linear infinite"></div>';
-    o+='<div style="font-family:Syne,sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">'+esc(DATA.name||CODE)+'</div>';
-    o+='<div style="font-size:9px;color:'+sCol(total)+';font-weight:700;letter-spacing:3px;margin-bottom:14px">STATUS: '+(total>=70?"GESUND":total>=45?"ENTWICKLUNG":"HANDLUNGSBEDARF")+'</div>';
-    var circ=2*Math.PI*66;var dash=circ*total/100;
-    o+='<div class="ring"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="66" fill="none" stroke="var(--bg3)" stroke-width="8"/>';
-    o+='<circle cx="80" cy="80" r="66" fill="none" stroke="'+sCol(total)+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+dash.toFixed(1)+' '+circ.toFixed(1)+'"/>';
-    o+='</svg><div class="ring-c"><span style="font-family:Syne,sans-serif;font-size:52px;font-weight:900;color:'+sCol(total)+'">'+total+'</span><span style="font-size:9px;color:var(--muted)">/100 ClubScore</span></div></div></div>';
-    // KPIs
-    var npsVal=DATA.npsAvg||0;
-    o+='<div class="g4" style="margin-bottom:12px">';
-    o+='<div class="stat"><div class="stat-val" style="color:var(--cyan)">'+cnt+'</div><div class="stat-lbl">TEILNEHMER</div></div>';
-    o+='<div class="stat"><div class="stat-val" style="color:'+sCol(total)+'">'+total+'%</div><div class="stat-lbl">CLUBSCORE</div></div>';
-    o+='<div class="stat"><div class="stat-val" style="color:'+(npsVal>=8?"var(--green)":npsVal>=6?"var(--gold)":"var(--red)")+'">'+npsVal.toFixed?npsVal.toFixed(1):npsVal+'</div><div class="stat-lbl">NPS \u00d8</div></div>';
-    o+='<div class="stat"><div class="stat-val" style="color:var(--purple)">'+(DATA.freitexts?DATA.freitexts.length:0)+'</div><div class="stat-lbl">KOMMENTARE</div></div></div>';
-    // Radar
-    o+='<div class="gc" style="text-align:center"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">VEREINSPROFIL</div>'+radar(sc)+'</div>';
-    // 4 Dimensions
-    o+='<div class="gc"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">BEREICHSANALYSE</div>';
-    var dims=[{k:"intern",l:"Vereinsintern",co:"#2FA7BC",ic:"\u2699\ufe0f"},{k:"sport",l:"Sportlich",co:"#34D399",ic:"\u26bd"},{k:"extern",l:"Vereinsextern",co:"#FB923C",ic:"\ud83c\udf0d"},{k:"zukunft",l:"Zukunft",co:"#FBBF24",ic:"\ud83d\ude80"}];
-    dims.sort(function(a,b){return(sc[a.k]||0)-(sc[b.k]||0)});
-    for(var di=0;di<dims.length;di++){
-      var d=dims[di];var v=sc[d.k]||0;
-      o+='<div class="dim-row" style="border-left:3px solid '+d.co+'"><div style="display:flex;justify-content:space-between;align-items:center">';
-      o+='<span style="font-size:13px;font-weight:600">'+d.ic+' '+d.l+'</span>';
-      o+='<span style="font-family:Syne,sans-serif;font-size:22px;font-weight:900;color:'+sCol(v)+'">'+v+'% <small style="font-size:10px">'+sLbl(v)+'</small></span></div>';
-      o+='<div class="dim-bar"><div class="dim-fill" style="width:'+v+'%;background:'+d.co+'"></div></div></div>';
-    }
-    o+='</div>';
-    // Stärken & Baustellen
-    dims.sort(function(a,b){return(sc[b.k]||0)-(sc[a.k]||0)});
-    o+='<div class="g2">';
-    o+='<div class="gc" style="padding:14px"><div class="stag" style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);color:var(--green)">\ud83d\udcaa ST\u00c4RKEN</div>';
-    for(var i=0;i<2;i++){var d=dims[i];o+='<div style="font-size:13px;margin-bottom:6px">'+d.ic+' '+d.l+' <strong style="color:var(--green)">'+(sc[d.k]||0)+'%</strong></div>'}
-    o+='</div>';
-    dims.sort(function(a,b){return(sc[a.k]||0)-(sc[b.k]||0)});
-    o+='<div class="gc" style="padding:14px"><div class="stag" style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);color:var(--red)">\ud83d\udd27 BAUSTELLEN</div>';
-    for(var i=0;i<2;i++){var d=dims[i];o+='<div style="font-size:13px;margin-bottom:6px">'+d.ic+' '+d.l+' <strong style="color:var(--red)">'+(sc[d.k]||0)+'%</strong></div>'}
-    o+='</div></div>';
-    // Interpretation (Premium)
-    o+='<div class="gc" style="border-left:3px solid var(--cyan)"><div style="font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:1.5px;margin-bottom:6px">EINORDNUNG</div>';
-    o+='<p style="font-size:12px;color:var(--text);line-height:1.7">'+IX.briefing+'</p>';
-    if(cnt<10)o+='<p style="font-size:10px;color:var(--orange);margin-top:6px">Hinweis: Bei '+cnt+' Teilnehmern ist die Aussagekraft begrenzt. Ab 15-20 Teilnehmern werden die Ergebnisse belastbar.</p>';
-    o+='</div>';
-  }
-
-  // ═══ TAB: ROLES ═══
-  if(TAB==="roles"){
-    o+='<div class="gc"><div class="stag" style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15);color:var(--purple)">\ud83d\udc65 TEILNEHMER NACH ROLLE</div>';
-    var roles=DATA.roles||{};var maxRV=0;for(var rk in roles){if(roles[rk]>maxRV)maxRV=roles[rk]}
-    var rCols={"Spieler\u00b7in":"#2FA7BC","Trainer\u00b7in":"#34D399","Vorstand":"#FBBF24","Funktionär\u00b7in":"#FB923C","Elternteil":"#A78BFA","Mitglied":"#60A5FA"};
-    for(var rk in roles){
-      var rv=roles[rk];var rpct=maxRV?Math.round(rv/maxRV*100):0;var rc=rCols[rk]||"var(--cyan)";
-      o+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:11px;min-width:80px;color:var(--text)">'+esc(rk)+'</span>';
-      o+='<div style="flex:1;height:24px;background:var(--bg2);border-radius:6px;overflow:hidden"><div style="width:'+rpct+'%;height:100%;background:'+rc+';border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">'+rv+'</div></div></div>';
-    }
-    o+='</div>';
-    // Role comparison
-    var rs=DATA.roleScores;
-    if(rs&&Object.keys(rs).length>1){
-      o+='<div class="gc"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">ROLLENVERGLEICH \u2014 WER SIEHT WAS?</div>';
-      o+='<p style="font-size:11px;color:var(--muted);margin-bottom:14px">Gleicher Verein, verschiedene Perspektiven. Große Unterschiede zeigen blinde Flecken.</p>';
-      var rDims=["intern","sport","extern","zukunft"];
-      var dNames={intern:"\u2699\ufe0f Intern",sport:"\u26bd Sport",extern:"\ud83c\udf0d Extern",zukunft:"\ud83d\ude80 Zukunft"};
-      for(var rdi=0;rdi<rDims.length;rdi++){
-        var dk=rDims[rdi];
-        o+='<div style="margin-bottom:14px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">'+dNames[dk]+'</div>';
-        for(var rk in rs){
-          var rv=rs[rk][dk]||0;var rc=rCols[rk]||"var(--cyan)";
-          o+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
-          o+='<span style="font-size:9px;min-width:72px;color:var(--muted)">'+esc(rk)+'</span>';
-          o+='<div style="flex:1;height:14px;background:var(--bg2);border-radius:4px;overflow:hidden"><div style="width:'+rv+'%;height:100%;background:'+rc+';border-radius:4px"></div></div>';
-          o+='<span style="font-size:11px;font-weight:700;min-width:32px;text-align:right;color:'+sCol(rv)+'">'+rv+'%</span></div>';
-        }
-        // Gap indicator
-        var gapVals=[];for(var gk in rs){if(rs[gk][dk]!==undefined)gapVals.push({role:gk,val:rs[gk][dk]})}
-        if(gapVals.length>1){
-          gapVals.sort(function(a,b){return a.val-b.val});
-          var gap=gapVals[gapVals.length-1].val-gapVals[0].val;
-          var gc=gap>25?"var(--red)":gap>15?"var(--gold)":"var(--green)";
-          o+='<div style="display:flex;align-items:center;gap:6px;margin-top:4px;padding:4px 8px;background:var(--bg);border-radius:6px">';
-          o+='<span style="font-size:9px;font-weight:700;color:'+gc+'">Gap: '+gap+' Pkt</span>';
-          if(gap>20)o+='<span style="font-size:9px;color:var(--text)">'+gapVals[gapVals.length-1].role+' ('+gapVals[gapVals.length-1].val+'%) vs. '+gapVals[0].role+' ('+gapVals[0].val+'%) \u2014 blinder Fleck!</span>';
-          else if(gap>10)o+='<span style="font-size:9px;color:var(--muted)">Moderate Diskrepanz \u2014 beobachten</span>';
-          else o+='<span style="font-size:9px;color:var(--muted)">Gute Uebereinstimmung</span>';
-          o+='</div>';
-        }
-        o+='</div>';
-      }
-      // Biggest gap overall
-      var allGaps=[];
-      for(var gdi=0;gdi<rDims.length;gdi++){
-        var gdk=rDims[gdi];var gvs=[];
-        for(var grk in rs){if(rs[grk][gdk]!==undefined)gvs.push(rs[grk][gdk])}
-        if(gvs.length>1)allGaps.push({dim:dNames[gdk],gap:Math.max.apply(null,gvs)-Math.min.apply(null,gvs)});
-      }
-      allGaps.sort(function(a,b){return b.gap-a.gap});
-      if(allGaps.length>0&&allGaps[0].gap>15){
-        o+='<div class="gc" style="border-left:3px solid var(--red);padding:14px"><div style="font-size:10px;font-weight:700;color:var(--red);letter-spacing:1.5px;margin-bottom:4px">GROESSTER BLINDER FLECK</div>';
-        o+='<p style="font-size:12px;color:var(--text);line-height:1.5">Im Bereich '+allGaps[0].dim+' gibt es den groessten Wahrnehmungsunterschied ('+allGaps[0].gap+' Punkte). Das bedeutet: Die Gruppen im Verein erleben diesen Bereich fundamental unterschiedlich. Hier liegt Gespraechsbedarf.</p></div>';
-      }
-      o+='</div>';
-    }
-  }
-
-  // ═══ TAB: DEEP ANALYSIS ═══
-  if(TAB==="deep"){
-    var dimInfo=[{k:"intern",l:"Vereinsintern",co:"#2FA7BC",ic:"\u2699\ufe0f"},{k:"sport",l:"Sportlich",co:"#34D399",ic:"\u26bd"},{k:"extern",l:"Vereinsextern",co:"#FB923C",ic:"\ud83c\udf0d"},{k:"zukunft",l:"Zukunft",co:"#FBBF24",ic:"\ud83d\ude80"}];
-    dimInfo.sort(function(a,b){return(sc[a.k]||0)-(sc[b.k]||0)});
-    for(var dii=0;dii<dimInfo.length;dii++){
-      var di3=dimInfo[dii];var dv=sc[di3.k]||0;
-      o+='<div class="gc" style="border-left:3px solid '+di3.co+'">';
-      o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-      o+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:18px">'+di3.ic+'</span><span style="font-size:14px;font-weight:800;color:var(--white)">'+di3.l+'</span></div>';
-      o+='<span style="font-family:Syne,sans-serif;font-size:24px;font-weight:900;color:'+sCol(dv)+'">'+dv+'%</span></div>';
-      o+='<div class="dim-bar" style="margin-bottom:12px"><div class="dim-fill" style="width:'+dv+'%;background:'+di3.co+'"></div></div>';
-      o+='<p style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:10px">'+(IX.dimTexts[di3.k]||"")+'</p>';
-      // Top 3 weakest questions in this dimension
-      var dQs=(DATA.questionScores||[]).filter(function(q){return q.s===di3.k}).sort(function(a,b){return a.pct-b.pct});
-      if(dQs.length>0){
-        o+='<div style="font-size:9px;font-weight:700;color:'+di3.co+';letter-spacing:1px;margin-bottom:6px">SCHWAECHSTE PUNKTE</div>';
-        for(var dqi=0;dqi<Math.min(3,dQs.length);dqi++){
-          var dq=dQs[dqi];
-          o+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;padding:6px 8px;background:var(--bg);border-radius:6px">';
-          o+='<span style="font-size:10px;color:var(--text);flex:1">'+esc(dq.t)+'</span>';
-          o+='<span style="font-size:11px;font-weight:700;color:'+sCol(dq.pct)+'">'+dq.pct+'%</span></div>';
-        }
-      }
-      o+='</div>';
-    }
-    // Cross-correlations
-    if(IX.crossCorr.length>0){
-      o+='<div class="gc" style="border-color:rgba(251,191,36,.2)"><div class="stag" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);color:var(--gold)">\ud83d\udd17 WECHSELWIRKUNGEN</div>';
-      o+='<p style="font-size:10px;color:var(--muted);margin-bottom:10px">Bereiche beeinflussen sich gegenseitig. Diese Zusammenhaenge sind besonders relevant:</p>';
-      for(var cci=0;cci<IX.crossCorr.length;cci++){
-        var cc=IX.crossCorr[cci];
-        o+='<div style="padding:12px;background:var(--bg);border-radius:8px;margin-bottom:6px;border-left:2px solid '+cc.c+'">';
-        o+='<div style="font-size:11px;font-weight:700;color:'+cc.c+';margin-bottom:4px">'+cc.t+'</div>';
-        o+='<p style="font-size:11px;color:var(--text);line-height:1.5">'+cc.d+'</p></div>';
-      }
-      o+='</div>';
-    }
-  }
-
-  // ═══ TAB: RISKS ═══
-  if(TAB==="risks"){
-    if(IX.risks.length>0){
-      o+='<div class="gc"><div class="stag" style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);color:var(--red)">\u26a0\ufe0f RISIKO-ANALYSE</div>';
-      o+='<p style="font-size:11px;color:var(--muted);margin-bottom:12px">Basierend auf den ClubCheck-Daten und vergleichbaren Faellen aus der Vereinsforschung.</p>';
-      for(var ri=0;ri<IX.risks.length;ri++){
-        var rk2=IX.risks[ri];
-        o+='<div style="padding:14px;background:var(--bg);border-radius:10px;margin-bottom:8px;border-left:3px solid '+rk2.c+'">';
-        o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-        o+='<span style="font-size:13px;font-weight:700;color:var(--white)">'+rk2.t+'</span>';
-        o+='<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+rk2.c+'20;color:'+rk2.c+'">'+rk2.l+'</span></div>';
-        o+='<p style="font-size:12px;color:var(--text);line-height:1.6">'+rk2.d+'</p></div>';
-      }
-      o+='</div>';
-    }else{
-      o+='<div class="gc" style="text-align:center;padding:30px"><div style="font-size:32px;margin-bottom:8px">\u2705</div><p style="font-size:13px;color:var(--green)">Keine kritischen Risiken identifiziert. Weiter so!</p></div>';
-    }
-    // Scenario
-    o+='<div class="gc"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">SZENARIO-VERGLEICH</div>';
-    o+='<div class="g2">';
-    o+='<div style="padding:14px;background:var(--bg);border-radius:10px;border:1px solid rgba(248,113,113,.15)">';
-    o+='<div style="font-size:10px;font-weight:700;color:var(--red);letter-spacing:1px;margin-bottom:6px">\u274c OHNE MASSNAHMEN</div>';
-    o+='<p style="font-size:11px;color:var(--text);line-height:1.5">In 12 Monaten: Weitere Verschlechterung der schwachen Bereiche. Steigende Unzufriedenheit. Mitgliederverlust 10-25%. Sponsor-Rueckzug moeglich. Engagierte Ehrenamtliche geben auf.</p></div>';
-    o+='<div style="padding:14px;background:var(--bg);border-radius:10px;border:1px solid rgba(52,211,153,.15)">';
-    o+='<div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:6px">\u2705 MIT MASSNAHMEN</div>';
-    o+='<p style="font-size:11px;color:var(--text);line-height:1.5">In 12 Monaten: Spuerbare Verbesserung in den Problembereichen. Mitglieder sehen Veraenderung und bleiben. Neue Mitglieder kommen. Sponsoren schaetzen die Professionalitaet. ClubScore steigt auf 60-70+.</p></div>';
-    o+='</div></div>';
-  }
-
-  // ═══ TAB: BRIEFING ═══
-  if(TAB==="briefing"){
-    o+='<div class="gc glow"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">\ud83d\udcdd VORSTANDSBRIEFING</div>';
-    o+='<p style="font-size:10px;color:var(--muted);margin-bottom:12px">Fertig formulierter Text fuer die naechste Vorstandssitzung. Kann direkt vorgelesen oder als E-Mail versendet werden.</p>';
-    o+='<div style="padding:16px;background:var(--bg);border-radius:10px;border:1px solid rgba(47,167,188,.1)">';
-    var briefLines=(IX.vorstandBrief||"").split("\n");
-    for(var bi=0;bi<briefLines.length;bi++){
-      if(briefLines[bi].trim())o+='<p style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:8px">'+esc(briefLines[bi])+'</p>';
-    }
-    o+='</div>';
-    o+='<button id="cpBrief" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(47,167,188,.15);background:transparent;color:var(--cyan);font-size:12px;font-weight:600;cursor:pointer;margin-top:10px">\ud83d\udccb Briefing-Text kopieren</button>';
-    o+='</div>';
-    $.innerHTML=o;
-    // Bind copy
-    document.getElementById("cpBrief").onclick=function(){
-      var txt=IX.vorstandBrief||"";
-      try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(function(){document.getElementById("cpBrief").textContent="\u2713 Kopiert!";document.getElementById("cpBrief").style.color="var(--green)";setTimeout(function(){document.getElementById("cpBrief").textContent="\ud83d\udccb Briefing-Text kopieren";document.getElementById("cpBrief").style.color=""},2000)});return}}catch(e){}
-      var ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;left:-9999px";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");document.getElementById("cpBrief").textContent="\u2713 Kopiert!";document.getElementById("cpBrief").style.color="var(--green)";setTimeout(function(){document.getElementById("cpBrief").textContent="\ud83d\udccb Briefing-Text kopieren";document.getElementById("cpBrief").style.color=""},2000)}catch(e2){}document.body.removeChild(ta);
-    };
-    return; // early return because we set innerHTML for copy binding
-  }
-
-  // ═══ TAB: QUESTIONS ═══
-  if(TAB==="questions"){
-    var qs=DATA.questionScores||[];
-    if(qs.length>0){
-      var secFilter="all";
-      // Sort by pct ascending (weakest first)
-      qs.sort(function(a,b){return a.pct-b.pct});
-      var secs={intern:{l:"\u2699\ufe0f Intern",co:"#2FA7BC"},sport:{l:"\u26bd Sport",co:"#34D399"},extern:{l:"\ud83c\udf0d Extern",co:"#FB923C"},zukunft:{l:"\ud83d\ude80 Zukunft",co:"#FBBF24"}};
-      // Top 5 weakest
-      o+='<div class="gc"><div class="stag" style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);color:var(--red)">\u26a0\ufe0f TOP 5 SCHWACHSTELLEN</div>';
-      for(var qi=0;qi<Math.min(5,qs.length);qi++){
-        var q=qs[qi];var co=secs[q.s]?secs[q.s].co:"var(--cyan)";
-        o+='<div class="qbar" style="border-left:2px solid var(--red)"><div class="qbar-text">'+esc(q.t)+'</div>';
-        o+='<div class="qbar-track"><div class="qbar-fill" style="width:'+q.pct+'%;background:var(--red)"></div></div>';
-        o+='<div class="qbar-val" style="color:var(--red)">'+q.pct+'%</div></div>';
-      }
-      o+='</div>';
-      // Top 5 strongest
-      var qsSorted=qs.slice().sort(function(a,b){return b.pct-a.pct});
-      o+='<div class="gc"><div class="stag" style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);color:var(--green)">\ud83c\udfc6 TOP 5 ST\u00c4RKEN</div>';
-      for(var qi=0;qi<Math.min(5,qsSorted.length);qi++){
-        var q=qsSorted[qi];
-        o+='<div class="qbar" style="border-left:2px solid var(--green)"><div class="qbar-text">'+esc(q.t)+'</div>';
-        o+='<div class="qbar-track"><div class="qbar-fill" style="width:'+q.pct+'%;background:var(--green)"></div></div>';
-        o+='<div class="qbar-val" style="color:var(--green)">'+q.pct+'%</div></div>';
-      }
-      o+='</div>';
-      // All by section
-      for(var sk in secs){
-        var sQs=qs.filter(function(q){return q.s===sk}).sort(function(a,b){return a.pct-b.pct});
-        if(!sQs.length)continue;
-        o+='<div class="gc"><div class="stag" style="background:'+secs[sk].co+'0D;border:1px solid '+secs[sk].co+'20;color:'+secs[sk].co+'">'+secs[sk].l+'</div>';
-        for(var qi=0;qi<sQs.length;qi++){
-          var q=sQs[qi];
-          o+='<div class="qbar"><div class="qbar-text">'+esc(q.t)+'</div>';
-          o+='<div class="qbar-track"><div class="qbar-fill" style="width:'+q.pct+'%;background:'+secs[sk].co+'"></div></div>';
-          o+='<div class="qbar-val" style="color:'+sCol(q.pct)+'">'+q.pct+'%</div>'+(q.avg?'<span style="font-size:8px;color:var(--muted);min-width:24px;text-align:right">Ø'+q.avg+'</span>':'')+'</div>';
-        }
-        o+='</div>';
-      }
-    }else{
-      o+='<div class="gc" style="text-align:center;padding:30px"><p style="color:var(--muted)">Einzelfragen-Auswertung wird bei ausreichend Daten angezeigt.</p></div>';
-    }
-  }
-
-  // ═══ TAB: NPS ═══
-  if(TAB==="nps"){
-    var nd=DATA.npsDistribution||{promoter:0,passiv:0,kritiker:0};
-    var nTotal=(nd.promoter||0)+(nd.passiv||0)+(nd.kritiker||0);
-    var npsScore=nTotal?Math.round(((nd.promoter||0)-(nd.kritiker||0))/nTotal*100):0;
-    o+='<div class="gc" style="text-align:center"><div class="stag" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);color:var(--gold)">\u2b50 NET PROMOTER SCORE</div>';
-    o+='<div style="font-family:Syne,sans-serif;font-size:56px;font-weight:900;color:'+(npsScore>=20?"var(--green)":npsScore>=0?"var(--gold)":"var(--red)")+';margin:10px 0">'+npsScore+'</div>';
-    o+='<div style="font-size:10px;color:var(--muted);margin-bottom:18px">NPS Score (-100 bis +100)</div>';
-    // Distribution
-    o+='<div class="g3" style="margin-bottom:14px">';
-    o+='<div class="stat" style="border:1px solid rgba(248,113,113,.15)"><div class="stat-val" style="color:var(--red)">'+(nd.kritiker||0)+'</div><div class="stat-lbl" style="color:var(--red)">KRITIKER (0-6)</div></div>';
-    o+='<div class="stat" style="border:1px solid rgba(251,191,36,.15)"><div class="stat-val" style="color:var(--gold)">'+(nd.passiv||0)+'</div><div class="stat-lbl" style="color:var(--gold)">PASSIV (7-8)</div></div>';
-    o+='<div class="stat" style="border:1px solid rgba(52,211,153,.15)"><div class="stat-val" style="color:var(--green)">'+(nd.promoter||0)+'</div><div class="stat-lbl" style="color:var(--green)">PROMOTER (9-10)</div></div></div>';
-    // Bar
-    if(nTotal>0){
-      var pK=Math.round((nd.kritiker||0)/nTotal*100);var pP=Math.round((nd.passiv||0)/nTotal*100);var pPr=100-pK-pP;
-      o+='<div style="display:flex;height:28px;border-radius:8px;overflow:hidden">';
-      if(pK>0)o+='<div style="width:'+pK+'%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">'+pK+'%</div>';
-      if(pP>0)o+='<div style="width:'+pP+'%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">'+pP+'%</div>';
-      if(pPr>0)o+='<div style="width:'+pPr+'%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--bg)">'+pPr+'%</div>';
-      o+='</div>';
-    }
-    // Interpretation
-    o+='<div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:10px;border-left:3px solid '+(npsScore>=20?"var(--green)":npsScore>=0?"var(--gold)":"var(--red)")+'">';
-    o+='<div style="font-size:10px;font-weight:700;color:'+(npsScore>=20?"var(--green)":npsScore>=0?"var(--gold)":"var(--red)")+';letter-spacing:1px;margin-bottom:4px">EINORDNUNG</div>';
-    if(npsScore>=50)o+='<p style="font-size:11px;color:var(--text);line-height:1.5">Exzellent! Eure Mitglieder sind begeistert und empfehlen den Verein aktiv weiter. Das ist ein starkes Fundament fuer Wachstum.</p>';
-    else if(npsScore>=20)o+='<p style="font-size:11px;color:var(--text);line-height:1.5">Gut! Mehr Mitglieder wuerden den Verein empfehlen als abraten. Potenzial: Die Passiven (7-8) koennen durch gezielte Verbesserungen zu Promotern werden.</p>';
-    else if(npsScore>=0)o+='<p style="font-size:11px;color:var(--text);line-height:1.5">Neutral bis schwach. Die Kritiker und Promoter halten sich die Waage. Das ist ein Warnsignal \u2014 ohne Verbesserungen droht Mitgliederverlust.</p>';
-    else o+='<p style="font-size:11px;color:var(--text);line-height:1.5">Kritisch! Mehr Mitglieder wuerden vom Verein abraten als ihn empfehlen. Sofortmassnahmen noetig um die Abwanderung zu stoppen. Fokus auf die Hauptkritikpunkte.</p>';
-    o+='<p style="font-size:9px;color:var(--muted);margin-top:6px">Benchmark Sportvereine: NPS +15 bis +30 ist typisch. Unter 0 ist Handlungsbedarf.</p>';
-    o+='</div>';
-    o+='</div>';
-  }
-
-  // ═══ TAB: FREITEXT ═══
-  if(TAB==="texts"){
-    var fts=DATA.freitexts||[];
-    o+='<div class="gc"><div class="stag" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);color:var(--gold)">\ud83d\udcac STIMMEN DER MITGLIEDER ('+fts.length+')</div>';
-    if(!fts.length)o+='<p style="font-size:12px;color:var(--muted)">Noch keine Freitexte vorhanden.</p>';
-    for(var fi=0;fi<fts.length;fi++){
-      var ft=typeof fts[fi]==="string"?{text:fts[fi]}:fts[fi];
-      o+='<div class="ft-card"><p>\u201e'+esc(ft.text)+'\u201c</p>';
-      if(ft.role)o+='<div class="ft-meta">'+esc(ft.role)+'</div>';
-      o+='</div>';
-    }
-    o+='</div>';
-  }
-
-  // ═══ TAB: ACTIONS ═══
-  if(TAB==="actions"){
-    o+='<div class="gc"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">\ud83c\udfaf HANDLUNGSEMPFEHLUNGEN</div>';
-    var dims2=[{k:"intern",l:"Vereinsintern",co:"#2FA7BC"},{k:"sport",l:"Sportlich",co:"#34D399"},{k:"extern",l:"Vereinsextern",co:"#FB923C"},{k:"zukunft",l:"Zukunft",co:"#FBBF24"}];
-    dims2.sort(function(a,b){return(sc[a.k]||0)-(sc[b.k]||0)});
-    var recs={
-      intern:{low:"Transparenz-Offensive starten: w\u00f6chentliche Kurz-Updates, offene Finanzberichte, klare Zust\u00e4ndigkeiten definieren. Empfehlung: ReadyMatrix + ClearMatrix Analyse.",mid:"Kommunikation und Entscheidungstransparenz verbessern. Rollenmatrix erstellen. Digitale Tools einf\u00fchren.",high:"Sehr gut \u2014 Kultur pflegen, regelm\u00e4\u00dfig messen."},
-      sport:{low:"Trainingskonzept \u00fcberarbeiten, Nachwuchskoordinator einsetzen, Infrastruktur-Investitionsplan erstellen. Empfehlung: AlignMatrix + NurtureMatrix.",mid:"Individuelle Spielerentwicklung st\u00e4rken, Abteilungs\u00fcbergreifende Zusammenarbeit f\u00f6rdern.",high:"Sportliche Basis ist stark \u2014 weiter in Qualit\u00e4t investieren."},
-      extern:{low:"Professionelle Au\u00dfendarstellung aufbauen: Website, Social Media, Sponsorenmanagement. Empfehlung: FanMatrix + SignalMatrix.",mid:"Community-Events, Sponsoren-Pakete professionalisieren, Medienarbeit aktivieren.",high:"Externe Wahrnehmung ist positiv \u2014 beibehalten und ausbauen."},
-      zukunft:{low:"Sofort: Strategieworkshop mit Vorstand + Schl\u00fcsselpersonen. Vision 2030 definieren. Nachfolgeplanung starten. Empfehlung: ReadyMatrix + ShiftMatrix.",mid:"Strategie sch\u00e4rfen, Zukunftsinvestitionen priorisieren, Nachfolge kl\u00e4ren.",high:"Zukunftsorientierung ist stark \u2014 weiter konsequent umsetzen."}
-    };
-    for(var di=0;di<dims2.length;di++){
-      var d=dims2[di];var v=sc[d.k]||0;
-      var rec=v>=70?recs[d.k].high:v>=45?recs[d.k].mid:recs[d.k].low;
-      var urgency=v<45?"\ud83d\udea8 DRINGEND":v<70?"\u26a0\ufe0f EMPFOHLEN":"\u2705 BEIBEHALTEN";
-      o+='<div style="padding:14px;background:var(--bg);border-radius:10px;margin-bottom:8px;border-left:3px solid '+d.co+'">';
-      o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-      o+='<span style="font-size:13px;font-weight:700">'+d.l+' ('+v+'%)</span>';
-      o+='<span style="font-size:10px;color:'+sCol(v)+'">'+urgency+'</span></div>';
-      o+='<p style="font-size:12px;color:var(--text);line-height:1.6">'+rec+'</p></div>';
-    }
-    // Weakest questions
-    var qs2=DATA.questionScores||[];
-    if(qs2.length>0){
-      qs2.sort(function(a,b){return a.pct-b.pct});
-      o+='<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:var(--red);letter-spacing:1.5px;margin-bottom:8px">TOP 3 SOFORT-MASSNAHMEN</div>';
-      for(var qi=0;qi<Math.min(3,qs2.length);qi++){
-        var q=qs2[qi];
-        o+='<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:4px;border-left:2px solid var(--red)">';
-        o+='<div style="font-size:11px;color:var(--text)">'+esc(q.t)+' <strong style="color:var(--red)">'+q.pct+'%</strong></div></div>';
-      }
-      o+='</div>';
-    }
-    o+='</div>';
-    // CTA
-    o+='<div class="gc glow" style="text-align:center;padding:20px">';
-    o+='<div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">Professionelle Begleitung gew\u00fcnscht?</div>';
-    o+='<p style="font-size:12px;color:var(--text);margin-bottom:8px">Humatrix bietet 12 Matrix-Analysen mit Experten-Begleitung \u2014 von ReadyMatrix bis ShiftMatrix.</p>';
-    o+='<div style="font-size:12px;color:var(--cyan);font-weight:600">bernhard@humatrix.cc \u00b7 sales.humatrix.cc</div></div>';
-  }
-
-  // ═══ TAB: REPORT ═══
-  if(TAB==="report"){
-    o+='<div class="gc glow" style="text-align:center;padding:28px">';
-    o+='<div style="font-size:40px;margin-bottom:10px">📄</div>';
-    o+='<div style="font-size:18px;font-weight:800;margin-bottom:6px">Premium Report exportieren</div>';
-    o+='<p style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:6px">Generiert einen professionellen PDF-Bericht mit allen Ergebnissen, Rollenvergleich, Einzelfragen-Analyse, Freitext-Sammlung und konkreten Handlungsempfehlungen.</p>';
-    o+='<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px 0">';
-    var features=["Executive Summary","Vereinsprofil","4 Bereichsanalysen","Einzelfragen-Ranking","Rollenvergleich","NPS-Analyse","Freitext-Zitate","Handlungsempfehlungen","Umsetzungsfahrplan"];
-    for(var fi=0;fi<features.length;fi++){o+='<span style="padding:4px 10px;border-radius:8px;border:1px solid rgba(47,167,188,.15);background:rgba(47,167,188,.05);font-size:9px;color:var(--cyan);font-weight:600">'+features[fi]+'</span>'}
-    o+='</div>';
-    o+='<div style="font-size:11px;color:var(--muted);margin-bottom:14px">'+cnt+' Teilnehmer · '+(DATA.name||CODE)+' · ca. 15 Seiten</div>';
-    o+='<button data-act="genPDF" class="btn go" style="max-width:320px;margin:0 auto">📄 PDF GENERIEREN & HERUNTERLADEN</button>';
-    o+='<div id="pdfStatus" style="font-size:11px;color:var(--muted);margin-top:10px"></div>';
-    o+='</div>';
-  }
-
-  // ═══ TAB: SHARE ═══
-  if(TAB==="share"){
-    var link=SURVEY_URL+"?c="+CODE;
-    o+='<div class="gc" style="text-align:center;padding:24px"><div class="stag" style="background:rgba(47,167,188,.06);border:1px solid rgba(47,167,188,.15);color:var(--cyan)">\ud83d\udce4 UMFRAGE TEILEN</div>';
-    o+='<p style="font-size:12px;color:var(--text);margin-bottom:16px">Sende diesen Link oder QR-Code an alle Vereinsmitglieder.</p>';
-    o+='<div style="margin-bottom:14px">'+qrImg(link)+'</div>';
-    o+='<input class="share-link" id="shareLink" readonly onclick="this.select()" data-act="copyLink" value="'+link+'" style="width:100%;text-align:center">';
-    o+='<button data-act="copyLink" class="btn2" id="copyBtn">\ud83d\udccb LINK KOPIEREN</button>';
-    o+='<div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px">';
-    o+='<div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">WHATSAPP VORLAGE:</div>';
-    o+='<p style="font-size:11px;color:var(--text);line-height:1.5" id="waText">Liebe Vereinsmitglieder! \ud83c\udfc6 Wir m\u00f6chten euren Verein verbessern und brauchen eure Meinung. Bitte f\u00fcllt den kurzen ClubCheck aus (5-10 Min): '+link+' Euer Feedback ist anonym und hilft dem Vorstand enorm. Danke! \ud83d\ude4f</p>';
-    o+='<button data-act="copyWA" class="btn2" style="margin-top:8px">\ud83d\udce4 WhatsApp-Text kopieren</button>';
-    o+='</div></div>';
-  }
-
-  // Bottom nav
-  o+='<div style="display:flex;gap:6px;margin-top:8px">';
-  o+='<button data-act="reload" class="btn2" style="flex:1">\ud83d\udd04 Aktualisieren</button>';
-  o+='<button data-act="goHome" class="btn2" style="flex:1">\u2190 Zur\u00fcck</button></div>';
-  o+=foot();
-  o+='</div>';
-  $.innerHTML=o;return;
-}
-
-$.innerHTML='';
-}
-
-// ═══ PDF GENERATION ═══
-function generatePDF(){
-  var st=document.getElementById("pdfStatus");
-  if(st)st.textContent="Report wird generiert...";
-  setTimeout(function(){
+async function login(){
+  const code = document.getElementById("code").value;
+  const password = document.getElementById("password").value;
   try{
-  var jsPDF=window.jspdf.jsPDF;
-  var doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
-  var W=210,H=297,M=15,CW=W-2*M;
-  var sc=DATA.avgScores||{};var total=sc.total||0;var cnt=DATA.count||0;
-  var club=DATA.name||CODE;
-
-  function sC(v){return v>=70?[52,211,153]:v>=45?[251,191,36]:[248,113,113]}
-  function sL(v){return v>=70?"Stark":v>=45?"Ausbaufaehig":"Kritisch"}
-  function darkBg(){doc.setFillColor(3,11,21);doc.rect(0,0,W,H,"F")}
-  function hdr(section){
-    doc.setFillColor(10,22,40);doc.rect(0,0,W,18,"F");
-    doc.setDrawColor(0,212,255);doc.setLineWidth(0.3);doc.line(M,18,W-M,18);
-    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(232,240,248);doc.text("HUMATRIX",M,8);
-    doc.setFontSize(6);doc.setTextColor(0,212,255);doc.text("CLUBCHECK PREMIUM ANALYSE",M,13);
-    if(section){doc.setFontSize(7);doc.setTextColor(0,212,255);doc.text(section,W-M,8,{align:"right"})}
-    doc.setFontSize(6);doc.setTextColor(74,100,120);doc.text(club+" | "+CODE,W-M,13,{align:"right"});
+    const res = await fetch("/api/dashboard-login", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code,password}) });
+    const data = await res.json();
+    if(!res.ok || !data.ok) throw new Error(data.error || "Anmeldung fehlgeschlagen.");
+    token = data.token;
+    localStorage.setItem(storeKey, token);
+    error = "";
+    await loadDashboard();
+  }catch(e){
+    error = e.message || "Anmeldung fehlgeschlagen.";
+    renderLogin();
   }
-  function ftr(pg){
-    doc.setDrawColor(17,30,51);doc.setLineWidth(0.2);doc.line(M,H-12,W-M,H-12);
-    doc.setFontSize(5);doc.setTextColor(74,100,120);
-    doc.text("Vertraulich | Humatrix by Bernhard Lampl | bernhard@humatrix.cc",M,H-8);
-    doc.text("Seite "+pg,W-M,H-8,{align:"right"});
-  }
-  function secTitle(y,t,r,g,b){
-    doc.setFillColor(r||0,g||212,b||255);doc.rect(M,y-1,2,5,"F");
-    doc.setFont("helvetica","bold");doc.setFontSize(14);doc.setTextColor(232,240,248);doc.text(t,M+5,y+3);
-    return y+10;
-  }
-  function bar(x,y,w,pct,r,g,b,h){
-    h=h||5;doc.setFillColor(17,30,51);doc.roundedRect(x,y,w,h,1.5,1.5,"F");
-    if(pct>0){var fw=Math.max(3,w*pct/100);doc.setFillColor(r,g,b);doc.roundedRect(x,y,fw,h,1.5,1.5,"F")}
-  }
-  function bodyText(y,t){
-    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);
-    var lines=doc.splitTextToSize(t,CW);doc.text(lines,M,y);return y+lines.length*4+2;
-  }
-  var pg=0;
-  function newPage(section){
-    if(pg>0)doc.addPage();pg++;darkBg();hdr(section);ftr(pg);return 24;
-  }
-
-  // ═══ PAGE 1: COVER ═══
-  darkBg();pg=1;ftr(1);
-  doc.setDrawColor(0,212,255);doc.setLineWidth(0.8);doc.line(W/2-30,80,W/2+30,80);
-  doc.setFont("helvetica","bold");doc.setFontSize(26);doc.setTextColor(232,240,248);doc.text("HUMATRIX",W/2,95,{align:"center"});
-  doc.setFontSize(9);doc.setTextColor(0,212,255);doc.text("CLUBCHECK \u2014 PREMIUM ANALYSE",W/2,103,{align:"center"});
-  doc.setFontSize(20);doc.setTextColor(232,240,248);doc.text(club,W/2,125,{align:"center"});
-  doc.setFontSize(9);doc.setTextColor(74,100,120);doc.text("Code: "+CODE+" | "+cnt+" Teilnehmer | April 2026",W/2,135,{align:"center"});
-  var tc=sC(total);doc.setFontSize(56);doc.setTextColor(tc[0],tc[1],tc[2]);doc.text(String(total),W/2,175,{align:"center"});
-  doc.setFontSize(10);doc.setTextColor(74,100,120);doc.text("/100 ClubScore",W/2,185,{align:"center"});
-  var statusT=total>=70?"GESUND":total>=45?"ENTWICKLUNG":"HANDLUNGSBEDARF";
-  doc.setFontSize(11);doc.setTextColor(tc[0],tc[1],tc[2]);doc.text("STATUS: "+statusT,W/2,198,{align:"center"});
-  doc.setDrawColor(0,212,255);doc.line(W/2-30,H-35,W/2+30,H-35);
-  doc.setFontSize(6);doc.setTextColor(74,100,120);
-  doc.text("Vertraulich | Erstellt von Humatrix by Bernhard Lampl",W/2,H-28,{align:"center"});
-  doc.text("bernhard@humatrix.cc | +43 676 916 60 20",W/2,H-23,{align:"center"});
-
-  // ═══ PAGE 2: EXECUTIVE SUMMARY ═══
-  var y=newPage("EXECUTIVE SUMMARY");
-  y=secTitle(y,"Executive Summary");y+=2;
-  doc.setFillColor(10,22,40);doc.roundedRect(M,y,CW,40,2,2,"F");
-  doc.setDrawColor(0,212,255);doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,40,2,2,"S");
-  doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(0,212,255);doc.text("KERNBEFUND",M+5,y+7);
-  var statusW=total>=70?"gesund":total>=45?"in einer Entwicklungsphase":"mit deutlichem Handlungsbedarf";
-  var kfText="Der "+club+" erreicht einen ClubScore von "+total+"/100 und befindet sich damit "+statusW+". Die Analyse basiert auf "+cnt+" Teilnehmern. Der sportliche Bereich ("+(sc.sport||0)+"%) ist die Staerke, waehrend Vereinsextern ("+(sc.extern||0)+"%) und Vereinsintern ("+(sc.intern||0)+"%) den groessten Handlungsbedarf zeigen.";
-  doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);
-  var kfLines=doc.splitTextToSize(kfText,CW-10);doc.text(kfLines,M+5,y+14);
-  y+=46;
-
-  // 4 score cards
-  var dims=[{k:"intern",l:"INTERN",c:[0,212,255]},{k:"sport",l:"SPORT",c:[52,211,153]},{k:"extern",l:"EXTERN",c:[251,146,60]},{k:"zukunft",l:"ZUKUNFT",c:[251,191,36]}];
-  var cardW=(CW-9)/4;
-  for(var i=0;i<4;i++){
-    var d=dims[i];var v=sc[d.k]||0;var vc=sC(v);var cx=M+i*(cardW+3);
-    doc.setFillColor(10,22,40);doc.roundedRect(cx,y,cardW,22,2,2,"F");
-    doc.setDrawColor(d.c[0],d.c[1],d.c[2]);doc.setLineWidth(0.3);doc.roundedRect(cx,y,cardW,22,2,2,"S");
-    doc.setFont("helvetica","bold");doc.setFontSize(6);doc.setTextColor(d.c[0],d.c[1],d.c[2]);doc.text(d.l,cx+cardW/2,y+7,{align:"center"});
-    doc.setFontSize(16);doc.setTextColor(vc[0],vc[1],vc[2]);doc.text(v+"%",cx+cardW/2,y+17,{align:"center"});
-  }
-  y+=30;
-
-  // NPS
-  var nps=DATA.npsDistribution||{promoter:0,passiv:0,kritiker:0};
-  var npsA=DATA.npsAvg||0;
-  var nTotal=(nps.promoter||0)+(nps.passiv||0)+(nps.kritiker||0);
-  var npsScore=nTotal?Math.round(((nps.promoter||0)-(nps.kritiker||0))/nTotal*100):0;
-  y=secTitle(y,"Weiterempfehlung (NPS)",251,191,36);
-  doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(232,240,248);
-  doc.text("NPS Score: "+npsScore+" | Durchschnitt: "+(typeof npsA==="number"?npsA.toFixed(1):npsA)+"/10 | "+
-    (nps.promoter||0)+" Promoter | "+(nps.passiv||0)+" Passiv | "+(nps.kritiker||0)+" Kritiker",M,y);
-  y+=10;
-
-  // Top 3 weakest + strongest
-  var allQ=DATA.questionScores||[];
-  if(allQ.length>0){
-    var sorted=allQ.slice().sort(function(a,b){return a.pct-b.pct});
-    y=secTitle(y,"Top 3 Handlungsfelder",248,113,113);
-    for(var i=0;i<Math.min(3,sorted.length);i++){
-      doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(248,113,113);doc.text((i+1)+".",M,y);
-      doc.setTextColor(232,240,248);doc.text(sorted[i].t+" \u2014 "+sorted[i].pct+"%",M+6,y);y+=6;
-    }
-    y+=4;
-    var sortedS=allQ.slice().sort(function(a,b){return b.pct-a.pct});
-    y=secTitle(y,"Top 3 Staerken",52,211,153);
-    for(var i=0;i<Math.min(3,sortedS.length);i++){
-      doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(52,211,153);doc.text((i+1)+".",M,y);
-      doc.setTextColor(232,240,248);doc.text(sortedS[i].t+" \u2014 "+sortedS[i].pct+"%",M+6,y);y+=6;
-    }
-  }
-
-  // ═══ PAGE 3: METHODIK ═══
-  y=newPage("METHODIK & TEILNEHMER");
-  y=secTitle(y,"Methodik");y+=2;
-  y=bodyText(y,"Die Humatrix ClubCheck Premium Analyse basiert auf einer standardisierten, wissenschaftlich fundierten Befragung. Die Methodik verbindet Ansaetze aus dem Organizational Health Index (McKinsey), der Balanced Scorecard (Kaplan & Norton) und der Self-Determination Theory (Deci & Ryan), adaptiert fuer Sportvereine. Bewertung auf 7-stufiger Likert-Skala (1=Stimme nicht zu, 7=Stimme voll zu).");
-  y+=4;
-  y=secTitle(y,"Teilnehmerstruktur",167,139,250);y+=2;
-  var roles=DATA.roles||{};var totalR=0;for(var rk in roles)totalR+=roles[rk];
-  for(var rk in roles){
-    var rv=roles[rk];var rpct=totalR?Math.round(rv/totalR*100):0;
-    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);doc.text(rk,M,y);
-    doc.setFont("helvetica","bold");doc.text(rv+" ("+rpct+"%)",M+45,y);
-    bar(M+70,y-3,CW-70,rpct,0,212,255,3);y+=7;
-  }
-  y+=6;
-  y=secTitle(y,"Bewertungsskala");y+=2;
-  var scales=[["0-29%","Kritisch",[248,113,113]],["30-44%","Schwach",[251,146,60]],["45-59%","Ausbaufaehig",[251,191,36]],["60-69%","Gut",[96,165,250]],["70-100%","Stark",[52,211,153]]];
-  for(var si=0;si<scales.length;si++){
-    var s=scales[si];doc.setFillColor(s[2][0],s[2][1],s[2][2]);doc.rect(M,y-2,3,3,"F");
-    doc.setFont("helvetica","bold");doc.setFontSize(7);doc.setTextColor(232,240,248);doc.text(s[0],M+6,y);
-    doc.setTextColor(s[2][0],s[2][1],s[2][2]);doc.text(s[1],M+22,y);y+=6;
-  }
-
-  // ═══ PAGE 4: VEREINSPROFIL ═══
-  y=newPage("VEREINSPROFIL");
-  y=secTitle(y,"Vereinsprofil \u2014 Gesamtuebersicht");y+=4;
-  // Dimension bars with benchmarks
-  for(var di=0;di<dims.length;di++){
-    var d=dims[di];var v=sc[d.k]||0;var vc=sC(v);
-    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(d.c[0],d.c[1],d.c[2]);doc.text(d.l,M,y);
-    doc.setFontSize(12);doc.setTextColor(vc[0],vc[1],vc[2]);doc.text(v+"%",W-M,y,{align:"right"});
-    doc.setFontSize(7);doc.text(sL(v),W-M-18,y,{align:"right"});
-    y+=3;bar(M,y,CW,v,d.c[0],d.c[1],d.c[2],5);y+=12;
-  }
-
-  // ═══ PAGES 5-8: SECTION DETAILS ═══
-  var secInfo={intern:{l:"Vereinsintern",c:[0,212,255]},sport:{l:"Sportlich",c:[52,211,153]},extern:{l:"Vereinsextern",c:[251,146,60]},zukunft:{l:"Zukunft",c:[251,191,36]}};
-  for(var sk in secInfo){
-    var si2=secInfo[sk];var sv=sc[sk]||0;var svc=sC(sv);
-    y=newPage(si2.l.toUpperCase());
-    y=secTitle(y,si2.l,si2.c[0],si2.c[1],si2.c[2]);y+=2;
-    // Score card
-    doc.setFillColor(10,22,40);doc.roundedRect(M,y,CW,16,2,2,"F");
-    doc.setDrawColor(si2.c[0],si2.c[1],si2.c[2]);doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,16,2,2,"S");
-    doc.setFont("helvetica","bold");doc.setFontSize(22);doc.setTextColor(svc[0],svc[1],svc[2]);doc.text(sv+"%",M+5,y+12);
-    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);doc.text("Score | "+sL(sv),M+30,y+8);
-    y+=22;
-    // Questions
-    y=secTitle(y,"Einzelauswertung \u2014 sortiert nach Handlungsbedarf",si2.c[0],si2.c[1],si2.c[2]);y+=2;
-    var secQs=(allQ.filter(function(q){return q.s===sk})||[]).sort(function(a,b){return a.pct-b.pct});
-    for(var qi=0;qi<secQs.length;qi++){
-      if(y>H-20){y=newPage(si2.l.toUpperCase());y+=4;}
-      var q=secQs[qi];var qc=sC(q.pct);
-      doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(147,170,187);
-      doc.text(q.t.substring(0,50),M,y);
-      bar(M+90,y-3,60,q.pct,si2.c[0],si2.c[1],si2.c[2],4);
-      doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(qc[0],qc[1],qc[2]);
-      doc.text(q.pct+"%",W-M,y,{align:"right"});
-      doc.setFontSize(5);doc.text(sL(q.pct),W-M-12,y,{align:"right"});
-      y+=7;
-    }
-  }
-
-  // ═══ PAGE 9: ROLLENVERGLEICH ═══
-  var rs=DATA.roleScores;
-  if(rs&&Object.keys(rs).length>1){
-    y=newPage("ROLLENVERGLEICH");
-    y=secTitle(y,"Rollenvergleich \u2014 Wer sieht was?",167,139,250);y+=2;
-    y=bodyText(y,"Unterschiedliche Rollen haben unterschiedliche Perspektiven. Grosse Differenzen zeigen blinde Flecken und Kommunikationsluecken.");y+=4;
-    var rColors={"Spieler\u00b7in":[0,212,255],"Trainer\u00b7in":[52,211,153],"Vorstand":[251,191,36]};
-    for(var di2=0;di2<dims.length;di2++){
-      if(y>H-35){y=newPage("ROLLENVERGLEICH");y+=4;}
-      var d2=dims[di2];
-      doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(d2.c[0],d2.c[1],d2.c[2]);doc.text(d2.l,M,y);y+=5;
-      for(var rk2 in rs){
-        if(!rs[rk2][d2.k]&&rs[rk2][d2.k]!==0)continue;
-        var rv2=rs[rk2][d2.k]||0;var rc2=rColors[rk2]||[0,212,255];var vc2=sC(rv2);
-        doc.setFont("helvetica","normal");doc.setFontSize(7);doc.setTextColor(147,170,187);doc.text(rk2,M,y);
-        bar(M+40,y-3,80,rv2,rc2[0],rc2[1],rc2[2],3);
-        doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(vc2[0],vc2[1],vc2[2]);doc.text(rv2+"%",W-M,y,{align:"right"});
-        y+=6;
-      }
-      var vals=[];for(var rk3 in rs){if(rs[rk3][d2.k]!==undefined)vals.push(rs[rk3][d2.k])}
-      if(vals.length>1){
-        var gap=Math.max.apply(null,vals)-Math.min.apply(null,vals);
-        var gc2=gap>25?[248,113,113]:gap>15?[251,191,36]:[52,211,153];
-        doc.setFont("helvetica","bold");doc.setFontSize(7);doc.setTextColor(gc2[0],gc2[1],gc2[2]);
-        doc.text("Gap: "+gap+" Pkt"+(gap>25?" \u2014 KRITISCH":gap>15?" \u2014 beobachten":""),M,y);
-      }
-      y+=10;
-    }
-  }
-
-  // ═══ PAGE 10: NPS DETAIL ═══
-  y=newPage("NPS ANALYSE");
-  y=secTitle(y,"Net Promoter Score",251,191,36);y+=2;
-  var nC=npsScore>=20?[52,211,153]:npsScore>=0?[251,191,36]:[248,113,113];
-  doc.setFont("helvetica","bold");doc.setFontSize(40);doc.setTextColor(nC[0],nC[1],nC[2]);doc.text(String(npsScore),W/2,y+20,{align:"center"});
-  doc.setFontSize(8);doc.setTextColor(74,100,120);doc.text("NPS Score (-100 bis +100)",W/2,y+27,{align:"center"});y+=38;
-  // Distribution
-  doc.setFont("helvetica","bold");doc.setFontSize(9);
-  doc.setTextColor(248,113,113);doc.text("Kritiker (0-6): "+(nps.kritiker||0),M,y);
-  doc.setTextColor(251,191,36);doc.text("Passiv (7-8): "+(nps.passiv||0),M+55,y);
-  doc.setTextColor(52,211,153);doc.text("Promoter (9-10): "+(nps.promoter||0),M+105,y);y+=8;
-  if(nTotal>0){
-    var pK=Math.round((nps.kritiker||0)/nTotal*CW);var pP=Math.round((nps.passiv||0)/nTotal*CW);var pPr=CW-pK-pP;
-    if(pK>0){doc.setFillColor(248,113,113);doc.roundedRect(M,y,pK,8,0,0,"F")}
-    if(pP>0){doc.setFillColor(251,191,36);doc.rect(M+pK,y,pP,8,"F")}
-    if(pPr>0){doc.setFillColor(52,211,153);doc.roundedRect(M+pK+pP,y,pPr,8,0,0,"F")}
-  }
-
-  // ═══ PAGE 11: FREITEXTE ═══
-  var fts=DATA.freitexts||[];
-  if(fts.length>0){
-    y=newPage("STIMMEN DER MITGLIEDER");
-    y=secTitle(y,"Stimmen der Mitglieder ("+fts.length+")",251,191,36);y+=2;
-    y=bodyText(y,"Offene Empfehlungen der Teilnehmer \u2014 ungefiltert und anonym.");y+=4;
-    for(var fi=0;fi<fts.length;fi++){
-      if(y>H-25){y=newPage("STIMMEN DER MITGLIEDER");y+=4;}
-      var ft=typeof fts[fi]==="string"?{text:fts[fi]}:fts[fi];
-      doc.setFillColor(251,191,36);doc.rect(M,y-2,1.5,4,"F");
-      doc.setFont("helvetica","bolditalic");doc.setFontSize(8);doc.setTextColor(147,170,187);
-      var ftLines=doc.splitTextToSize('"'+ft.text+'"',CW-10);doc.text(ftLines,M+5,y);
-      y+=ftLines.length*4+2;
-      if(ft.role){doc.setFont("helvetica","normal");doc.setFontSize(6);doc.setTextColor(74,100,120);doc.text("\u2014 "+ft.role,M+5,y);y+=3}
-      y+=4;
-    }
-  }
-
-  // ═══ PAGE 12: EMPFEHLUNGEN ═══
-  y=newPage("HANDLUNGSEMPFEHLUNGEN");
-  y=secTitle(y,"Handlungsempfehlungen");y+=2;
-  var recs={
-    intern:{t:"Vereinsintern \u2014 Transparenz & Kommunikation",items:["Woechentliches Kurz-Update des Vorstands an alle Mitglieder","Klare Rollenmatrix: Wer ist wofuer zustaendig?","Quartalsweise Finanzberichte veroeffentlichen","Beschwerdekanal einrichten (anonym moeglich)","Digitale Vereinsmanagement-Tools evaluieren"]},
-    sport:{t:"Sportlich \u2014 Entwicklung & Infrastruktur",items:["Trainingszeiten-Verteilung pruefen und fair gestalten","Scouting-Konzept professionalisieren","Leistungsdiagnostik einfuehren (mind. 2x/Saison)","Nachwuchs-Uebergangskonzept formalisieren","Infrastruktur-Investitionsplan 3 Jahre"]},
-    extern:{t:"Vereinsextern \u2014 Aussenwirkung & Partner",items:["Professionelle Website erstellen/ueberarbeiten","Social Media Strategie (mind. 3 Posts/Woche)","Sponsoring-Pakete professionell gestalten","Community-Events organisieren","Alumni-Netzwerk aufbauen"]},
-    zukunft:{t:"Zukunft \u2014 Strategie & Nachfolge",items:["Strategieworkshop mit Vorstand durchfuehren","Vision 2030 definieren und kommunizieren","Nachfolgeplan fuer Schluesselpositionen","Digitalisierungsoffensive starten","ClubCheck jaehrlich wiederholen"]}
-  };
-  for(var rsk in recs){
-    var rv3=sc[rsk]||0;if(rv3>=70)continue;
-    if(y>H-40){y=newPage("HANDLUNGSEMPFEHLUNGEN");y+=4;}
-    var urg=rv3<45?"DRINGEND":"EMPFOHLEN";var uc=rv3<45?[248,113,113]:[251,191,36];
-    doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(232,240,248);doc.text(recs[rsk].t,M,y);
-    doc.setTextColor(uc[0],uc[1],uc[2]);doc.text(urg+" | "+rv3+"%",W-M,y,{align:"right"});y+=6;
-    for(var ri=0;ri<recs[rsk].items.length;ri++){
-      doc.setFillColor(0,212,255);doc.circle(M+2,y-1,1,"F");
-      doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);doc.text(recs[rsk].items[ri],M+6,y);y+=6;
-    }
-    y+=6;
-  }
-
-  // ═══ PAGE 13: UMSETZUNGSFAHRPLAN ═══
-  y=newPage("UMSETZUNGSFAHRPLAN");
-  y=secTitle(y,"Umsetzungsfahrplan");y+=2;
-  y=bodyText(y,"Empfohlener Zeitrahmen basierend auf Dringlichkeit und Machbarkeit.");y+=4;
-  var phases=[
-    {p:"SOFORT (0-4 Wochen)",c:[248,113,113],items:["Transparenz-Offensive: woechentliche Updates starten","ClubCheck-Ergebnisse mit dem Team teilen","Beschwerdekanal einrichten"]},
-    {p:"KURZFRISTIG (1-3 Monate)",c:[251,146,60],items:["Rollenmatrix erstellen","Website-Relaunch beauftragen","Strategieworkshop planen","Nachfolgeplanung starten"]},
-    {p:"MITTELFRISTIG (3-6 Monate)",c:[251,191,36],items:["Social Media Strategie umsetzen","Sponsoring professionalisieren","Digitale Tools einfuehren"]},
-    {p:"LANGFRISTIG (6-12 Monate)",c:[52,211,153],items:["Vision 2030 finalisieren","Infrastruktur-Investitionen umsetzen","ClubCheck wiederholen"]}
-  ];
-  for(var pi=0;pi<phases.length;pi++){
-    if(y>H-30){y=newPage("UMSETZUNGSFAHRPLAN");y+=4;}
-    var ph=phases[pi];
-    doc.setFillColor(ph.c[0],ph.c[1],ph.c[2]);doc.rect(M,y,CW,0.5,"F");y+=4;
-    doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(ph.c[0],ph.c[1],ph.c[2]);doc.text(ph.p,M,y);y+=6;
-    for(var ii=0;ii<ph.items.length;ii++){
-      doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);doc.text("\u2192 "+ph.items[ii],M+4,y);y+=5;
-    }
-    y+=4;
-  }
-
-  // ═══ PAGE 14: HUMATRIX ═══
-  y=newPage("UEBER HUMATRIX");
-  y=secTitle(y,"Ueber Humatrix");y+=2;
-  y=bodyText(y,"Humatrix unterstuetzt Vereine und Verbaende mit wissenschaftlich fundierten Analysen, klaren Handlungsempfehlungen und praxisnaher Beratung. Unser Portfolio umfasst 12 spezialisierte Matrix-Analysen.");y+=6;
-  y=secTitle(y,"Weiterfuehrende Analysen",251,191,36);y+=2;
-  var prods=[["AlignMatrix","Fuehrungspassung Trainer-Spieler"],["ReadyMatrix","Organisationsreife bewerten"],["ClearMatrix","Rollen und Entscheidungswege"],["FlowMatrix","Kommunikation und Informationsfluss"],["TrustMatrix","Vertrauen und Teamkultur"],["NurtureMatrix","Nachwuchsarbeit evaluieren"]];
-  for(var pi2=0;pi2<prods.length;pi2++){
-    doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(0,212,255);doc.text(prods[pi2][0],M,y);
-    doc.setFont("helvetica","normal");doc.setTextColor(147,170,187);doc.text(prods[pi2][1],M+35,y);y+=6;
-  }
-  y+=10;
-  y=secTitle(y,"Kontakt");y+=2;
-  doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(232,240,248);doc.text("Mag. Bernhard Lampl PhD BSc. MBA LLM MBA",M,y);y+=5;
-  doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(147,170,187);doc.text("CEO & Founder",M,y);y+=5;
-  doc.setTextColor(0,212,255);doc.text("bernhard@humatrix.cc",M,y);
-  doc.setTextColor(147,170,187);doc.text("+43 / 676 / 916 60 20",M+55,y);y+=5;
-  doc.text("Dorfstrasse 3b, 6116 Weer, Tyrol / Austria",M,y);y+=5;
-  doc.setTextColor(0,212,255);doc.text("sales.humatrix.cc",M,y);
-
-  // ═══ SAVE ═══
-  doc.save("ClubCheck_Premium_"+club.replace(/[^a-zA-Z0-9]/g,"_")+".pdf");
-  if(st)st.innerHTML='<span style="color:var(--green)">Report wurde heruntergeladen!</span>';
-  }catch(err){
-    if(st)st.innerHTML='<span style="color:var(--red)">Fehler: '+err.message+'</span>';
-    console.error("PDF Error:",err);
-  }
-  },300);
 }
 
-// ═══ EVENTS ═══
-document.addEventListener("click",function(e){
-  var el=e.target;while(el&&!el.dataset.act)el=el.parentElement;if(!el)return;
-  var act=el.dataset.act;
-  if(act==="goHome"){V="home";TAB="overview";DATA=null;R();return}
-  if(act==="goLogin"){V="login";R();return}
-  if(act==="goRegister"){V="register";R();return}
-  if(act==="goQuestions"&&REG.name.length>=2){V="questions";R();return}
-  if(act==="goDemo"){CODE="DEMO";DATA=demoData();V="dash";TAB="overview";R();return}
-  if(act==="goLoad"&&CODE.length>=3){V="loading";R();loadDash(CODE,function(){V="dash";TAB="overview";R()});return}
-  if(act==="reload"){V="loading";R();DATA=null;loadDash(CODE,function(){V="dash";R()});return}
-  // Question type selector
-  if(act.indexOf("qt_")===0){var pp=act.split("_");REG.questions[parseInt(pp[1])].type=pp[2];R();return}
-  // Add/remove option
-  if(act.indexOf("addOpt_")===0){var qi3=parseInt(act.split("_")[1]);if(REG.questions[qi3].opts.length<6)REG.questions[qi3].opts.push("");R();return}
-  if(act.indexOf("delOpt_")===0){var pp2=act.split("_");var qi4=parseInt(pp2[1]);var oi3=parseInt(pp2[2]);if(REG.questions[qi4].opts.length>2)REG.questions[qi4].opts.splice(oi3,1);R();return}
-  if(act==="doRegister"&&REG.name.length>=2){
-    CODE=genCode(REG.name);
-    var payload={type:"club_register",code:CODE,name:REG.name,contact:REG.contact,email:REG.email};
-    for(var qi=0;qi<5;qi++){
-      var cq=REG.questions[qi];
-      if(cq.text){
-        payload["q"+(qi+1)+"_text"]=cq.text;
-        payload["q"+(qi+1)+"_type"]=cq.type;
-        if(cq.type==="choice"){
-          var validOpts=cq.opts.filter(function(o){return o.trim().length>0});
-          if(validOpts.length>0)payload["q"+(qi+1)+"_opts"]=validOpts.join("|");
-        }
-      }
-    }
-    send(payload);
-    V="created";R();return;
+function renderForgot(){
+  setHero("Passwort zurücksetzen.", "Gib Club-Code und E-Mail-Adresse ein. Wenn die Daten passen, wird ein Link zum Zurücksetzen gesendet.");
+  app.innerHTML = `
+    ${error ? `<div class="err">${esc(error)}</div>` : ""}
+    <div class="card card-p">
+      <div class="section-head"><h2>Passwort vergessen</h2><p>Aus Sicherheitsgründen zeigen wir nicht an, ob ein Konto gefunden wurde.</p></div>
+      <div class="field"><label class="label">Club-Code</label><input class="input" id="resetCode" value="${esc(initialCode)}" placeholder="Club-Code"></div>
+      <div class="field"><label class="label">E-Mail</label><input class="input" id="resetEmail" type="email" placeholder="E-Mail aus der Registrierung"></div>
+      <div class="btn-row"><button class="btn bp" onclick="requestReset()">Link anfordern</button><button class="btn bo" onclick="error='';renderLogin()">Zurück</button></div>
+    </div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Hinweis</h3><p>Der Link ist zeitlich begrenzt. Prüfe auch deinen Spam-Ordner.</p></div>`;
+}
+
+async function requestReset(){
+  const code = document.getElementById("resetCode").value;
+  const email = document.getElementById("resetEmail").value;
+  try{
+    const res = await fetch("/api/request-password-reset", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code,email}) });
+    const data = await res.json();
+    app.innerHTML = `<div class="ok">${esc(data.message || "Falls die Daten passen, wurde ein Link versendet.")}</div><div class="card card-p"><h2>Prüfe deine E-Mails</h2><p>Du kannst danach ein neues Passwort setzen und dich erneut anmelden.</p><div class="btn-row"><button class="btn bo" onclick="renderLogin()">Zur Anmeldung</button></div></div>`;
+  }catch(e){
+    app.innerHTML = `<div class="ok">Falls die Daten passen, wurde ein Link versendet.</div>`;
   }
-  if(act.indexOf("tab_")===0){TAB=act.substring(4);R();return}
-  if(act==="genPDF"){generatePDF();return}
-  if(act==="copyLink"){
-    var link=SURVEY_URL+"?c="+CODE;
-    function doCopy(txt,btnId){
-      var b=document.getElementById(btnId||"copyBtn");
-      function ok(){if(b){b.textContent="\u2713 Kopiert!";b.style.color="var(--green)";setTimeout(function(){b.textContent="\ud83d\udccb LINK KOPIEREN";b.style.color=""},2000)}}
-      try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(ok);return}}catch(e){}
-      var ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;left:-9999px";document.body.appendChild(ta);ta.select();
-      try{document.execCommand("copy");ok()}catch(e2){if(b)b.textContent="Bitte manuell kopieren"}
-      document.body.removeChild(ta);
-    }
-    doCopy(link);
-    return;
+}
+
+function renderResetPassword(){
+  setHero("Neues Passwort setzen.", "Wähle ein neues Passwort für dein ClubCheck-Dashboard.");
+  app.innerHTML = `
+    ${error ? `<div class="err">${esc(error)}</div>` : ""}
+    <div class="card card-p">
+      <div class="section-head"><h2>Neues Passwort</h2><p>Das Passwort muss mindestens 8 Zeichen haben.</p></div>
+      <div class="field"><label class="label">Neues Passwort</label><input class="input" id="newPassword" type="password" placeholder="Mindestens 8 Zeichen"></div>
+      <div class="field"><label class="label">Wiederholen</label><input class="input" id="newPassword2" type="password" placeholder="Wiederholen"></div>
+      <div class="btn-row"><button class="btn bp" onclick="resetPassword()">Passwort speichern</button></div>
+    </div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Sicherheit</h3><p>Der Link kann nur einmal verwendet werden.</p></div>`;
+}
+
+async function resetPassword(){
+  const p1 = document.getElementById("newPassword").value;
+  const p2 = document.getElementById("newPassword2").value;
+  if(p1.length < 8){ error = "Das Passwort muss mindestens 8 Zeichen haben."; return renderResetPassword(); }
+  if(p1 !== p2){ error = "Die Passwörter stimmen nicht überein."; return renderResetPassword(); }
+  try{
+    const res = await fetch("/api/reset-password", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({token: resetToken, password: p1}) });
+    const data = await res.json();
+    if(!res.ok || !data.ok) throw new Error(data.error || "Das Passwort konnte nicht gespeichert werden.");
+    localStorage.removeItem(storeKey);
+    app.innerHTML = `<div class="ok">Das Passwort wurde geändert.</div><div class="card card-p"><h2>Du kannst dich jetzt anmelden.</h2><div class="btn-row"><button class="btn bp" onclick="location.href='/dashboard.html'">Zur Anmeldung</button></div></div>`;
+  }catch(e){
+    error = e.message || "Das Passwort konnte nicht gespeichert werden.";
+    renderResetPassword();
   }
-  if(act==="copyWA"){
-    var waEl=document.getElementById("waText");
-    if(waEl){
-      var txt=waEl.textContent;
-      try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(function(){el.textContent="\u2713 Kopiert!";el.style.color="var(--green)";setTimeout(function(){el.textContent="\ud83d\udce4 WhatsApp-Text kopieren";el.style.color=""},2000)});return}}catch(e){}
-      var ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;left:-9999px";document.body.appendChild(ta);ta.select();
-      try{document.execCommand("copy");el.textContent="\u2713 Kopiert!";el.style.color="var(--green)";setTimeout(function(){el.textContent="\ud83d\udce4 WhatsApp-Text kopieren";el.style.color=""},2000)}catch(e2){}
-      document.body.removeChild(ta);
-    }
-    return;
+}
+
+async function loadDashboard(){
+  setHero("Dashboard wird geladen.", "Bitte einen Moment Geduld.");
+  app.innerHTML = `<div class="card card-p"><h2>Dashboard wird geladen …</h2><p>Die aktuellen Rückmeldungen werden abgerufen.</p></div>`;
+  side.innerHTML = "";
+  try{
+    const res = await fetch("/api/get-dashboard", { headers: { "Authorization": `Bearer ${token}` } });
+    const data = await res.json();
+    if(!res.ok || !data.ok) throw new Error(data.error || "Dashboard konnte nicht geladen werden.");
+    dashboard = data.dashboard;
+    renderDashboard();
+  }catch(e){
+    localStorage.removeItem(storeKey);
+    token = "";
+    error = e.message || "Bitte erneut anmelden.";
+    renderLogin();
   }
-});
-R();
-}catch(e){document.body.innerHTML='<p style="color:red;padding:20px">'+e.message+'</p>'}
+}
+
+function scoreClass(v){ if(v === null || v === undefined) return "—"; return v >= 5.5 ? "Stark" : v >= 4 ? "Stabil" : "Handlungsbedarf"; }
+
+function renderDashboard(){
+  const d = dashboard;
+  const surveyUrl = `${location.origin}/survey.html?c=${encodeURIComponent(d.club.code)}`;
+  setHero(d.club.name, "Hier findest du die aktuellen Rückmeldungen, zentrale Kennzahlen und den PDF-Bericht.");
+  app.innerHTML = `
+    <div class="grid3">
+      <div class="kpi"><div class="num">${d.count}</div><div class="lbl">Rückmeldungen</div></div>
+      <div class="kpi"><div class="num">${fmt(d.scores.total)}</div><div class="lbl">Gesamtwert / 7</div></div>
+      <div class="kpi"><div class="num">${fmt(d.nps.score)}</div><div class="lbl">Empfehlungswert</div></div>
+    </div>
+
+    <div class="card card-p" style="margin-top:22px">
+      <div class="section-head"><h2>Bewertungsbereiche</h2><p>Durchschnittswerte auf einer Skala von 1 bis 7.</p></div>
+      ${scoreRow("Organisation", d.scores.intern)}
+      ${scoreRow("Sport", d.scores.sport)}
+      ${scoreRow("Außenwirkung", d.scores.extern)}
+      ${scoreRow("Zukunft", d.scores.zukunft)}
+      ${d.scores.custom ? scoreRow("Eigene Vereinsfragen", d.scores.custom) : ""}
+    </div>
+
+    <div class="grid2" style="margin-top:22px">
+      <div class="card card-p">
+        <h2 style="font-size:30px;margin-bottom:14px">Rollen</h2>
+        ${bars(d.roles)}
+      </div>
+      <div class="card card-p">
+        <h2 style="font-size:30px;margin-bottom:14px">Empfehlung</h2>
+        <div class="summary-list">
+          <div class="summary-row"><div class="summary-label">Promotoren</div><div class="summary-value">${d.nps.promoters}</div></div>
+          <div class="summary-row"><div class="summary-label">Passive</div><div class="summary-value">${d.nps.passives}</div></div>
+          <div class="summary-row"><div class="summary-label">Kritiker</div><div class="summary-value">${d.nps.critics}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-p" style="margin-top:22px">
+      <div class="section-head"><h2>Freitext-Rückmeldungen</h2><p>Freitexte werden erst ab mehreren Rückmeldungen angezeigt, um Einzelpersonen besser zu schützen.</p></div>
+      ${d.freitexts.length ? d.freitexts.map(x => `<div class="note"><strong>${esc(x.role || "Anonym")}:</strong> ${esc(x.text)}</div>`).join("") : `<p>Aktuell sind keine freigegebenen Freitexte vorhanden.</p>`}
+    </div>
+
+    <div class="btn-row">
+      <button class="btn bp" onclick="downloadPdf()">PDF-Bericht herunterladen</button>
+      <button class="btn bo" onclick="copyText('${surveyUrl}')">Mitglieder-Link kopieren</button>
+      <button class="btn bo" onclick="logout()">Abmelden</button>
+    </div>
+  `;
+
+  side.innerHTML = `
+    <div class="card card-p">
+      <h3 style="font-size:24px;margin-bottom:10px">Mitglieder-Link</h3>
+      <p style="word-break:break-all">${esc(surveyUrl)}</p>
+      <div class="btn-row"><button class="btn bp full" onclick="copyText('${surveyUrl}')">Link kopieren</button></div>
+    </div>
+    <div class="card card-p" style="margin-top:18px">
+      <h3 style="font-size:24px;margin-bottom:10px">Paket</h3>
+      <div class="summary-list">
+        <div class="summary-row"><div class="summary-label">Code</div><div class="summary-value">${esc(d.club.code)}</div></div>
+        <div class="summary-row"><div class="summary-label">Paket</div><div class="summary-value">${esc(d.club.package)}</div></div>
+        <div class="summary-row"><div class="summary-label">Limit</div><div class="summary-value">${d.count} / ${d.club.maxMembers}</div></div>
+      </div>
+    </div>`;
+}
+
+function scoreRow(label, value){
+  const width = value ? Math.max(0, Math.min(100, Math.round((value/7)*100))) : 0;
+  return `<div style="margin-bottom:18px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(label)}</div><div class="summary-value">${pct(value)} · ${scoreClass(value)}</div></div><div class="bar"><span style="width:${width}%"></span></div></div>`;
+}
+
+function bars(obj){
+  const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length) return "<p>Noch keine Daten.</p>";
+  const max = Math.max(...entries.map(x=>x[1]), 1);
+  return entries.map(([k,v]) => `<div style="margin-bottom:14px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(k)}</div><div class="summary-value">${v}</div></div><div class="bar"><span style="width:${Math.round((v/max)*100)}%"></span></div></div>`).join("");
+}
+
+function copyText(text){ navigator.clipboard.writeText(text).then(()=>alert("Link kopiert.")).catch(()=>alert("Bitte manuell kopieren.")); }
+function logout(){ localStorage.removeItem(storeKey); token=""; dashboard=null; error=""; renderLogin(); }
+
+function downloadPdf(){
+  try{
+    if(!window.jspdf || !window.jspdf.jsPDF){
+      window.print();
+      return;
+    }
+    const d = dashboard;
+    const doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
+    const left = 18;
+    let y = 18;
+
+    function line(txt, size=11, bold=false, color=[26,26,26]){
+      doc.setTextColor(color[0], color[1], color[2]);
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setFontSize(size);
+      const lines = doc.splitTextToSize(String(txt || ""), 174);
+      doc.text(lines, left, y);
+      y += lines.length * (size * 0.42) + 3;
+    }
+
+    function addPageIfNeeded(extra=20){ if(y + extra > 280){ doc.addPage(); y = 18; } }
+
+    doc.setFillColor(245,243,238);
+    doc.rect(0,0,210,297,"F");
+    doc.setFillColor(255,255,255);
+    doc.rect(12,12,186,273,"F");
+
+    line("Humatrix ClubCheck", 11, true, [90,86,80]);
+    line(`PDF-Bericht · ${d.club.name}`, 24, true);
+    line(`Club-Code: ${d.club.code} · Rückmeldungen: ${d.count} von ${d.club.maxMembers}`, 11, false, [90,86,80]);
+    y += 4;
+
+    line("Kennzahlen", 16, true);
+    line(`Gesamtwert: ${fmt(d.scores.total)}/7`, 12);
+    line(`Organisation: ${fmt(d.scores.intern)}/7 · Sport: ${fmt(d.scores.sport)}/7 · Außenwirkung: ${fmt(d.scores.extern)}/7 · Zukunft: ${fmt(d.scores.zukunft)}/7`, 11);
+    line(`Empfehlungswert: ${fmt(d.nps.score)} · Promotoren: ${d.nps.promoters} · Passive: ${d.nps.passives} · Kritiker: ${d.nps.critics}`, 11);
+    y += 4;
+
+    line("Einordnung", 16, true);
+    const total = d.scores.total;
+    let evalText = "Für eine belastbare Interpretation sollten weitere Rückmeldungen gesammelt werden.";
+    if(total !== null && total !== undefined){
+      if(total >= 5.5) evalText = "Die Gesamtbewertung ist stark. Der Verein sollte die vorhandenen Stärken sichern und gezielt weiterentwickeln.";
+      else if(total >= 4) evalText = "Die Gesamtbewertung ist stabil. Einzelne Bereiche sollten genauer priorisiert und in konkrete Maßnahmen übersetzt werden.";
+      else evalText = "Die Gesamtbewertung zeigt klaren Handlungsbedarf. Der Vorstand sollte wenige, konkrete Verbesserungsmaßnahmen priorisieren.";
+    }
+    line(evalText, 11);
+
+    addPageIfNeeded(50);
+    y += 4;
+    line("Rollenverteilung", 16, true);
+    Object.entries(d.roles || {}).forEach(([role,count]) => line(`${role}: ${count}`, 11));
+
+    addPageIfNeeded(50);
+    y += 4;
+    line("Freitext-Rückmeldungen", 16, true);
+    if(d.freitexts && d.freitexts.length){
+      d.freitexts.slice(0,12).forEach(x => {
+        addPageIfNeeded(24);
+        line(`${x.role || "Anonym"}: ${x.text}`, 10);
+      });
+    }else{
+      line("Keine freigegebenen Freitexte vorhanden.", 11);
+    }
+
+    const filename = `ClubCheck_${d.club.code}_${new Date().toISOString().slice(0,10)}.pdf`;
+    doc.save(filename);
+  }catch(e){
+    console.error(e);
+    alert("Der PDF-Bericht konnte nicht erstellt werden. Bitte später erneut versuchen.");
+  }
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,49 @@
+HUMATRIX CLUBCHECK — FINALE UPLOAD-DATEN
+
+ZIP FÜR VERCEL:
+clubcheck-final-upload-with-emails.zip
+
+1) Supabase
+- Datei sql/schema.sql im Supabase SQL Editor ausführen.
+- Dadurch werden Clubs, Antworten, Passwort-Resets und E-Mail-Logs angelegt/aktualisiert.
+
+2) Vercel Environment Variables
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_SERVICE_KEY=eyJxxxxx
+STRIPE_SECRET_KEY=sk_live_xxxxx oder sk_test_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+APP_SESSION_SECRET=langer-zufaelliger-wert
+APP_BASE_URL=https://clubcheck.humatrix.cc
+RESEND_API_KEY=re_xxxxx
+EMAIL_FROM=Humatrix ClubCheck <clubcheck@humatrix.cc>
+EMAIL_REPLY_TO=office@humatrix.cc
+
+3) Resend
+- Domain humatrix.cc in Resend verifizieren.
+- API Key erstellen.
+- EMAIL_FROM muss eine verifizierte Absenderadresse sein.
+
+4) Stripe
+Webhook URL:
+https://clubcheck.humatrix.cc/api/stripe-webhook
+
+Events:
+checkout.session.completed
+checkout.session.expired
+checkout.session.async_payment_failed
+
+5) E-Mail-Kommunikation
+- Registrierung gestartet: Wird beim Start der Zahlung versendet.
+- Danke/Kaufbestätigung: Wird nach erfolgreicher Zahlung versendet.
+- Passwort zurücksetzen: Wird über Dashboard-Anforderung versendet.
+
+6) Testfolge
+- register.html öffnen
+- Basic testen: nur 1 Vereinsfrage
+- Testzahlung ausführen
+- Bestätigungsmail prüfen
+- Mitglieder-Link öffnen
+- 3 Testantworten absenden
+- Dashboard öffnen
+- PDF herunterladen
+- Passwort-Reset prüfen
