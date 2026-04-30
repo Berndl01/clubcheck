@@ -26,12 +26,20 @@ CREATE TABLE IF NOT EXISTS clubs (
   q1_text TEXT, q1_type VARCHAR(10) DEFAULT 'scale', q1_opts TEXT,
   q2_text TEXT, q2_type VARCHAR(10) DEFAULT 'scale', q2_opts TEXT,
   q3_text TEXT, q3_type VARCHAR(10) DEFAULT 'scale', q3_opts TEXT,
+  q4_text TEXT, q4_type VARCHAR(10) DEFAULT 'scale', q4_opts TEXT,
+  q5_text TEXT, q5_type VARCHAR(10) DEFAULT 'scale', q5_opts TEXT,
 
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE clubs ADD COLUMN IF NOT EXISTS max_custom_questions INT DEFAULT 1;
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q4_text TEXT;
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q4_type VARCHAR(10) DEFAULT 'scale';
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q4_opts TEXT;
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q5_text TEXT;
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q5_type VARCHAR(10) DEFAULT 'scale';
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS q5_opts TEXT;
 
 CREATE TABLE IF NOT EXISTS responses (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

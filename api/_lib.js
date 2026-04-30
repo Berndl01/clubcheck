@@ -8,7 +8,7 @@ const PLANS = {
     amount: 19900,
     price: 199,
     name: "ClubCheck Basic",
-    desc: "Bis 100 Mitglieder · 12 Wochen · 1 Vereinsfrage",
+    desc: "Bis 100 Mitglieder · 12 Wochen · 1 eigene Vereinsfrage",
     maxMembers: 100,
     maxCustomQuestions: 1
   },
@@ -18,7 +18,7 @@ const PLANS = {
     amount: 29900,
     price: 299,
     name: "ClubCheck Plus",
-    desc: "Bis 250 Mitglieder · 12 Wochen · bis zu 3 Vereinsfragen",
+    desc: "Bis 250 Mitglieder · 12 Wochen · bis zu 3 eigene Vereinsfragen",
     maxMembers: 250,
     maxCustomQuestions: 3
   },
@@ -28,9 +28,9 @@ const PLANS = {
     amount: 49900,
     price: 499,
     name: "ClubCheck Premium",
-    desc: "Bis 500 Mitglieder · 12 Wochen · bis zu 3 Vereinsfragen",
+    desc: "Bis 500 Mitglieder · 12 Wochen · bis zu 5 eigene Vereinsfragen",
     maxMembers: 500,
-    maxCustomQuestions: 3
+    maxCustomQuestions: 5
   }
 };
 
@@ -251,10 +251,12 @@ function questionToFields(questions) {
   const out = {
     q1_text: null, q1_type: "scale", q1_opts: null,
     q2_text: null, q2_type: "scale", q2_opts: null,
-    q3_text: null, q3_type: "scale", q3_opts: null
+    q3_text: null, q3_type: "scale", q3_opts: null,
+    q4_text: null, q4_type: "scale", q4_opts: null,
+    q5_text: null, q5_type: "scale", q5_opts: null
   };
 
-  questions.slice(0, 3).forEach((q, i) => {
+  questions.slice(0, 5).forEach((q, i) => {
     const n = i + 1;
     const text = cleanString(q && q.text, 180);
     if (!text) return;
@@ -279,7 +281,7 @@ function questionToFields(questions) {
 
 function clubQuestionsFromRow(club) {
   const items = [];
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 5; i++) {
     const text = club[`q${i}_text`];
     if (!text) continue;
     items.push({
@@ -289,7 +291,7 @@ function clubQuestionsFromRow(club) {
       opts: club[`q${i}_opts`] ? String(club[`q${i}_opts`]).split("|").filter(Boolean) : []
     });
   }
-  return items.slice(0, Number(club.max_custom_questions || 3));
+  return items.slice(0, Number(club.max_custom_questions || 5));
 }
 
 function avg(nums) {

@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
 
     const { data: club, error } = await supabase
       .from("clubs")
-      .select("id,code,name,package,max_members,max_custom_questions,expires_at,payment_status,q1_text,q1_type,q1_opts,q2_text,q2_type,q2_opts,q3_text,q3_type,q3_opts")
+      .select("id,code,name,package,max_members,max_custom_questions,expires_at,payment_status,q1_text,q1_type,q1_opts,q2_text,q2_type,q2_opts,q3_text,q3_type,q3_opts,q4_text,q4_type,q4_opts,q5_text,q5_type,q5_opts")
       .eq("code", code)
       .maybeSingle();
 

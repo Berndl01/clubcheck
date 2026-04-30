@@ -6,7 +6,7 @@
     "build": "echo done"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/supabase-js": "^2.105.1",
     "stripe": "^17.7.0"
   },
   "engines": {

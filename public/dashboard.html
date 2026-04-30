@@ -58,7 +58,7 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 <body>
 <header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/">Startseite</a><a class="pill" href="/register.html">Registrierung</a><a class="pill ac" href="/dashboard.html">Dashboard</a></nav></div></header>
 
-<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p><div class="meta"><div class="chip">Auswertung</div><div class="chip">Mitglieder-Link</div><div class="chip">PDF-Bericht</div></div></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px">Auswertung</h3><p>Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
+<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px">Auswertung</h3><p>Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
 
 <main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
 <footer class="footer"><div class="wrap footer-in"><div>Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/">Startseite</a><a href="/register.html">Registrierung</a></div></div></footer>
@@ -275,71 +275,861 @@ function downloadPdf(){
       window.print();
       return;
     }
-    const d = dashboard;
-    const doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
-    const left = 18;
-    let y = 18;
-
-    function line(txt, size=11, bold=false, color=[26,26,26]){
-      doc.setTextColor(color[0], color[1], color[2]);
-      doc.setFont("helvetica", bold ? "bold" : "normal");
-      doc.setFontSize(size);
-      const lines = doc.splitTextToSize(String(txt || ""), 174);
-      doc.text(lines, left, y);
-      y += lines.length * (size * 0.42) + 3;
-    }
-
-    function addPageIfNeeded(extra=20){ if(y + extra > 280){ doc.addPage(); y = 18; } }
-
-    doc.setFillColor(245,243,238);
-    doc.rect(0,0,210,297,"F");
-    doc.setFillColor(255,255,255);
-    doc.rect(12,12,186,273,"F");
-
-    line("Humatrix ClubCheck", 11, true, [90,86,80]);
-    line(`PDF-Bericht · ${d.club.name}`, 24, true);
-    line(`Club-Code: ${d.club.code} · Rückmeldungen: ${d.count} von ${d.club.maxMembers}`, 11, false, [90,86,80]);
-    y += 4;
-
-    line("Kennzahlen", 16, true);
-    line(`Gesamtwert: ${fmt(d.scores.total)}/7`, 12);
-    line(`Organisation: ${fmt(d.scores.intern)}/7 · Sport: ${fmt(d.scores.sport)}/7 · Außenwirkung: ${fmt(d.scores.extern)}/7 · Zukunft: ${fmt(d.scores.zukunft)}/7`, 11);
-    line(`Empfehlungswert: ${fmt(d.nps.score)} · Promotoren: ${d.nps.promoters} · Passive: ${d.nps.passives} · Kritiker: ${d.nps.critics}`, 11);
-    y += 4;
-
-    line("Einordnung", 16, true);
-    const total = d.scores.total;
-    let evalText = "Für eine belastbare Interpretation sollten weitere Rückmeldungen gesammelt werden.";
-    if(total !== null && total !== undefined){
-      if(total >= 5.5) evalText = "Die Gesamtbewertung ist stark. Der Verein sollte die vorhandenen Stärken sichern und gezielt weiterentwickeln.";
-      else if(total >= 4) evalText = "Die Gesamtbewertung ist stabil. Einzelne Bereiche sollten genauer priorisiert und in konkrete Maßnahmen übersetzt werden.";
-      else evalText = "Die Gesamtbewertung zeigt klaren Handlungsbedarf. Der Vorstand sollte wenige, konkrete Verbesserungsmaßnahmen priorisieren.";
-    }
-    line(evalText, 11);
-
-    addPageIfNeeded(50);
-    y += 4;
-    line("Rollenverteilung", 16, true);
-    Object.entries(d.roles || {}).forEach(([role,count]) => line(`${role}: ${count}`, 11));
-
-    addPageIfNeeded(50);
-    y += 4;
-    line("Freitext-Rückmeldungen", 16, true);
-    if(d.freitexts && d.freitexts.length){
-      d.freitexts.slice(0,12).forEach(x => {
-        addPageIfNeeded(24);
-        line(`${x.role || "Anonym"}: ${x.text}`, 10);
-      });
-    }else{
-      line("Keine freigegebenen Freitexte vorhanden.", 11);
-    }
-
-    const filename = `ClubCheck_${d.club.code}_${new Date().toISOString().slice(0,10)}.pdf`;
+    const doc = generateClubCheckPdf(window.jspdf.jsPDF, dashboard);
+    const filename = `ClubCheck_${dashboard.club.code}_${new Date().toISOString().slice(0,10)}.pdf`;
     doc.save(filename);
   }catch(e){
     console.error(e);
     alert("Der PDF-Bericht konnte nicht erstellt werden. Bitte später erneut versuchen.");
   }
+}
+
+// === Premium PDF generator ===
+// Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
+// Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
+// Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
+function generateClubCheckPdf(jsPDF, d) {
+  const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
+
+  const C = {
+    bg:        [245, 243, 238],
+    paper:     [255, 255, 255],
+    ink:       [22, 22, 22],
+    inkSoft:   [88, 84, 78],
+    inkLight:  [156, 151, 141],
+    line:      [225, 220, 210],
+    lineSoft:  [235, 231, 222],
+    gold:      [138, 109, 59],
+    goldSoft:  [195, 170, 125],
+    green:     [61, 107, 74],
+    red:       [156, 48, 48],
+  };
+
+  const W = 210, H = 297;
+  const M = 22;
+  const CW = W - 2 * M;
+
+  let pageNum = 0;
+
+  function rgb(c, kind) {
+    if (kind === "fill") doc.setFillColor(c[0], c[1], c[2]);
+    else if (kind === "draw") doc.setDrawColor(c[0], c[1], c[2]);
+    else doc.setTextColor(c[0], c[1], c[2]);
+  }
+  function font(family, weight) { doc.setFont(family, weight); }
+  function thinLine(x1, y1, x2, y2, color, w) {
+    rgb(color || C.line, "draw");
+    doc.setLineWidth(w || 0.2);
+    doc.line(x1, y1, x2, y2);
+  }
+  function trackedWidth(text, charSpacePt) {
+    const baseW = doc.getTextWidth(String(text));
+    const extras = Math.max(0, String(text).length - 1) * (charSpacePt / 2.83464567);
+    return baseW + extras;
+  }
+  function caps(text, x, y, opts) {
+    opts = opts || {};
+    const color = opts.color || C.inkSoft;
+    const size = opts.size || 8;
+    const charSpace = opts.charSpace == null ? 1.0 : opts.charSpace;
+    const weight = opts.weight || "bold";
+    const align = opts.align || "left";
+    rgb(color, "text");
+    font("helvetica", weight);
+    doc.setFontSize(size);
+    const t = String(text || "").toUpperCase();
+    doc.setCharSpace(charSpace);
+    let actualX = x;
+    if (align === "right") actualX = x - trackedWidth(t, charSpace);
+    else if (align === "center") actualX = x - trackedWidth(t, charSpace) / 2;
+    doc.text(t, actualX, y);
+    doc.setCharSpace(0);
+  }
+  function serif(text, x, y, size, weight, color, align) {
+    rgb(color || C.ink, "text");
+    font("times", weight || "normal");
+    doc.setFontSize(size);
+    doc.text(String(text), x, y, align ? { align: align } : undefined);
+  }
+  function sans(text, x, y, size, weight, color, align) {
+    rgb(color || C.ink, "text");
+    font("helvetica", weight || "normal");
+    doc.setFontSize(size);
+    doc.text(String(text), x, y, align ? { align: align } : undefined);
+  }
+  function paragraph(text, x, y, width, opts) {
+    opts = opts || {};
+    const size = opts.size || 10.5;
+    const color = opts.color || C.inkSoft;
+    const weight = opts.weight || "normal";
+    const lineH = opts.lineH || 1.55;
+    const family = opts.family || "helvetica";
+    rgb(color, "text");
+    font(family, weight);
+    doc.setFontSize(size);
+    const lines = doc.splitTextToSize(String(text || ""), width);
+    const lhMm = (size * 0.3528) * lineH;
+    lines.forEach(function(ln, i) { doc.text(ln, x, y + i * lhMm); });
+    return y + lines.length * lhMm;
+  }
+  function paintBackground() {
+    rgb(C.bg, "fill");
+    doc.rect(0, 0, W, H, "F");
+  }
+  function pageHeader() {
+    caps("Humatrix · ClubCheck", M, 14, { color: C.inkSoft, size: 7.2, charSpace: 1.0, weight: "bold" });
+    caps("Auswertungsbericht", W - M, 14, { color: C.inkLight, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
+    thinLine(M, 17, W - M, 17, C.lineSoft, 0.2);
+  }
+  function pageFooter(num) {
+    thinLine(M, H - 17, W - M, H - 17, C.lineSoft, 0.2);
+    sans("humatrix.cc", M, H - 11, 7.5, "normal", C.inkLight);
+    caps("Seite " + String(num).padStart(2, "0"), W - M, H - 11, { color: C.inkSoft, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
+  }
+  function startPage(isFirst) {
+    if (!isFirst) doc.addPage();
+    pageNum += 1;
+    paintBackground();
+    pageHeader();
+  }
+  function fmtNum(v) {
+    if (v === null || v === undefined) return "—";
+    const n = Number(v);
+    if (!isFinite(n)) return "—";
+    return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ",");
+  }
+  function fmt(v) { return v === null || v === undefined ? "—" : String(v); }
+  function scoreLabel(v) {
+    if (v === null || v === undefined) return "Keine Daten";
+    return v >= 5.5 ? "Stark" : v >= 4 ? "Stabil" : "Handlungsbedarf";
+  }
+  function scoreColor(v) {
+    if (v === null || v === undefined) return C.inkLight;
+    return v >= 5.5 ? C.green : v >= 4 ? C.gold : C.red;
+  }
+  function npsLabel(v) {
+    if (v === null || v === undefined) return "Keine Daten";
+    return v >= 30 ? "Stark" : v >= 0 ? "Stabil" : "Handlungsbedarf";
+  }
+  function npsColor(v) {
+    if (v === null || v === undefined) return C.inkLight;
+    return v >= 30 ? C.green : v >= 0 ? C.gold : C.red;
+  }
+  function participationLabel(c) {
+    if (c >= 30) return "Belastbar";
+    if (c >= 10) return "Indikativ";
+    return "Erste Signale";
+  }
+  function participationColor(c) {
+    if (c >= 30) return C.green;
+    if (c >= 10) return C.gold;
+    return C.inkSoft;
+  }
+  function packageLabel(pkg) {
+    var p = String(pkg || "").toLowerCase();
+    if (p === "basic")   return "Basic Auswertung";
+    if (p === "plus")    return "Plus Auswertung";
+    if (p === "premium") return "Premium Auswertung";
+    return "Vorstand-Auswertung";
+  }
+  function dateStr() {
+    const dt = new Date();
+    const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+    return dt.getDate() + ". " + months[dt.getMonth()] + " " + dt.getFullYear();
+  }
+
+  // === DATA HELPERS ===
+  const pkg = String(d.club.package || "basic").toLowerCase();
+  const isBasic   = pkg === "basic";
+  const isPlus    = pkg === "plus";
+  const isPremium = pkg === "premium";
+
+  const ALL_AREAS = [
+    { key: "intern",  lbl: "Organisation",  val: d.scores.intern,
+      hint: "Klare Rollen, regelmäßige Kommunikation und nachvollziehbare Entscheidungen stärken die Organisation. Wenn dieser Bereich schwach ist, fehlen oft strukturierte Abläufe oder eindeutige Zuständigkeiten.",
+      tipsStrong: "Verschriftlichte Rollenbeschreibungen, ein moderiertes Vorstandsritual (z. B. monatliches Stand-up) und ein offen einsehbarer Entscheidungspfad sichern den Vorsprung.",
+      tipsWeak:   "Eine schlanke Rollenmatrix erstellen, einen festen Kommunikationskanal etablieren und Entscheidungen schriftlich begründen — sichtbar für alle Mitglieder." },
+    { key: "sport",   lbl: "Sport",         val: d.scores.sport,
+      hint: "Trainingsbedingungen, sportliche Entwicklung und Trainer:innen-Qualität sind die zentralen Hebel der sportlichen Wahrnehmung des Vereins.",
+      tipsStrong: "Trainings-Konzept dokumentieren und Trainer:innen-Entwicklung gezielt fortführen. Regelmäßige Trainings-Hospitationen zwischen den Teams stärken die Linie.",
+      tipsWeak:   "Mit den Trainer:innen kurze Quartalsgespräche führen, Trainingspläne sichten und Infrastruktur-Engpässe priorisieren. Externe Fortbildung kann hier viel bewegen." },
+    { key: "extern",  lbl: "Außenwirkung",  val: d.scores.extern,
+      hint: "Konsistente Außenkommunikation und ein erkennbares Profil stärken die Wahrnehmung des Vereins in Ort, Verband und Sponsoring.",
+      tipsStrong: "Ein klar geführter Kommunikationskalender und ein bewusstes Sponsoring-Konzept halten den Vorsprung. Erfolgsgeschichten regelmäßig erzählen.",
+      tipsWeak:   "Eine Person für Vereinskommunikation benennen, einen einfachen Inhaltsplan entwickeln und Auftritte (Webseite, Social, lokale Medien) sprachlich vereinheitlichen." },
+    { key: "zukunft", lbl: "Zukunft",       val: d.scores.zukunft,
+      hint: "Langfristige Strategie, Nachfolgeplanung und Mitgliedergewinnung sichern die Stabilität über Jahre hinweg.",
+      tipsStrong: "Strategie alle 12–18 Monate überprüfen, Nachfolger:innen aktiv aufbauen und Mitgliedergewinnung als laufenden Prozess verankern.",
+      tipsWeak:   "Einen kompakten Strategieworkshop einplanen (halbtags reicht), eine schlanke Nachfolge-Roadmap erstellen und Schlüsselrollen früh entlasten." }
+  ];
+  const sortedAreas = ALL_AREAS.filter(function(a){ return a.val !== null && a.val !== undefined; })
+                                .sort(function(a, b){ return a.val - b.val; });
+
+  // ============================================================
+  // SECTION: COVER (always)
+  // ============================================================
+  function renderCover() {
+    startPage(true);
+
+    rgb(C.gold, "fill");
+    doc.rect(M, 30, 38, 0.7, "F");
+    caps(packageLabel(d.club.package), M, 39, { color: C.gold, size: 8.5, charSpace: 1.6 });
+
+    rgb(C.ink, "text");
+    font("times", "normal");
+    doc.setFontSize(38);
+    const titleLines = doc.splitTextToSize(d.club.name, CW - 10);
+    let ty = 60;
+    titleLines.slice(0, 2).forEach(function(ln, i) { doc.text(ln, M, ty + i * 14); });
+    let cursor = ty + Math.min(titleLines.length, 2) * 14 - 2;
+
+    serif("Auswertungsbericht", M, cursor + 10, 16, "italic", C.inkSoft);
+    cursor += 18;
+
+    thinLine(M, cursor, M + 60, cursor, C.line, 0.4);
+    cursor += 8;
+
+    caps("Vereinscode",  M,        cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps("Datum",        M + 55,   cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps("Beteiligung",  M + 110,  cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    cursor += 6;
+    sans(d.club.code, M, cursor, 12, "bold", C.ink);
+    sans(dateStr(), M + 55, cursor, 12, "normal", C.ink);
+    sans(d.count + " / " + d.club.maxMembers, M + 110, cursor, 12, "normal", C.ink);
+    cursor += 18;
+
+    // Hero KPI card
+    const heroX = M, heroY = cursor, heroH = 76;
+    rgb(C.paper, "fill"); doc.rect(heroX, heroY, CW, heroH, "F");
+    rgb(C.line, "draw"); doc.setLineWidth(0.25); doc.rect(heroX, heroY, CW, heroH, "S");
+    rgb(C.gold, "fill"); doc.rect(heroX, heroY, CW, 0.6, "F");
+
+    const colW = CW / 3;
+    const kpis = [
+      { lbl: "Gesamtwert",   val: fmtNum(d.scores.total),  unit: "auf Skala 1–7", note: scoreLabel(d.scores.total),    color: scoreColor(d.scores.total) },
+      { lbl: "Empfehlung",   val: fmt(d.nps.score),         unit: "Net Promoter",  note: npsLabel(d.nps.score),         color: npsColor(d.nps.score) },
+      { lbl: "Beteiligung",  val: String(d.count),          unit: "von " + d.club.maxMembers + " Mitgliedern", note: participationLabel(d.count), color: participationColor(d.count) }
+    ];
+    kpis.forEach(function(k, i) {
+      const x = heroX + i * colW;
+      const cx = x + colW / 2;
+      if (i > 0) thinLine(x, heroY + 14, x, heroY + heroH - 10, C.lineSoft, 0.2);
+      caps(k.lbl, cx, heroY + 17, { color: C.inkSoft, size: 7.5, charSpace: 1.2, align: "center" });
+      rgb(C.ink, "text"); font("times", "normal"); doc.setFontSize(40);
+      doc.text(k.val, cx, heroY + 44, { align: "center" });
+      rgb(C.inkLight, "text"); font("times", "italic"); doc.setFontSize(9.5);
+      doc.text(k.unit, cx, heroY + 52, { align: "center" });
+      rgb(k.color, "text"); font("helvetica", "bold"); doc.setFontSize(7);
+      doc.setCharSpace(0.7);
+      const pw = trackedWidth(k.note.toUpperCase(), 0.7);
+      doc.text(k.note.toUpperCase(), cx - pw / 2, heroY + 65);
+      doc.setCharSpace(0);
+      rgb(k.color, "draw"); doc.setLineWidth(0.4);
+      doc.line(cx - pw / 2, heroY + 67, cx + pw / 2, heroY + 67);
+    });
+    cursor = heroY + heroH + 16;
+
+    caps("Einordnung", M, cursor, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    cursor += 8;
+    let evalText;
+    const total = d.scores.total;
+    if (total === null || total === undefined) {
+      evalText = "Für eine belastbare Interpretation sollten weitere Rückmeldungen gesammelt werden. Die folgenden Kennzahlen sind als erste Signale zu verstehen.";
+    } else if (total >= 5.5) {
+      evalText = "Die Gesamtbewertung ist stark. Der Verein sollte vorhandene Stärken sichern und gezielt weiterentwickeln. Im Anschluss wird sichtbar, welche Bereiche besonders tragen und wo bewusst nachgeschärft werden kann.";
+    } else if (total >= 4) {
+      evalText = "Die Gesamtbewertung ist stabil. Einzelne Bereiche sollten priorisiert und in konkrete Maßnahmen übersetzt werden. Die folgenden Detailwerte zeigen die wirksamsten Hebel.";
+    } else {
+      evalText = "Die Gesamtbewertung zeigt klaren Handlungsbedarf. Der Vorstand sollte wenige, konkrete Verbesserungsmaßnahmen priorisieren. Die Detailwerte machen sichtbar, wo zuerst angesetzt werden kann.";
+    }
+    rgb(C.gold, "fill"); doc.rect(M, cursor + 1, 1.2, 18, "F");
+    rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(13);
+    const evalLines = doc.splitTextToSize(evalText, CW - 10);
+    evalLines.forEach(function(ln, i) { doc.text(ln, M + 7, cursor + 7 + i * 6.4); });
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: EXECUTIVE SUMMARY (premium only)
+  // ============================================================
+  function renderExecutiveSummary() {
+    startPage();
+    let y = 32;
+    caps("01 — Executive Summary", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Die wichtigsten Erkenntnisse.", M, y, 28, "normal", C.ink);
+    y += 8;
+    paragraph(
+      "Diese Seite fasst die zentralen Ergebnisse für Vorstand und Sportleitung in drei Blöcken zusammen: was trägt, was bremst und welcher Hebel zuerst gezogen werden sollte.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 18;
+
+    const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
+    const weakest = sortedAreas.length ? sortedAreas[0] : null;
+
+    function summaryBlock(yStart, accentColor, label, headline, body) {
+      const blockH = 38;
+      rgb(C.paper, "fill"); doc.rect(M, yStart, CW, blockH, "F");
+      rgb(C.line, "draw"); doc.setLineWidth(0.2); doc.rect(M, yStart, CW, blockH, "S");
+      rgb(accentColor, "fill"); doc.rect(M, yStart, 3, blockH, "F");
+      caps(label, M + 11, yStart + 9, { color: accentColor, size: 7.5, charSpace: 1.4 });
+      sans(headline, M + 11, yStart + 18, 13, "bold", C.ink);
+      paragraph(body, M + 11, yStart + 24, CW - 18, { size: 9.5, color: C.inkSoft, lineH: 1.5 });
+      return yStart + blockH + 8;
+    }
+
+    if (strongest) {
+      y = summaryBlock(y, C.green, "Was trägt",
+        strongest.lbl + " · " + fmtNum(strongest.val) + " / 7",
+        "Dieser Bereich ist die belastbarste Säule des Vereins. " + strongest.tipsStrong);
+    }
+    if (weakest && (!strongest || weakest.key !== strongest.key)) {
+      y = summaryBlock(y, scoreColor(weakest.val), "Was bremst",
+        weakest.lbl + " · " + fmtNum(weakest.val) + " / 7",
+        "Hier liegt der wirksamste Ansatzpunkt. " + weakest.tipsWeak);
+    }
+
+    // NPS block
+    const npsTxt = d.nps.score === null || d.nps.score === undefined
+      ? "Es liegen noch keine ausreichenden NPS-Daten vor."
+      : (d.nps.score >= 30
+          ? "Die emotionale Bindung ist stark — Promotoren überwiegen deutlich. Diese Energie kann gezielt für Mitgliedergewinnung genutzt werden."
+          : d.nps.score >= 0
+            ? "Die emotionale Bindung ist neutral. Wenige aber gezielte Verbesserungen können die Promotorenquote spürbar erhöhen."
+            : "Die emotionale Bindung ist kritisch. Kritiker sollten kurzfristig in den Dialog geholt werden, um Hauptursachen zu klären.");
+    y = summaryBlock(y, npsColor(d.nps.score), "Empfehlungsbereitschaft",
+      "Net Promoter Score · " + fmt(d.nps.score), npsTxt);
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: SCORES (always — Basic combines with NPS, Plus/Premium standalone)
+  // ============================================================
+  function renderScores(includeNps) {
+    startPage();
+    let y = 32;
+    caps("01 — Bewertungsbereiche", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Wo der Verein steht.", M, y, 28, "normal", C.ink);
+    y += 8;
+    paragraph(
+      "Durchschnittswerte auf einer Skala von 1 (sehr schwach) bis 7 (sehr stark). Die Werte beruhen auf den anonymen Rückmeldungen aller teilnehmenden Mitglieder.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 16;
+
+    const areas = ALL_AREAS.map(function(a){ return [a.lbl, a.val]; });
+    if (d.scores.custom !== null && d.scores.custom !== undefined) {
+      areas.push(["Eigene Vereinsfragen", d.scores.custom]);
+    }
+
+    const barW = CW;
+    const barH = 5.5;
+    areas.forEach(function(pair) {
+      const label = pair[0], value = pair[1];
+      caps(label, M, y, { color: C.ink, size: 9.5, charSpace: 0.6 });
+      const valText = fmtNum(value) + " / 7";
+      const statusText = scoreLabel(value);
+      rgb(scoreColor(value), "text"); font("helvetica", "bold"); doc.setFontSize(8);
+      doc.setCharSpace(1.0);
+      const statusW = trackedWidth(statusText.toUpperCase(), 1.0);
+      doc.text(statusText.toUpperCase(), M + barW - statusW, y);
+      doc.setCharSpace(0);
+      rgb(C.ink, "text"); font("helvetica", "bold"); doc.setFontSize(9.5);
+      const valW = doc.getTextWidth(valText);
+      const sepText = "  ·  "; const sepW = doc.getTextWidth(sepText);
+      const valX = M + barW - statusW - sepW - valW;
+      doc.text(valText, valX, y);
+      rgb(C.inkLight, "text"); doc.text(sepText, valX + valW, y);
+      y += 4;
+      rgb(C.lineSoft, "fill"); doc.rect(M, y, barW, barH, "F");
+      if (value !== null && value !== undefined) {
+        const fillW = Math.max(0, Math.min(1, value / 7)) * barW;
+        rgb(scoreColor(value), "fill"); doc.rect(M, y, fillW, barH, "F");
+      }
+      rgb(C.bg, "draw"); doc.setLineWidth(0.5);
+      [4 / 7, 5.5 / 7].forEach(function(p) {
+        const tx = M + p * barW;
+        doc.line(tx, y, tx, y + barH);
+      });
+      y += barH + 11;
+    });
+
+    y += 2;
+    caps("Skala", M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
+    y += 6;
+    function legendDot(x, color, label) {
+      rgb(color, "fill"); doc.circle(x + 1.2, y - 1.1, 1.1, "F");
+      sans(label, x + 4, y, 8.5, "normal", C.inkSoft);
+    }
+    legendDot(M, C.red, "1,0–3,9  Handlungsbedarf");
+    legendDot(M + 60, C.gold, "4,0–5,4  Stabil");
+    legendDot(M + 110, C.green, "5,5–7,0  Stark");
+
+    if (includeNps) {
+      y += 12;
+      thinLine(M, y, W - M, y, C.line, 0.3);
+      y += 12;
+      renderNpsInline(y);
+    }
+
+    pageFooter(pageNum);
+  }
+
+  // NPS rendered inline at given y (for Basic) — returns final y
+  function renderNpsInline(yStart) {
+    let y = yStart;
+    caps("02 — Empfehlung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Würden Mitglieder den Verein weiterempfehlen?", M, y, 22, "normal", C.ink);
+    y += 7;
+    paragraph(
+      "Der Empfehlungswert (Net Promoter Score) liegt zwischen -100 und +100. Er ergibt sich aus dem Anteil Promotoren minus Kritiker und ist ein robuster Indikator für die emotionale Bindung der Mitglieder.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 18;
+    drawNpsCards(y);
+  }
+
+  function drawNpsCards(yStart) {
+    const npsTotal = (d.nps.promoters || 0) + (d.nps.passives || 0) + (d.nps.critics || 0);
+    const items = [
+      { lbl: "Promotoren", val: d.nps.promoters || 0, color: C.green, sub: "Skala 9–10" },
+      { lbl: "Passive",    val: d.nps.passives  || 0, color: C.gold,  sub: "Skala 7–8"  },
+      { lbl: "Kritiker",   val: d.nps.critics   || 0, color: C.red,   sub: "Skala 0–6"  }
+    ];
+    const colW = CW / 3;
+    const cardH = 36;
+    items.forEach(function(n, i) {
+      const x = M + i * colW;
+      const cardX = x + 2, cardW = colW - 4;
+      rgb(C.paper, "fill"); doc.rect(cardX, yStart, cardW, cardH, "F");
+      rgb(C.line, "draw"); doc.setLineWidth(0.2); doc.rect(cardX, yStart, cardW, cardH, "S");
+      rgb(n.color, "fill"); doc.rect(cardX, yStart, cardW, 1, "F");
+      caps(n.lbl, cardX + 7, yStart + 9, { color: C.inkSoft, size: 7.5, charSpace: 1.2 });
+      rgb(C.ink, "text"); font("times", "normal"); doc.setFontSize(28);
+      doc.text(String(n.val), cardX + 7, yStart + 25);
+      sans(n.sub, cardX + 7, yStart + 32, 8, "normal", C.inkLight);
+      if (npsTotal > 0) {
+        const pct = Math.round((n.val / npsTotal) * 100);
+        sans(pct + "%", cardX + cardW - 7, yStart + 32, 8, "bold", n.color, "right");
+      }
+    });
+    return yStart + cardH;
+  }
+
+  // ============================================================
+  // SECTION: NPS DETAILED (plus + premium)
+  // ============================================================
+  function renderNpsDetailed(sectionLabel) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Empfehlung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Würden Mitglieder den Verein weiterempfehlen?", M, y, 26, "normal", C.ink);
+    y += 7;
+    paragraph(
+      "Der Empfehlungswert (Net Promoter Score) gehört zu den belastbarsten Messgrößen für Mitgliederbindung. Er liegt zwischen -100 und +100 und ergibt sich aus Promotoren minus Kritikern.",
+      M, y, CW, { size: 10.5, color: C.inkSoft, lineH: 1.6 }
+    );
+    y += 18;
+
+    drawNpsCards(y);
+    y += 36 + 14;
+
+    // Erläuterung
+    caps("Wie der Wert zu lesen ist", M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
+    y += 7;
+    const ranges = [
+      { range: "+30 bis +100", label: "Stark", color: C.green, txt: "Hohe emotionale Bindung. Empfehlungsbereitschaft kann aktiv für Mitgliedergewinnung genutzt werden." },
+      { range: "0 bis +29",    label: "Stabil", color: C.gold, txt: "Neutrale Grundstimmung. Gezielte Verbesserungen können Promotoren-Anteil deutlich erhöhen." },
+      { range: "-100 bis -1",  label: "Handlungsbedarf", color: C.red, txt: "Mehr Kritiker als Promotoren. Ursachen sollten kurzfristig im offenen Dialog geklärt werden." }
+    ];
+    ranges.forEach(function(r) {
+      rgb(r.color, "fill"); doc.circle(M + 1.4, y - 1.2, 1.4, "F");
+      sans(r.range, M + 5, y, 9.5, "bold", C.ink);
+      sans(r.label, M + 42, y, 9.5, "bold", r.color);
+      paragraph(r.txt, M + 5, y + 4.5, CW - 5, { size: 9.5, color: C.inkSoft, lineH: 1.55 });
+      y += 16;
+    });
+
+    // Aktueller Wert mit Empfehlung
+    y += 4;
+    thinLine(M, y, W - M, y, C.line, 0.3);
+    y += 10;
+    caps("Empfehlung für deinen Verein", M, y, { color: C.gold, size: 8, charSpace: 1.4 });
+    y += 7;
+    let emp;
+    if (d.nps.score === null || d.nps.score === undefined) {
+      emp = "Sobald genügend Rückmeldungen vorliegen, erscheint hier eine konkrete Handlungsempfehlung auf Basis des Empfehlungswerts.";
+    } else if (d.nps.score >= 30) {
+      emp = "Die Empfehlungsbereitschaft ist stark. Promotoren können in einem strukturierten Mitgliedergewinnungs-Programm aktiv eingebunden werden — etwa über Empfehlungs-Aktionen oder als Botschafter:innen.";
+    } else if (d.nps.score >= 0) {
+      emp = "Die Empfehlungsbereitschaft ist stabil. Wenige aber gezielte Maßnahmen — vor allem bei den Passiven — können den NPS deutlich erhöhen. Eine kurze Befragung zur Frage „Was würde dich zum Promotor machen?“ liefert oft die wirksamsten Hebel.";
+    } else {
+      emp = "Die Empfehlungsbereitschaft ist kritisch. Ein moderiertes Gespräch mit Kritiker:innen (anonym, in Kleingruppen) bringt fast immer wertvolle Aufschlüsse. Erst danach Maßnahmen ableiten — sonst besteht das Risiko, an Symptomen zu arbeiten.";
+    }
+    rgb(C.gold, "fill"); doc.rect(M, y, 1.2, 18, "F");
+    rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11.5);
+    const empLines = doc.splitTextToSize(emp, CW - 10);
+    empLines.forEach(function(ln, i) { doc.text(ln, M + 7, y + 5 + i * 5.7); });
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: CUSTOM QUESTIONS (plus+ if questions exist)
+  // ============================================================
+  function renderCustomQuestions(sectionLabel) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Eigene Vereinsfragen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Was ihr selbst gefragt habt.", M, y, 28, "normal", C.ink);
+    y += 8;
+    paragraph(
+      "Durchschnittswerte zu den vom Verein hinterlegten Fragen. Skala 1–7. Antworten beruhen auf denselben anonymen Rückmeldungen wie die Hauptauswertung.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 16;
+
+    const customQs = (d.questions && d.questions.length) ? d.questions : [];
+    if (customQs.length === 0) {
+      paragraph("Für diesen Verein wurden keine eigenen Vereinsfragen hinterlegt.",
+        M, y, CW, { size: 11, color: C.inkLight, weight: "italic", family: "times" });
+    } else {
+      customQs.slice(0, 5).forEach(function(q, i) {
+        const label = "Frage " + (i + 1);
+        caps(label, M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
+        const valText = fmtNum(q.avg) + " / 7";
+        const statusText = scoreLabel(q.avg);
+        rgb(scoreColor(q.avg), "text"); font("helvetica", "bold"); doc.setFontSize(8);
+        doc.setCharSpace(1.0);
+        const statusW = trackedWidth(statusText.toUpperCase(), 1.0);
+        doc.text(statusText.toUpperCase(), M + CW - statusW, y);
+        doc.setCharSpace(0);
+        rgb(C.ink, "text"); font("helvetica", "bold"); doc.setFontSize(9.5);
+        const valW = doc.getTextWidth(valText);
+        const sepText = "  ·  "; const sepW = doc.getTextWidth(sepText);
+        const valX = M + CW - statusW - sepW - valW;
+        doc.text(valText, valX, y);
+        rgb(C.inkLight, "text"); doc.text(sepText, valX + valW, y);
+        y += 5;
+        rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11);
+        const qLines = doc.splitTextToSize("\u201E" + (q.text || "Eigene Vereinsfrage") + "\u201C", CW - 4);
+        qLines.forEach(function(ln, idx) { doc.text(ln, M, y + idx * 5.2); });
+        y += qLines.length * 5.2 + 3;
+        rgb(C.lineSoft, "fill"); doc.rect(M, y, CW, 4, "F");
+        if (q.avg !== null && q.avg !== undefined) {
+          const fillW = Math.max(0, Math.min(1, Number(q.avg) / 7)) * CW;
+          rgb(scoreColor(q.avg), "fill"); doc.rect(M, y, fillW, 4, "F");
+        }
+        y += 12;
+      });
+    }
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: ROLES + VOICES (always — voice density depends on package)
+  // ============================================================
+  function renderRolesVoices(sectionRoles, sectionVoices, voiceLimit) {
+    startPage();
+    let y = 32;
+    caps(sectionRoles + " — Rollenverteilung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Wer hat geantwortet.", M, y, 26, "normal", C.ink);
+    y += 7;
+    paragraph(
+      "Die Rollenverteilung zeigt, aus welchen Perspektiven die Rückmeldungen stammen. Ein ausgewogenes Bild entsteht, wenn mehrere Rollen vertreten sind.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 14;
+
+    const roleEntries = Object.entries(d.roles || {}).sort(function(a, b) { return b[1] - a[1]; });
+    if (roleEntries.length === 0) {
+      paragraph("Noch keine Rückmeldungen erfasst.", M, y, CW, { size: 11, color: C.inkLight, weight: "italic" });
+      y += 10;
+    } else {
+      const maxRole = Math.max.apply(null, roleEntries.map(function(p) { return p[1]; }).concat(1));
+      const roleTotal = roleEntries.reduce(function(s, p) { return s + p[1]; }, 0);
+      roleEntries.forEach(function(pair) {
+        const role = pair[0], count = pair[1];
+        caps(role, M, y, { color: C.ink, size: 9.5, charSpace: 0.6 });
+        const pct = roleTotal ? Math.round((count / roleTotal) * 100) : 0;
+        sans(count + "  ·  " + pct + "%", M + CW, y, 9.5, "bold", C.inkSoft, "right");
+        y += 4;
+        rgb(C.lineSoft, "fill"); doc.rect(M, y, CW, 4, "F");
+        rgb(C.ink, "fill"); doc.rect(M, y, (count / maxRole) * CW, 4, "F");
+        y += 11;
+      });
+    }
+
+    y += 6;
+    thinLine(M, y, W - M, y, C.line, 0.3);
+    y += 12;
+
+    caps(sectionVoices + " — Stimmen aus dem Verein", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Was Mitglieder sagen.", M, y, 26, "normal", C.ink);
+    y += 7;
+
+    const freitexts = (d.freitexts || []).slice(0, voiceLimit);
+    if (freitexts.length === 0) {
+      paragraph(
+        "Aktuell sind keine freigegebenen Freitexte vorhanden. Freitexte werden anonym ausgewiesen, sobald genügend Rückmeldungen vorliegen.",
+        M, y, CW - 20, { size: 10.5, color: C.inkLight, weight: "italic", family: "times" }
+      );
+    } else {
+      paragraph(
+        "Auswahl anonymer Originalantworten. Die Reihenfolge folgt der zeitlichen Erfassung.",
+        M, y, CW - 30, { size: 10, color: C.inkSoft }
+      );
+      y += 12;
+      freitexts.forEach(function(t) {
+        const text = "\u201E" + t.text + "\u201C";
+        const role = (t.role || "Anonym");
+        font("times", "italic"); doc.setFontSize(11);
+        const lines = doc.splitTextToSize(text, CW - 14);
+        const blockH = 6 + lines.length * 5.2 + 3;
+        if (y + blockH + 5 > H - 25) return; // stop if no space — limit was set to fit
+        rgb(C.gold, "fill"); doc.rect(M, y + 1, 1, blockH - 4, "F");
+        caps(role, M + 7, y + 5, { color: C.inkLight, size: 7, charSpace: 1.2 });
+        rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11);
+        lines.forEach(function(ln, i) { doc.text(ln, M + 7, y + 11 + i * 5.2); });
+        y += blockH + 5;
+      });
+    }
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: SHORT RECOMMENDATIONS + CONTACT (basic)
+  // ============================================================
+  function renderRecsContactBasic(sectionLabel) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Handlungsempfehlungen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Wo der Verein zuerst ansetzen kann.", M, y, 26, "normal", C.ink);
+    y += 8;
+
+    const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
+    const weakest = sortedAreas.slice(0, 2);
+
+    if (strongest) {
+      caps("Stärke sichern", M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
+      y += 5;
+      sans(strongest.lbl + " · " + fmtNum(strongest.val) + " / 7", M, y, 11, "bold", C.ink);
+      y += 5;
+      y = paragraph(strongest.tipsStrong, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y += 8;
+    }
+    weakest.forEach(function(area, i) {
+      caps("Hebel " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
+      y += 5;
+      sans(area.lbl + " · " + fmtNum(area.val) + " / 7", M, y, 11, "bold", C.ink);
+      y += 5;
+      y = paragraph(area.tipsWeak, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y += 8;
+    });
+
+    // Kontakt
+    y += 6;
+    thinLine(M, y, W - M, y, C.line, 0.3);
+    y += 10;
+    renderContactBlock(y);
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: VOICES + RECOMMENDATIONS (plus — page 5)
+  // ============================================================
+  function renderRecsDetailed(sectionLabel) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Handlungsempfehlungen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Wo der Verein zuerst ansetzen kann.", M, y, 26, "normal", C.ink);
+    y += 8;
+    paragraph(
+      "Empfehlungen basieren auf den Bewertungsbereichen und sind als Ausgangspunkt für die Vorstandsdiskussion gedacht — nicht als fertiger Maßnahmenkatalog.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 16;
+
+    const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
+    const weakest = sortedAreas.slice(0, 3);
+
+    if (strongest) {
+      caps("Stärke sichern", M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
+      y += 5;
+      sans(strongest.lbl + " · " + fmtNum(strongest.val) + " / 7", M, y, 11.5, "bold", C.ink);
+      y += 5;
+      y = paragraph(strongest.tipsStrong, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y += 9;
+    }
+    weakest.forEach(function(area, i) {
+      caps("Hebel " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
+      y += 5;
+      sans(area.lbl + " · " + fmtNum(area.val) + " / 7", M, y, 11.5, "bold", C.ink);
+      y += 5;
+      y = paragraph(area.tipsWeak, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y += 9;
+    });
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: ROADMAP + CONTACT (plus page 6, premium combined with recs page 7)
+  // ============================================================
+  function renderRoadmapContact(sectionLabel, withContact) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Maßnahmen-Roadmap", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Vom Bericht zur Umsetzung.", M, y, 26, "normal", C.ink);
+    y += 8;
+    paragraph(
+      "Eine schlanke Roadmap in drei Horizonten. Wichtig ist nicht Vollständigkeit, sondern dass jede Phase klare Eigentümer:innen und ein sichtbares Ergebnis hat.",
+      M, y, CW - 30, { size: 10, color: C.inkSoft }
+    );
+    y += 16;
+
+    const phases = [
+      { eyebrow: "Sofort · 0–4 Wochen", color: C.red,
+        body: "Die Ergebnisse im Vorstand besprechen, einen Owner pro Hebel benennen und kurzfristig sichtbare Quick Wins definieren. Mitgliedern eine kurze Rückmeldung geben, dass die Umfrage gewirkt hat — das ist der wichtigste Schritt für Glaubwürdigkeit." },
+      { eyebrow: "Kurzfristig · 4–12 Wochen", color: C.gold,
+        body: "Den größten Hebel angehen. Einen klaren Mini-Plan (3–5 Schritte) aufsetzen, intern kommunizieren und an einer Stelle dokumentieren. Erste Wirkung sollte spürbar werden — wenn nicht, früh nachsteuern." },
+      { eyebrow: "Mittelfristig · 3–9 Monate", color: C.green,
+        body: "Die Strukturen festigen, die geholfen haben. Eine zweite ClubCheck-Runde am Ende des Zyklus liefert eine belastbare Vorher-Nachher-Sicht und sichert den Lerneffekt im Verein." }
+    ];
+    phases.forEach(function(ph) {
+      const blockH = 32;
+      rgb(C.paper, "fill"); doc.rect(M, y, CW, blockH, "F");
+      rgb(C.line, "draw"); doc.setLineWidth(0.2); doc.rect(M, y, CW, blockH, "S");
+      rgb(ph.color, "fill"); doc.rect(M, y, 3, blockH, "F");
+      caps(ph.eyebrow, M + 11, y + 8, { color: ph.color, size: 7.5, charSpace: 1.4 });
+      paragraph(ph.body, M + 11, y + 14, CW - 18, { size: 9.5, color: C.inkSoft, lineH: 1.55 });
+      y += blockH + 8;
+    });
+
+    if (withContact) {
+      y += 4;
+      thinLine(M, y, W - M, y, C.line, 0.3);
+      y += 10;
+      renderContactBlock(y);
+    }
+
+    pageFooter(pageNum);
+  }
+
+  // ============================================================
+  // SECTION: TIPS + CONTACT (premium page 8)
+  // ============================================================
+  function renderTipsContact(sectionLabel) {
+    startPage();
+    let y = 32;
+    caps(sectionLabel + " — Tipps für die Vereinsentwicklung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    y += 9;
+    serif("Aus der Praxis für die Praxis.", M, y, 26, "normal", C.ink);
+    y += 8;
+
+    const tips = [
+      { title: "Ergebnisse sichtbar machen.",
+        body: "Die wichtigste Regel: Mitglieder müssen erleben, dass ihre Rückmeldungen wirken. Eine kurze, ehrliche Zusammenfassung in WhatsApp-Gruppe, Vereins-Newsletter oder bei der nächsten Versammlung schafft Vertrauen für die nächste Befragung." },
+      { title: "Wenig, aber gut gemacht.",
+        body: "Drei konsequent verfolgte Maßnahmen schlagen zehn halbherzige. Lieber einen Hebel ernsthaft ziehen als überall ein bisschen schrauben. Das gilt besonders bei knappen Ehrenamts-Ressourcen." },
+      { title: "Rollen vor Personen.",
+        body: "Vereinsentwicklung wird oft an einzelnen engagierten Personen aufgehängt. Wer Strukturen über Rollen statt Namen denkt, baut Belastbarkeit auf. Eine kurze Rollenmatrix wirkt oft stärker als ein dickes Vereinsstatut." },
+      { title: "Externe Sicht einholen.",
+        body: "Wer im Verein steckt, sieht manche Muster nicht mehr. Eine externe Moderation für Strategie- oder Konfliktthemen kann den Unterschied machen — gerade dann, wenn der Vorstand selbst Teil der Dynamik ist." }
+    ];
+    tips.forEach(function(t) {
+      sans(t.title, M, y, 12, "bold", C.ink);
+      y += 6;
+      y = paragraph(t.body, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y += 8;
+    });
+
+    y += 4;
+    thinLine(M, y, W - M, y, C.line, 0.3);
+    y += 10;
+    renderContactBlock(y);
+
+    pageFooter(pageNum);
+  }
+
+  // === SHARED CONTACT BLOCK ===
+  function renderContactBlock(yStart) {
+    let y = yStart;
+    caps("Humatrix · The Mind Club Company", M, y, { color: C.gold, size: 8, charSpace: 1.4 });
+    y += 7;
+    serif("Wir begleiten Vereine über den Bericht hinaus.", M, y, 16, "italic", C.ink);
+    y += 9;
+    paragraph(
+      "Wenn ihr die Ergebnisse vertiefen, einen Strategieworkshop aufsetzen oder eine zweite ClubCheck-Runde planen wollt — wir unterstützen euch gerne. Antworte einfach direkt auf eine unserer E-Mails oder schreib uns:",
+      M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 }
+    );
+    y += 16;
+
+    // Contact card
+    const cardH = 26;
+    rgb(C.paper, "fill"); doc.rect(M, y, CW, cardH, "F");
+    rgb(C.line, "draw"); doc.setLineWidth(0.2); doc.rect(M, y, CW, cardH, "S");
+    rgb(C.gold, "fill"); doc.rect(M, y, CW, 0.6, "F");
+
+    const colW = CW / 3;
+    caps("E-Mail",     M + 6,                  y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps("Web",        M + 6 + colW,           y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps("Sitz",       M + 6 + 2 * colW,       y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    sans("office@humatrix.cc",          M + 6,            y + 18, 10.5, "bold", C.ink);
+    sans("humatrix.cc",                 M + 6 + colW,     y + 18, 10.5, "bold", C.ink);
+    sans("Tirol, Österreich",           M + 6 + 2 * colW, y + 18, 10.5, "bold", C.ink);
+  }
+
+  // ============================================================
+  // SECTION: METHODIK FOOTER (always last — inline at bottom of last page)
+  // ============================================================
+  // Note: we don't add a separate page; we append disclaimer inline if there's room
+
+  // ============================================================
+  // RENDER PIPELINE — package-aware
+  // ============================================================
+  if (isBasic) {
+    // 4 pages
+    renderCover();                       // P1
+    renderScores(true);                  // P2 (scores + NPS combined)
+    renderRolesVoices("03", "04", 4);    // P3
+    renderRecsContactBasic("05");        // P4 (recs short + contact)
+  } else if (isPlus) {
+    // 6 pages
+    renderCover();                                  // P1
+    renderScores(false);                            // P2
+    renderNpsDetailed("02");                        // P3
+    renderCustomQuestions("03");                    // P4
+    renderRolesVoices("04", "05", 4);               // P5
+    renderRoadmapContact("06", true);               // P6 (roadmap + contact, no detailed recs)
+  } else {
+    // PREMIUM — 8 pages
+    renderCover();                                  // P1
+    renderExecutiveSummary();                       // P2
+    renderScores(false);                            // P3
+    renderNpsDetailed("03");                        // P4
+    renderCustomQuestions("04");                    // P5
+    renderRolesVoices("05", "06", 8);               // P6 (more voices)
+    renderRecsDetailed("07");                       // P7
+    renderTipsContact("08");                        // P8
+  }
+
+  return doc;
 }
 </script>
 </body>

@@ -84,7 +84,7 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 const PLANS = {
   basic: { label: "Basic", price: 199, desc: "Bis 100 Rückmeldungen · 1 Vereinsfrage", maxQuestions: 1 },
   plus: { label: "Plus", price: 299, desc: "Bis 250 Rückmeldungen · bis zu 3 Vereinsfragen", maxQuestions: 3 },
-  premium: { label: "Premium", price: 499, desc: "Bis 500 Rückmeldungen · bis zu 3 Vereinsfragen", maxQuestions: 3 }
+  premium: { label: "Premium", price: 499, desc: "Bis 500 Rückmeldungen · bis zu 5 Vereinsfragen", maxQuestions: 5 }
 };
 
 let step = 1;
@@ -93,7 +93,7 @@ let form = {
   firstName: "", lastName: "", email: "", phone: "",
   password: "", password2: "",
   clubName: "", package: "plus",
-  q1: "", q2: "", q3: "",
+  q1: "", q2: "", q3: "", q4: "", q5: "",
   acceptTerms: false
 };
 
@@ -179,7 +179,7 @@ function renderSide() {
   if (!side) return;
   const fullName = `${form.firstName} ${form.lastName}`.trim() || "Noch offen";
   const club = form.clubName.trim() || "Noch offen";
-  const questions = [form.q1, form.q2, form.q3].slice(0, plan.maxQuestions).filter(x => String(x || "").trim()).length;
+  const questions = [form.q1, form.q2, form.q3, form.q4, form.q5].slice(0, plan.maxQuestions).filter(x => String(x || "").trim()).length;
   side.innerHTML = `
     <div class="card card-p">
       <h3 style="font-size:24px;margin-bottom:12px">Zusammenfassung</h3>
@@ -243,7 +243,7 @@ function renderClub() {
     ${qHtml}
     <div class="btn-row"><button class="btn bp" onclick="nextClub()">Weiter zur Bezahlung</button><button class="btn bo" onclick="step=2;error='';render()">Zurück</button></div>
   `);
-  bind(["clubName","q1","q2","q3"]);
+  bind(["clubName","q1","q2","q3","q4","q5"]);
 }
 
 function renderPayment() {
@@ -276,7 +276,7 @@ function nextAccount() {
 }
 
 function nextClub() {
-  ["clubName","q1","q2","q3"].forEach(id => { const el = document.getElementById(id); if (el) form[id] = el.value; });
+  ["clubName","q1","q2","q3","q4","q5"].forEach(id => { const el = document.getElementById(id); if (el) form[id] = el.value; });
   if (!form.clubName.trim()) { error = "Bitte den Vereinsnamen eingeben."; return render(); }
   error = ""; step = 4; render();
 }
@@ -286,7 +286,7 @@ async function startCheckout() {
   const btn = document.getElementById("payBtn");
   btn.disabled = true; btn.textContent = "Bezahlung wird vorbereitet ...";
   const max = PLANS[form.package].maxQuestions;
-  const questions = [form.q1,form.q2,form.q3].slice(0,max).map(x => String(x || "").trim()).filter(Boolean).map(text => ({ text, type: "scale", opts: [] }));
+  const questions = [form.q1,form.q2,form.q3,form.q4,form.q5].slice(0,max).map(x => String(x || "").trim()).filter(Boolean).map(text => ({ text, type: "scale", opts: [] }));
 
   try {
     const res = await fetch("/api/create-checkout", {

@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
 
     const { data: club, error: clubError } = await supabase
       .from("clubs")
-      .select("id,code,name,package,max_members,max_custom_questions,expires_at,created_at,q1_text,q1_type,q1_opts,q2_text,q2_type,q2_opts,q3_text,q3_type,q3_opts")
+      .select("id,code,name,package,max_members,max_custom_questions,expires_at,created_at,q1_text,q1_type,q1_opts,q2_text,q2_type,q2_opts,q3_text,q3_type,q3_opts,q4_text,q4_type,q4_opts,q5_text,q5_type,q5_opts")
       .eq("id", session.sub)
       .maybeSingle();
 
@@ -79,6 +79,19 @@ module.exports = async function handler(req, res) {
       }
     });
 
+    // Enrich custom questions with their averages for the PDF
+    const customQuestions = clubQuestionsFromRow(club).map((q, i) => {
+      const stat = questionAverages.find(qa => qa.key === `custom_${i + 1}`);
+      return {
+        id: q.id,
+        text: q.text,
+        type: q.type,
+        opts: q.opts,
+        avg: stat ? stat.avg : null,
+        count: stat ? stat.count : 0
+      };
+    });
+
     const freitexts = count >= 3
       ? rows.filter(r => r.freitext).slice(0, 40).map(r => ({
           text: r.freitext,
@@ -113,6 +126,7 @@ module.exports = async function handler(req, res) {
           critics,
           count: npsValues.length
         },
+        questions: customQuestions,
         questionAverages,
         freitexts,
         lastResponses: rows.slice(0, 20).map(r => ({

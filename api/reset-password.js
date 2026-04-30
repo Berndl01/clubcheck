@@ -7,6 +7,7 @@ const {
   sendJson,
   methodNotAllowed
 } = require("./_lib");
+const { sendPasswordChangedEmail, appBaseUrl } = require("./_email");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return methodNotAllowed(res);
@@ -45,6 +46,27 @@ module.exports = async function handler(req, res) {
       .from("password_resets")
       .update({ used_at: new Date().toISOString() })
       .eq("id", reset.id);
+
+    // Bestätigungs-Email "Passwort geändert" — best effort, blockiert die Antwort nicht
+    try {
+      const { data: club } = await supabase
+        .from("clubs")
+        .select("code,name,contact_email,contact_name")
+        .eq("id", reset.club_id)
+        .maybeSingle();
+
+      if (club && club.contact_email) {
+        const baseUrl = appBaseUrl(req);
+        const dashboardUrl = `${baseUrl}/dashboard.html?c=${encodeURIComponent(String(club.code || "").toUpperCase())}`;
+        await sendPasswordChangedEmail(club.contact_email, {
+          clubName: club.name,
+          contactName: club.contact_name,
+          dashboardUrl
+        });
+      }
+    } catch (mailErr) {
+      console.error("password_changed email failed:", mailErr.message);
+    }
 
     return sendJson(res, 200, { ok: true });
   } catch (err) {
