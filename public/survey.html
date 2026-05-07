@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f5f3ee">
-<title>ClubCheck Umfrage</title>
+<title>ClubCheck</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -27,125 +27,231 @@ a{color:inherit;text-decoration:none}
 .logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
 .logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
 .logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
-.nav{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:10px 18px;border-radius:999px;border:1px solid var(--brd);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);font-weight:500;cursor:pointer;background:transparent}
+.nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pill{padding:10px 18px;border-radius:999px;border:1px solid var(--brd);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);font-weight:500;cursor:pointer;background:transparent}
 .pill:hover{border-color:var(--ac);color:var(--ac)}.pill.ac{background:var(--ac);color:#fff;border-color:var(--ac)}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
 .hero{padding:54px 0 30px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
 .eyebrow{display:inline-block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tm);margin-bottom:16px;font-weight:500}
 h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-size:17px;max-width:680px;margin-bottom:20px}
 .meta{display:flex;gap:10px;flex-wrap:wrap}.chip{background:var(--card2);border:1px solid var(--brd);padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm)}
 .card{background:var(--card);border:1px solid var(--brd)}.card-p{padding:32px}.soft{background:linear-gradient(180deg,#fafaf7 0%,#f7f4ee 100%)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
 .section{padding:34px 0}.section-head{margin-bottom:24px}.section-head h2{font-size:34px;margin-bottom:8px}.section-head p{max-width:760px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:14px 26px;border-radius:var(--r);border:1px solid transparent;font-family:var(--fn);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:.2s ease}
-.btn:disabled{opacity:.4;pointer-events:none}.bp{background:var(--ac);color:#fff}.bp:hover:not(:disabled){background:var(--ac2)}.bo{background:transparent;color:var(--tx);border-color:var(--tx)}.bo:hover:not(:disabled){background:var(--tx);color:#fff}.bw{background:var(--gold);color:#fff}.bw:hover:not(:disabled){background:#735a30}.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.full{width:100%}
-.field{margin-bottom:22px}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.label{display:block;font-size:10px;font-weight:500;color:var(--tm);margin-bottom:8px;letter-spacing:.14em;text-transform:uppercase}
-.input,.textarea,.select{width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--brd);border-radius:0;background:transparent;color:var(--tx);font-family:var(--fn);font-size:15px;outline:none}
-.textarea{min-height:88px;resize:vertical}.input:focus,.textarea:focus,.select:focus{border-bottom-color:var(--ac)}.input::placeholder,.textarea::placeholder{color:var(--tl)}
+.btn:disabled{opacity:.4;pointer-events:none}.bp{background:var(--ac);color:#fff}.bp:hover:not(:disabled){background:var(--ac2)}.bo{background:transparent;color:var(--tx);border-color:var(--tx)}.bo:hover:not(:disabled){background:var(--tx);color:#fff}.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.full{width:100%}
+.field{margin-bottom:22px}.label{display:block;font-size:10px;font-weight:500;color:var(--tm);margin-bottom:8px;letter-spacing:.14em;text-transform:uppercase}
+.input,.textarea{width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--brd);border-radius:0;background:transparent;color:var(--tx);font-family:var(--fn);font-size:15px;outline:none}
+.textarea{min-height:88px;resize:vertical}.input:focus,.textarea:focus{border-bottom-color:var(--ac)}.input::placeholder,.textarea::placeholder{color:var(--tl)}
 .err,.ok,.note{padding:14px 18px;border-left:2px solid;margin-bottom:18px;font-size:13px;line-height:1.65}.err{background:var(--red2);color:var(--red);border-color:var(--red)}.ok{background:var(--green2);color:var(--green);border-color:var(--green)}.note{background:var(--gold2);color:var(--gold);border-color:var(--gold)}
-.stepper{display:flex;border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-bottom:28px}.step{padding:14px 18px;border:0;background:transparent;border-bottom:2px solid transparent;color:var(--tl);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}.step.active{color:var(--ac);border-bottom-color:var(--ac)}.step.done{color:var(--tm);cursor:pointer}.step.disabled{opacity:.45}
 .price-card{border:1px solid var(--brd);background:var(--card);padding:22px 24px;cursor:pointer;transition:.2s}.price-card:hover{border-color:var(--ac)}.price-card.selected{background:var(--ac);border-color:var(--ac);color:#fff}.price-card.selected p,.price-card.selected .muted{color:rgba(255,255,255,.78)}
-.price-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px}.price-name{font-family:var(--fd);font-size:25px}.price-value{font-family:var(--fd);font-size:32px;letter-spacing:-.04em}.muted{color:var(--tm)}.mini{font-size:12px;color:var(--tl);line-height:1.6}
+.price-name{font-family:var(--fd);font-size:25px}.muted{color:var(--tm)}.mini{font-size:12px;color:var(--tl);line-height:1.6}
 .summary-list{border-top:1px solid var(--brd);margin-top:10px}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--brd);padding:14px 0}.summary-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);min-width:110px}.summary-value{text-align:right;line-height:1.55}
-.kpi{padding:22px;border:1px solid var(--brd);background:var(--card)}.kpi .num{font-family:var(--fd);font-size:40px;line-height:1}.kpi .lbl{font-size:11px;color:var(--tm);letter-spacing:.12em;text-transform:uppercase;margin-top:8px}.bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
+.bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
 .footer{background:var(--card2);border-top:1px solid var(--brd);padding:38px 0;margin-top:48px}.footer-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--tm);font-size:13px}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
-@media(max-width:980px){.hero-grid,.layout,.grid2,.grid3{grid-template-columns:1fr}.sticky{position:static!important}}
-@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav{display:none}}
+@media(max-width:980px){.hero-grid,.layout,.grid2{grid-template-columns:1fr}.sticky{position:static!important}}
+@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav .pill{display:none}}
 </style>
 </head>
 <body>
-<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/">Startseite</a><a class="pill ac" href="/survey.html">Umfrage</a></nav></div></header>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/" id="navHome">Startseite</a><a class="pill ac" href="/survey.html" id="navSurvey">Umfrage</a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></nav></div></header>
 
-<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow">Mitgliederbefragung</span><h1 id="heroTitle">ClubCheck Rückmeldung abgeben.</h1><p class="lead" id="heroLead">Gib deine persönliche Einschätzung ab und hilf deinem Verein, die wichtigsten Entwicklungsfelder zu erkennen.</p><div class="meta"><div class="chip">Anonym möglich</div><div class="chip">Strukturiert</div><div class="chip">Schnell erledigt</div></div></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px">Wichtig</h3><p>Bitte antworte ehrlich aus deiner eigenen Perspektive. Es geht nicht um Kontrolle, sondern um ein besseres gemeinsames Bild des Vereins.</p></div></div></div></section>
+<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow" id="heroEyebrow">Mitgliederbefragung</span><h1 id="heroTitle">ClubCheck Rückmeldung abgeben.</h1><p class="lead" id="heroLead">Gib deine persönliche Einschätzung ab und hilf deinem Verein, die wichtigsten Entwicklungsfelder zu erkennen.</p><div class="meta" id="heroChips"></div></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px" id="heroSideTitle">Wichtig</h3><p id="heroSideText">Bitte antworte ehrlich aus deiner eigenen Perspektive. Es geht nicht um Kontrolle, sondern um ein besseres gemeinsames Bild des Vereins.</p></div></div></div></section>
 
 <main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
-<footer class="footer"><div class="wrap footer-in"><div>Humatrix ClubCheck — Mitgliederbefragung.</div><div class="footer-links"><a href="/">Startseite</a></div></div></footer>
+<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Mitgliederbefragung.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/impressum.html" id="footerImpressum">Impressum</a><a href="/datenschutz.html" id="footerPrivacy">Datenschutz</a></div></div></footer>
 <script>
-const app = document.getElementById("app");
-const side = document.getElementById("side");
-
-const PERSON = [
-  { key: "cal_life", text: "Wie zufrieden bist du generell mit deinem Leben?", sub: "1 = sehr unzufrieden · 7 = sehr zufrieden", type: "scale", min: 1, max: 7 },
-  { key: "tenure", text: "Seit wann bist du im Verein?", type: "choice", opts: ["< 1 Jahr","1–3 Jahre","3–5 Jahre","5–10 Jahre","10+ Jahre"] },
-  { key: "role", text: "Welche Rolle hast du im Verein?", type: "choice", opts: ["Spieler·in","Trainer·in","Vorstand","Funktionär·in","Elternteil","Mitglied"] },
-  { key: "cal_active", text: "Wie aktiv bist du im Vereinsleben?", sub: "1 = kaum aktiv · 7 = sehr aktiv", type: "scale", min: 1, max: 7 },
-  { key: "nps", text: "Würdest du den Verein einem Freund empfehlen?", sub: "0 = auf keinen Fall · 10 = absolut", type: "nps", min: 0, max: 10 }
-];
-
-const BANK = {
-  intern: [
-    "Die Vereinsführung handelt transparent und nachvollziehbar.",
-    "Rollen und Zuständigkeiten sind klar definiert.",
-    "Informationen erreichen mich rechtzeitig und vollständig.",
-    "Konflikte werden fair und konstruktiv gelöst.",
-    "Ich fühle mich wertgeschätzt und ernst genommen.",
-    "Entscheidungen werden nachvollziehbar getroffen.",
-    "Die Finanzen werden verantwortungsvoll geführt.",
-    "Der Verein nutzt zeitgemäße digitale Werkzeuge.",
-    "Neue Mitglieder werden aktiv willkommen geheißen und integriert.",
-    "Der Verein lebt seine Werte im täglichen Miteinander.",
-    "Es gibt klare Regeln und alle halten sich daran.",
-    "Ich kann Probleme offen ansprechen.",
-    "Es gibt ein funktionierendes Beschwerdemanagement.",
-    "Ehrenamtliche werden ausreichend unterstützt.",
-    "Sitzungen und Meetings sind effizient."
-  ],
-  sport: [
-    "Die Trainingsqualität ist hoch und zeitgemäß.",
-    "Spielerentwicklung wird individuell gefördert.",
-    "Der Zusammenhalt im Team ist stark.",
-    "Die Nachwuchsarbeit ist professionell und zukunftsorientiert.",
-    "Der sportliche Staff ist kompetent und motiviert.",
-    "Es gibt klare sportliche Ziele.",
-    "Mannschaften und Abteilungen arbeiten gut zusammen.",
-    "Infrastruktur und Ausstattung passen zu den Anforderungen.",
-    "Trainingszeiten und Kapazitäten sind fair verteilt.",
-    "Spielerrekrutierung ist strukturiert.",
-    "Der Übergang vom Nachwuchs zur Kampfmannschaft funktioniert.",
-    "Verletzungsprävention wird ernst genommen.",
-    "Die Kommunikation zwischen Trainern und Spielern ist offen.",
-    "Kriterien für Aufstellungen und Einsatzzeiten sind klar.",
-    "Sportliche Entscheidungen werden gut erklärt."
-  ],
-  extern: [
-    "Der Verein ist in Gemeinde und Region gut verankert.",
-    "Die Außendarstellung ist professionell.",
-    "Sponsoren und Partner werden gut betreut.",
-    "Fans und Zuschauer fühlen sich willkommen.",
-    "Der Verein pflegt gute Beziehungen zum Verband.",
-    "Veranstaltungen und Events sind gut organisiert.",
-    "Der Verein hat ein positives Image.",
-    "Medienarbeit und Kommunikation nach außen funktionieren gut.",
-    "Mitgliederverwaltung und Kommunikation sind strukturiert.",
-    "Sponsoring-Angebote sind attraktiv gestaltet.",
-    "Der Verein engagiert sich gesellschaftlich.",
-    "Ehemalige Mitglieder werden eingebunden.",
-    "Merchandising oder Vereinsangebote sind attraktiv.",
-    "Kooperationen mit Schulen, Unternehmen oder Vereinen bestehen.",
-    "Der Verein reagiert professionell auf Krisen."
-  ],
-  zukunft: [
-    "Der Verein ist gut für die nächsten 3–5 Jahre aufgestellt.",
-    "Es gibt eine klare Strategie und Vision.",
-    "Es wird ausreichend in Zukunftsbereiche investiert.",
-    "Ich sehe mich auch in 3 Jahren noch als aktives Mitglied.",
-    "Der Verein ist offen für Veränderungen.",
-    "Nachfolgeplanung für Schlüsselpositionen ist vorhanden.",
-    "Der Verein entwickelt sich sportlich in die richtige Richtung.",
-    "Ich bin zuversichtlich bezüglich der finanziellen Zukunft.",
-    "Der Verein ist auf demografische Veränderungen vorbereitet.",
-    "Digitalisierung wird aktiv vorangetrieben.",
-    "Der Verein hat eine klare Positionierung.",
-    "Es gibt ein Konzept für Mitgliedergewinnung.",
-    "Infrastrukturplanung ist langfristig.",
-    "Es gibt genügend ehrenamtliche Ressourcen.",
-    "Es gibt regelmäßige Zufriedenheitsmessungen."
-  ]
+// ===== I18N =====
+const I18N = {
+  de: {
+    navHome:"Startseite", navSurvey:"Umfrage",
+    heroEyebrow:"Mitgliederbefragung",
+    heroTitle:"ClubCheck Rückmeldung abgeben.",
+    heroLead:"Gib deine persönliche Einschätzung ab und hilf deinem Verein, die wichtigsten Entwicklungsfelder zu erkennen.",
+    chip1:"Anonym möglich", chip2:"Strukturiert", chip3:"Schnell erledigt",
+    heroSideTitle:"Wichtig",
+    heroSideText:"Bitte antworte ehrlich aus deiner eigenen Perspektive. Es geht nicht um Kontrolle, sondern um ein besseres gemeinsames Bild des Vereins.",
+    footerCopy:"Humatrix ClubCheck — Mitgliederbefragung.",
+    footerHome:"Startseite", footerImpressum:"Impressum", footerPrivacy:"Datenschutz",
+    codeTitle:"Club-Code eingeben",
+    codeDesc:"Der Club-Code steht im Mitglieder-Link oder wurde vom Verein geteilt.",
+    codeLabel:"Club-Code",
+    codePlaceholder:"z. B. SVW9791",
+    codeBtn:"Befragung öffnen",
+    errCode:"Bitte Club-Code eingeben.",
+    loadingTitle:"ClubCheck wird geladen …",
+    loadingDesc:"Bitte einen Moment Geduld.",
+    introHeroLead:"Die Befragung ist bewusst klar aufgebaut. Bitte beantworte die Fragen ehrlich und aus deiner persönlichen Sicht.",
+    introTitle:"Bevor du startest",
+    introDesc:"Du kannst anonym teilnehmen. Ein Name ist freiwillig und wird nur angezeigt, wenn du ihn angibst.",
+    nameLabel:"Name optional",
+    namePlaceholder:"Optional",
+    anonLabel:"Anonym teilnehmen",
+    modeNoteBasic:"Dieser Verein verwendet den ClubCheck Einstiegstest – kompakt mit den wichtigsten Fragen (ca. 6–8 Minuten).",
+    modeNoteCore:"Dieser Verein verwendet den ClubCheck Premium-Test – ausführlich mit mehr Tiefgang (ca. 12–15 Minuten).",
+    startBtn:"Befragung starten",
+    sideTitle:"ClubCheck",
+    sideStart:"Gib deinen Club-Code ein oder öffne den persönlichen Mitglieder-Link.",
+    sideHelp:"Deine Rückmeldung hilft dem Verein, Stärken und Entwicklungsfelder besser zu verstehen.",
+    sideCode:"Code", sideMode:"Modus", sideProgress:"Fortschritt",
+    sidePulse:"Einstiegstest", sideCore:"Premium-Test",
+    sidePrivacyTitle:"Datenschutz",
+    sidePrivacyText:"Deine Rückmeldung wird für die Vereinsauswertung genutzt. Namen sind optional.",
+    nextBtn:"Weiter", submitBtn:"Absenden", backBtn:"Zurück",
+    errAnswer:"Bitte diese Frage beantworten.",
+    errNotLoaded:"Der ClubCheck konnte nicht geladen werden.",
+    errSave:"Die Rückmeldung konnte nicht gespeichert werden.",
+    saving:"Rückmeldung wird gespeichert …",
+    savingDesc:"Bitte einen Moment Geduld.",
+    doneTitle:"Danke für deine Rückmeldung.",
+    doneLead:"Deine Antworten wurden gespeichert und fließen in die Vereinsauswertung ein.",
+    doneOk:"Vielen Dank. Deine Rückmeldung wurde gespeichert.",
+    doneCard:"Abgeschlossen",
+    doneClose:"Du kannst diese Seite jetzt schließen.",
+    secOrg:"Organisation", secSport:"Sport", secExt:"Außenwirkung", secFut:"Zukunft",
+    secCustom:"Vereinsfrage", secEnd:"Abschluss", secStart:"Einstieg",
+    scaleSub:"1 = trifft gar nicht zu · 7 = trifft voll zu",
+    customSub:"Eigene Vereinsfrage",
+    optional:"Optional",
+    // PERSON-Fragen
+    p_life:"Wie zufrieden bist du generell mit deinem Leben?",
+    p_life_sub:"1 = sehr unzufrieden · 7 = sehr zufrieden",
+    p_tenure:"Seit wann bist du im Verein?",
+    p_role:"Welche Rolle hast du im Verein?",
+    p_active:"Wie aktiv bist du im Vereinsleben?",
+    p_active_sub:"1 = kaum aktiv · 7 = sehr aktiv",
+    p_nps:"Würdest du den Verein einem Freund empfehlen?",
+    p_nps_sub:"0 = auf keinen Fall · 10 = absolut",
+    closing:"Was sollte sich im Verein am dringendsten verbessern?",
+    // Tenure-Optionen
+    t_lt1:"< 1 Jahr", t_1to3:"1–3 Jahre", t_3to5:"3–5 Jahre", t_5to10:"5–10 Jahre", t_10p:"10+ Jahre",
+    // Rollen
+    r_player:"Spieler·in", r_coach:"Trainer·in", r_board:"Vorstand", r_func:"Funktionär·in", r_parent:"Elternteil", r_member:"Mitglied"
+  },
+  en: {
+    navHome:"Home", navSurvey:"Survey",
+    heroEyebrow:"Member survey",
+    heroTitle:"Submit your ClubCheck feedback.",
+    heroLead:"Share your personal perspective and help your club identify the most important areas for development.",
+    chip1:"Anonymous", chip2:"Structured", chip3:"Quick",
+    heroSideTitle:"Important",
+    heroSideText:"Please answer honestly from your own perspective. This is not about control, but about a shared, clearer picture of the club.",
+    footerCopy:"Humatrix ClubCheck — Member survey.",
+    footerHome:"Home", footerImpressum:"Imprint", footerPrivacy:"Privacy",
+    codeTitle:"Enter club code",
+    codeDesc:"The club code is in the member link or was shared by your club.",
+    codeLabel:"Club code",
+    codePlaceholder:"e.g. SVW9791",
+    codeBtn:"Open survey",
+    errCode:"Please enter the club code.",
+    loadingTitle:"Loading ClubCheck …",
+    loadingDesc:"One moment please.",
+    introHeroLead:"The survey is intentionally simple. Please answer honestly and from your personal perspective.",
+    introTitle:"Before you start",
+    introDesc:"You can participate anonymously. A name is optional and only shown if you provide one.",
+    nameLabel:"Name (optional)",
+    namePlaceholder:"Optional",
+    anonLabel:"Participate anonymously",
+    modeNoteBasic:"This club is using the ClubCheck Entry Survey – compact, focused on the most important questions (approx. 6–8 minutes).",
+    modeNoteCore:"This club is using the ClubCheck Premium Survey – in-depth and detailed (approx. 12–15 minutes).",
+    startBtn:"Start survey",
+    sideTitle:"ClubCheck",
+    sideStart:"Enter your club code or open the personal member link.",
+    sideHelp:"Your feedback helps the club understand strengths and areas for development.",
+    sideCode:"Code", sideMode:"Mode", sideProgress:"Progress",
+    sidePulse:"Entry survey", sideCore:"Premium survey",
+    sidePrivacyTitle:"Privacy",
+    sidePrivacyText:"Your feedback is used for the club analysis. Names are optional.",
+    nextBtn:"Next", submitBtn:"Submit", backBtn:"Back",
+    errAnswer:"Please answer this question.",
+    errNotLoaded:"ClubCheck could not be loaded.",
+    errSave:"Your feedback could not be saved.",
+    saving:"Saving your feedback …",
+    savingDesc:"One moment please.",
+    doneTitle:"Thank you for your feedback.",
+    doneLead:"Your responses have been saved and will be part of the club analysis.",
+    doneOk:"Thank you. Your feedback has been saved.",
+    doneCard:"Completed",
+    doneClose:"You can close this page now.",
+    secOrg:"Organisation", secSport:"Sport", secExt:"External image", secFut:"Future",
+    secCustom:"Club question", secEnd:"Closing", secStart:"Intro",
+    scaleSub:"1 = does not apply at all · 7 = fully applies",
+    customSub:"Custom club question",
+    optional:"Optional",
+    p_life:"How satisfied are you with your life in general?",
+    p_life_sub:"1 = very dissatisfied · 7 = very satisfied",
+    p_tenure:"How long have you been with the club?",
+    p_role:"What is your role in the club?",
+    p_active:"How active are you in club life?",
+    p_active_sub:"1 = barely active · 7 = very active",
+    p_nps:"Would you recommend the club to a friend?",
+    p_nps_sub:"0 = definitely not · 10 = absolutely",
+    closing:"What should be improved most urgently in the club?",
+    t_lt1:"< 1 year", t_1to3:"1–3 years", t_3to5:"3–5 years", t_5to10:"5–10 years", t_10p:"10+ years",
+    r_player:"Player", r_coach:"Coach", r_board:"Board", r_func:"Officer", r_parent:"Parent", r_member:"Member"
+  }
 };
 
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function t(k){ return (I18N[LANG] && I18N[LANG][k]) || I18N.de[k] || k; }
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l;
+  localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l;
+  applyStaticI18n();
+  // Frage-Bank ändert sich nach Sprache
+  if(club) questions = makeQuestions();
+  render();
+}
+function applyStaticI18n(){
+  document.title = "ClubCheck — " + t("navSurvey");
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.getElementById("navHome").textContent = t("navHome");
+  document.getElementById("navSurvey").textContent = t("navSurvey");
+  document.getElementById("footerCopy").textContent = t("footerCopy");
+  document.getElementById("footerHome").textContent = t("footerHome");
+  document.getElementById("footerImpressum").textContent = t("footerImpressum");
+  document.getElementById("footerPrivacy").textContent = t("footerPrivacy");
+  document.getElementById("heroSideTitle").textContent = t("heroSideTitle");
+  document.getElementById("heroSideText").textContent = t("heroSideText");
+  document.getElementById("heroChips").innerHTML = `<div class="chip">${t("chip1")}</div><div class="chip">${t("chip2")}</div><div class="chip">${t("chip3")}</div>`;
+}
+
+// ===== Frage-Bank pro Sprache =====
+function getPerson(){
+  return [
+    { key:"cal_life",   text:t("p_life"),   sub:t("p_life_sub"),   type:"scale", min:1, max:7 },
+    { key:"tenure",     text:t("p_tenure"),                          type:"choice", opts:[t("t_lt1"),t("t_1to3"),t("t_3to5"),t("t_5to10"),t("t_10p")] },
+    { key:"role",       text:t("p_role"),                            type:"choice", opts:[t("r_player"),t("r_coach"),t("r_board"),t("r_func"),t("r_parent"),t("r_member")] },
+    { key:"cal_active", text:t("p_active"), sub:t("p_active_sub"), type:"scale", min:1, max:7 },
+    { key:"nps",        text:t("p_nps"),    sub:t("p_nps_sub"),    type:"nps",   min:0, max:10 }
+  ];
+}
+const BANK = {
+  de: {
+    intern:["Die Vereinsführung handelt transparent und nachvollziehbar.","Rollen und Zuständigkeiten sind klar definiert.","Informationen erreichen mich rechtzeitig und vollständig.","Konflikte werden fair und konstruktiv gelöst.","Ich fühle mich wertgeschätzt und ernst genommen.","Entscheidungen werden nachvollziehbar getroffen.","Die Finanzen werden verantwortungsvoll geführt.","Der Verein nutzt zeitgemäße digitale Werkzeuge.","Neue Mitglieder werden aktiv willkommen geheißen und integriert.","Der Verein lebt seine Werte im täglichen Miteinander.","Es gibt klare Regeln und alle halten sich daran.","Ich kann Probleme offen ansprechen.","Es gibt ein funktionierendes Beschwerdemanagement.","Ehrenamtliche werden ausreichend unterstützt.","Sitzungen und Meetings sind effizient."],
+    sport:["Die Trainingsqualität ist hoch und zeitgemäß.","Spielerentwicklung wird individuell gefördert.","Der Zusammenhalt im Team ist stark.","Die Nachwuchsarbeit ist professionell und zukunftsorientiert.","Der sportliche Staff ist kompetent und motiviert.","Es gibt klare sportliche Ziele.","Mannschaften und Abteilungen arbeiten gut zusammen.","Infrastruktur und Ausstattung passen zu den Anforderungen.","Trainingszeiten und Kapazitäten sind fair verteilt.","Spielerrekrutierung ist strukturiert.","Der Übergang vom Nachwuchs zur Kampfmannschaft funktioniert.","Verletzungsprävention wird ernst genommen.","Die Kommunikation zwischen Trainern und Spielern ist offen.","Kriterien für Aufstellungen und Einsatzzeiten sind klar.","Sportliche Entscheidungen werden gut erklärt."],
+    extern:["Der Verein ist in Gemeinde und Region gut verankert.","Die Außendarstellung ist professionell.","Sponsoren und Partner werden gut betreut.","Fans und Zuschauer fühlen sich willkommen.","Der Verein pflegt gute Beziehungen zum Verband.","Veranstaltungen und Events sind gut organisiert.","Der Verein hat ein positives Image.","Medienarbeit und Kommunikation nach außen funktionieren gut.","Mitgliederverwaltung und Kommunikation sind strukturiert.","Sponsoring-Angebote sind attraktiv gestaltet.","Der Verein engagiert sich gesellschaftlich.","Ehemalige Mitglieder werden eingebunden.","Merchandising oder Vereinsangebote sind attraktiv.","Kooperationen mit Schulen, Unternehmen oder Vereinen bestehen.","Der Verein reagiert professionell auf Krisen."],
+    zukunft:["Der Verein ist gut für die nächsten 3–5 Jahre aufgestellt.","Es gibt eine klare Strategie und Vision.","Es wird ausreichend in Zukunftsbereiche investiert.","Ich sehe mich auch in 3 Jahren noch als aktives Mitglied.","Der Verein ist offen für Veränderungen.","Nachfolgeplanung für Schlüsselpositionen ist vorhanden.","Der Verein entwickelt sich sportlich in die richtige Richtung.","Ich bin zuversichtlich bezüglich der finanziellen Zukunft.","Der Verein ist auf demografische Veränderungen vorbereitet.","Digitalisierung wird aktiv vorangetrieben.","Der Verein hat eine klare Positionierung.","Es gibt ein Konzept für Mitgliedergewinnung.","Infrastrukturplanung ist langfristig.","Es gibt genügend ehrenamtliche Ressourcen.","Es gibt regelmäßige Zufriedenheitsmessungen."]
+  },
+  en: {
+    intern:["Club leadership acts transparently and comprehensibly.","Roles and responsibilities are clearly defined.","Information reaches me in time and in full.","Conflicts are resolved fairly and constructively.","I feel valued and taken seriously.","Decisions are made in a comprehensible way.","Finances are managed responsibly.","The club uses modern digital tools.","New members are actively welcomed and integrated.","The club lives its values in everyday interactions.","There are clear rules and everyone abides by them.","I can address problems openly.","There is a working complaints process.","Volunteers are sufficiently supported.","Meetings and gatherings are efficient."],
+    sport:["Training quality is high and up to date.","Player development is supported individually.","Team cohesion is strong.","Youth development is professional and future-oriented.","The sports staff is competent and motivated.","There are clear sporting goals.","Teams and departments work well together.","Infrastructure and equipment match the requirements.","Training times and capacities are distributed fairly.","Player recruitment is structured.","The transition from youth to senior teams works well.","Injury prevention is taken seriously.","Communication between coaches and players is open.","Criteria for line-ups and playing time are clear.","Sporting decisions are well explained."],
+    extern:["The club is well rooted in the community and region.","External presentation is professional.","Sponsors and partners are looked after well.","Fans and spectators feel welcome.","The club maintains good relations with the federation.","Events are well organised.","The club has a positive image.","Media relations and external communication work well.","Membership administration and communication are structured.","Sponsoring offers are attractively designed.","The club is socially engaged.","Former members are kept involved.","Merchandising or club offers are attractive.","Cooperations with schools, companies or other clubs exist.","The club reacts professionally to crises."],
+    zukunft:["The club is well positioned for the next 3–5 years.","There is a clear strategy and vision.","Sufficient investments are made in future areas.","I still see myself as an active member in 3 years.","The club is open to change.","Succession planning for key positions exists.","The club is developing in the right sporting direction.","I am confident about the financial future.","The club is prepared for demographic change.","Digitalisation is actively pushed forward.","The club has a clear positioning.","There is a concept for attracting members.","Infrastructure planning is long-term.","There are enough volunteer resources.","There are regular satisfaction measurements."]
+  }
+};
+
+// ===== State =====
+const app = document.getElementById("app");
+const side = document.getElementById("side");
 let code = new URLSearchParams(location.search).get("c") || "";
 let club = null;
 let view = code ? "loading" : "code";
-let mode = "";
+let mode = ""; // "pulse" | "core" — wird vom Server aus dem Paket gesetzt
 let name = "";
 let isAnonymous = true;
 let answers = {};
@@ -153,6 +259,7 @@ let questions = [];
 let idx = 0;
 let error = "";
 
+applyStaticI18n();
 render();
 if (code) loadClub();
 
@@ -169,47 +276,48 @@ function render(){
 function renderSide(){
   if(!side) return;
   if(!club){
-    side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">ClubCheck</h3><p>Gib deinen Club-Code ein oder öffne den persönlichen Mitglieder-Link.</p></div>`;
+    side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">${t("sideTitle")}</h3><p>${t("sideStart")}</p></div>`;
     return;
   }
   const total = questions.length || 0;
   const current = view === "question" ? Math.min(idx + 1, total) : 0;
+  const modeLabel = mode === "core" ? t("sideCore") : mode === "pulse" ? t("sidePulse") : "—";
   side.innerHTML = `
     <div class="card card-p">
       <h3 style="font-size:24px;margin-bottom:10px">${esc(club.name)}</h3>
-      <p>Deine Rückmeldung hilft dem Verein, Stärken und Entwicklungsfelder besser zu verstehen.</p>
+      <p>${t("sideHelp")}</p>
       <div class="summary-list">
-        <div class="summary-row"><div class="summary-label">Code</div><div class="summary-value">${esc(club.code)}</div></div>
-        <div class="summary-row"><div class="summary-label">Modus</div><div class="summary-value">${mode ? esc(mode.toUpperCase()) : "Noch offen"}</div></div>
-        <div class="summary-row"><div class="summary-label">Fortschritt</div><div class="summary-value">${current} / ${total}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sideCode")}</div><div class="summary-value">${esc(club.code)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sideMode")}</div><div class="summary-value">${esc(modeLabel)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sideProgress")}</div><div class="summary-value">${current} / ${total}</div></div>
       </div>
     </div>
-    <div class="card card-p" style="margin-top:18px"><h3 style="font-size:22px;margin-bottom:10px">Datenschutz</h3><p>Deine Rückmeldung wird für die Vereinsauswertung genutzt. Namen sind optional.</p></div>`;
+    <div class="card card-p" style="margin-top:18px"><h3 style="font-size:22px;margin-bottom:10px">${t("sidePrivacyTitle")}</h3><p>${t("sidePrivacyText")}</p></div>`;
 }
 
 function setError(msg){ error = msg || ""; }
 
 function renderCode(){
-  document.getElementById("heroTitle").textContent = "ClubCheck Rückmeldung abgeben.";
-  document.getElementById("heroLead").textContent = "Gib deinen Club-Code ein, um die Befragung deines Vereins zu öffnen.";
+  document.getElementById("heroTitle").textContent = t("heroTitle");
+  document.getElementById("heroLead").textContent = t("heroLead");
   app.innerHTML = `
     ${error ? `<div class="err">${esc(error)}</div>` : ""}
     <div class="card card-p">
-      <div class="section-head"><h2>Club-Code eingeben</h2><p>Der Club-Code steht im Mitglieder-Link oder wurde vom Verein geteilt.</p></div>
-      <div class="field"><label class="label">Club-Code</label><input id="codeInput" class="input" value="${esc(code)}" placeholder="z. B. SVW9791"></div>
-      <div class="btn-row"><button class="btn bp" onclick="submitCode()">Befragung öffnen</button></div>
+      <div class="section-head"><h2>${t("codeTitle")}</h2><p>${t("codeDesc")}</p></div>
+      <div class="field"><label class="label">${t("codeLabel")}</label><input id="codeInput" class="input" value="${esc(code)}" placeholder="${esc(t("codePlaceholder"))}"></div>
+      <div class="btn-row"><button class="btn bp" onclick="submitCode()">${t("codeBtn")}</button></div>
     </div>`;
   renderSide();
 }
 
 function submitCode(){
   const v = document.getElementById("codeInput").value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12);
-  if(!v){ setError("Bitte Club-Code eingeben."); return renderCode(); }
+  if(!v){ setError(t("errCode")); return renderCode(); }
   code = v; view = "loading"; render(); loadClub();
 }
 
 function renderLoading(){
-  app.innerHTML = `<div class="card card-p"><h2>ClubCheck wird geladen …</h2><p>Bitte einen Moment Geduld.</p></div>`;
+  app.innerHTML = `<div class="card card-p"><h2>${t("loadingTitle")}</h2><p>${t("loadingDesc")}</p></div>`;
   renderSide();
 }
 
@@ -217,35 +325,36 @@ async function loadClub(){
   try{
     const res = await fetch(`/api/get-club-config?code=${encodeURIComponent(code)}`);
     const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || "Der ClubCheck konnte nicht geladen werden.");
+    if(!res.ok || !data.ok) throw new Error(data.error || t("errNotLoaded"));
     club = data.club;
+    // Modus wird strikt vom Server (aus dem Paket) bestimmt — keine Auswahl im Browser.
+    mode = club.mode || (club.package === "basic" ? "pulse" : "core");
+    questions = makeQuestions();
     view = "intro";
     setError("");
     render();
   }catch(e){
     view = "code";
-    setError(e.message || "Der ClubCheck konnte nicht geladen werden.");
+    setError(e.message || t("errNotLoaded"));
     render();
   }
 }
 
 function renderIntro(){
-  document.getElementById("heroTitle").textContent = `Rückmeldung für ${club.name}`;
-  document.getElementById("heroLead").textContent = "Die Befragung ist bewusst klar aufgebaut. Bitte beantworte die Fragen ehrlich und aus deiner persönlichen Sicht.";
+  document.getElementById("heroTitle").textContent = `${t("heroEyebrow")} · ${club.name}`;
+  document.getElementById("heroLead").textContent = t("introHeroLead");
+  const modeNote = mode === "core" ? t("modeNoteCore") : t("modeNoteBasic");
   app.innerHTML = `
     ${error ? `<div class="err">${esc(error)}</div>` : ""}
     <div class="card card-p">
-      <div class="section-head"><h2>Bevor du startest</h2><p>Du kannst anonym teilnehmen. Ein Name ist freiwillig und wird nur angezeigt, wenn du ihn angibst.</p></div>
-      <div class="field"><label class="label">Name optional</label><input class="input" id="nameInput" value="${esc(name)}" placeholder="Optional"></div>
+      <div class="section-head"><h2>${t("introTitle")}</h2><p>${t("introDesc")}</p></div>
+      <div class="note">${esc(modeNote)}</div>
+      <div class="field"><label class="label">${t("nameLabel")}</label><input class="input" id="nameInput" value="${esc(name)}" placeholder="${esc(t("namePlaceholder"))}"></div>
       <label style="display:flex;gap:12px;align-items:flex-start;color:var(--tm);line-height:1.65;margin:12px 0 22px">
         <input id="anonInput" type="checkbox" style="margin-top:4px;accent-color:var(--ac)" ${isAnonymous ? "checked" : ""}>
-        <span>Anonym teilnehmen</span>
+        <span>${t("anonLabel")}</span>
       </label>
-      <div class="grid2">
-        <div class="price-card ${mode==="pulse" ? "selected" : ""}" onclick="mode='pulse';renderIntro()"><div class="price-name">Pulse</div><p>Kompakter Check mit den wichtigsten Fragen.</p><div class="mini">ca. 6–8 Minuten</div></div>
-        <div class="price-card ${mode==="core" ? "selected" : ""}" onclick="mode='core';renderIntro()"><div class="price-name">Core</div><p>Ausführlichere Befragung mit mehr Tiefgang.</p><div class="mini">ca. 12–15 Minuten</div></div>
-      </div>
-      <div class="btn-row"><button class="btn bp" onclick="startSurvey()">Befragung starten</button></div>
+      <div class="btn-row"><button class="btn bp" onclick="startSurvey()">${t("startBtn")}</button></div>
     </div>`;
   document.getElementById("anonInput").onchange = e => isAnonymous = e.target.checked;
   document.getElementById("nameInput").oninput = e => name = e.target.value;
@@ -253,28 +362,29 @@ function renderIntro(){
 }
 
 function makeQuestions(){
+  if(!club) return [];
   const n = mode === "core" ? 15 : 8;
-  const items = [...PERSON];
+  const items = [...getPerson()];
+  const bank = BANK[LANG] || BANK.de;
   ["intern","sport","extern","zukunft"].forEach(sec => {
-    BANK[sec].slice(0,n).forEach((text,i)=>items.push({ key: `${sec}_${i+1}`, section: sec, text, type: "scale", min: 1, max: 7, sub: "1 = trifft gar nicht zu · 7 = trifft voll zu" }));
+    bank[sec].slice(0,n).forEach((text,i)=>items.push({ key:`${sec}_${i+1}`, section:sec, text, type:"scale", min:1, max:7, sub:t("scaleSub") }));
   });
   (club.questions || []).forEach((q,i) => {
-    items.push({ key: `custom_${i+1}`, section: "custom", text: q.text, type: q.type || "scale", opts: q.opts || [], min: 1, max: 7, sub: "Eigene Vereinsfrage" });
+    items.push({ key:`custom_${i+1}`, section:"custom", text:q.text, type:q.type || "scale", opts:q.opts || [], min:1, max:7, sub:t("customSub") });
   });
-  items.push({ key: "freitext", section: "abschluss", text: "Was sollte sich im Verein am dringendsten verbessern?", type: "text", sub: "Optional" });
+  items.push({ key:"freitext", section:"abschluss", text:t("closing"), type:"text", sub:t("optional") });
   return items;
 }
 
 function startSurvey(){
   name = document.getElementById("nameInput").value;
-  if(!mode){ setError("Bitte Pulse oder Core wählen."); return renderIntro(); }
   questions = makeQuestions();
   idx = 0; view = "question"; setError(""); render();
 }
 
 function sectionLabel(q){
-  const map = { intern:"Organisation", sport:"Sport", extern:"Außenwirkung", zukunft:"Zukunft", custom:"Vereinsfrage", abschluss:"Abschluss" };
-  return map[q.section] || "Einstieg";
+  const map = { intern:t("secOrg"), sport:t("secSport"), extern:t("secExt"), zukunft:t("secFut"), custom:t("secCustom"), abschluss:t("secEnd") };
+  return map[q.section] || t("secStart");
 }
 
 function renderQuestion(){
@@ -282,9 +392,9 @@ function renderQuestion(){
   const pct = Math.round((idx / Math.max(1, questions.length)) * 100);
   let input = "";
   if(q.type === "choice"){
-    input = `<div class="grid2">${q.opts.map(opt => `<button class="price-card ${answers[q.key]===opt ? "selected" : ""}" onclick="answers['${q.key}']='${esc(opt)}';renderQuestion()">${esc(opt)}</button>`).join("")}</div>`;
+    input = `<div class="grid2">${q.opts.map(opt => `<button class="price-card ${answers[q.key]===opt ? "selected" : ""}" onclick="answers['${q.key}']=${JSON.stringify(opt)};renderQuestion()">${esc(opt)}</button>`).join("")}</div>`;
   }else if(q.type === "text"){
-    input = `<textarea class="textarea" id="textAnswer" placeholder="Optional">${esc(answers[q.key] || "")}</textarea>`;
+    input = `<textarea class="textarea" id="textAnswer" placeholder="${esc(t("optional"))}">${esc(answers[q.key] || "")}</textarea>`;
   }else{
     const min = q.min ?? 1, max = q.max ?? 7;
     let buttons = "";
@@ -301,8 +411,8 @@ function renderQuestion(){
       ${q.sub ? `<p style="margin-bottom:22px">${esc(q.sub)}</p>` : ""}
       ${input}
       <div class="btn-row">
-        <button class="btn bp" onclick="nextQuestion()">${idx === questions.length - 1 ? "Absenden" : "Weiter"}</button>
-        ${idx > 0 ? `<button class="btn bo" onclick="prevQuestion()">Zurück</button>` : `<button class="btn bo" onclick="view='intro';render()">Zurück</button>`}
+        <button class="btn bp" onclick="nextQuestion()">${idx === questions.length - 1 ? t("submitBtn") : t("nextBtn")}</button>
+        ${idx > 0 ? `<button class="btn bo" onclick="prevQuestion()">${t("backBtn")}</button>` : `<button class="btn bo" onclick="view='intro';render()">${t("backBtn")}</button>`}
       </div>
     </div>`;
   if(q.type === "text"){
@@ -318,7 +428,7 @@ function nextQuestion(){
     answers[q.key] = el ? el.value : "";
   }
   if(q.type !== "text" && (answers[q.key] === undefined || answers[q.key] === "")){
-    setError("Bitte diese Frage beantworten.");
+    setError(t("errAnswer"));
     return renderQuestion();
   }
   setError("");
@@ -329,13 +439,14 @@ function nextQuestion(){
 function prevQuestion(){ if(idx>0){ idx--; setError(""); renderQuestion(); } }
 
 async function submitSurvey(){
-  app.innerHTML = `<div class="card card-p"><h2>Rückmeldung wird gespeichert …</h2><p>Bitte einen Moment Geduld.</p></div>`;
+  app.innerHTML = `<div class="card card-p"><h2>${t("saving")}</h2><p>${t("savingDesc")}</p></div>`;
   try{
     const res = await fetch("/api/submit-response", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         code,
+        // mode wird ohnehin server-seitig aus dem Paket abgeleitet — wir senden ihn nur als Hinweis mit
         mode,
         name,
         isAnonymous,
@@ -346,18 +457,18 @@ async function submitSurvey(){
       })
     });
     const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || "Die Rückmeldung konnte nicht gespeichert werden.");
+    if(!res.ok || !data.ok) throw new Error(data.error || t("errSave"));
     view = "done"; render();
   }catch(e){
-    setError(e.message || "Die Rückmeldung konnte nicht gespeichert werden.");
+    setError(e.message || t("errSave"));
     view = "question"; renderQuestion();
   }
 }
 
 function renderDone(){
-  document.getElementById("heroTitle").textContent = "Danke für deine Rückmeldung.";
-  document.getElementById("heroLead").textContent = "Deine Antworten wurden gespeichert und fließen in die Vereinsauswertung ein.";
-  app.innerHTML = `<div class="ok">Vielen Dank. Deine Rückmeldung wurde gespeichert.</div><div class="card card-p"><h2>Abgeschlossen</h2><p>Du kannst diese Seite jetzt schließen.</p></div>`;
+  document.getElementById("heroTitle").textContent = t("doneTitle");
+  document.getElementById("heroLead").textContent = t("doneLead");
+  app.innerHTML = `<div class="ok">${t("doneOk")}</div><div class="card card-p"><h2>${t("doneCard")}</h2><p>${t("doneClose")}</p></div>`;
   renderSide();
 }
 </script>

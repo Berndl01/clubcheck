@@ -9,6 +9,11 @@ const {
   scoreFromAnswers
 } = require("./_lib");
 
+// Pulse = Einstiegstest (basic). Core = Premium-Test (plus, premium).
+function modeForPackage(pkg) {
+  return pkg === "basic" ? "pulse" : "core";
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return methodNotAllowed(res);
 
@@ -21,7 +26,7 @@ module.exports = async function handler(req, res) {
 
     const { data: club, error: clubError } = await supabase
       .from("clubs")
-      .select("id,code,name,max_members,expires_at,payment_status")
+      .select("id,code,name,package,max_members,expires_at,payment_status")
       .eq("code", code)
       .maybeSingle();
 
@@ -55,8 +60,11 @@ module.exports = async function handler(req, res) {
     const isAnonymous = Boolean(body.isAnonymous);
     const role = cleanString(body.role || answers.role, 50);
     const tenure = cleanString(body.tenure || answers.tenure, 50);
-    const modeRaw = String(body.mode || "pulse").toLowerCase();
-    const mode = modeRaw === "core" ? "core" : "pulse";
+
+    // WICHTIG: Modus wird strikt aus dem Paket abgeleitet,
+    // damit Mitglieder keinen anderen Modus erzwingen können.
+    const mode = modeForPackage(club.package);
+
     const freitext = cleanString(body.freitext || answers.freitext, 2500);
     const nps = Number(answers.nps);
     const calLife = Number(answers.cal_life);

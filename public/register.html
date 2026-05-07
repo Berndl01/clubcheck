@@ -4,17 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f5f3ee">
-<title>ClubCheck Registrierung</title>
+<title>ClubCheck</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f5f3ee;--bg2:#edeae3;--card:#fff;--card2:#fafaf7;--brd:#e5e2da;--brd2:#efece5;
-  --tx:#1a1a1a;--tm:#5a5650;--tl:#9c978d;--ac:#1a1a1a;--ac2:#2d2d2d;
-  --gold:#8a6d3b;--gold2:#f5efe3;--green:#3d6b4a;--green2:#eaefe8;--red:#9c3030;--red2:#f3e8e6;
-  --blue:#2a4a6b;--fd:'Fraunces','Georgia',serif;--fn:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--r:2px;
-}
+:root{--bg:#f5f3ee;--bg2:#edeae3;--card:#fff;--card2:#fafaf7;--brd:#e5e2da;--brd2:#efece5;--tx:#1a1a1a;--tm:#5a5650;--tl:#9c978d;--ac:#1a1a1a;--ac2:#2d2d2d;--gold:#8a6d3b;--gold2:#f5efe3;--green:#3d6b4a;--green2:#eaefe8;--red:#9c3030;--red2:#f3e8e6;--fd:'Fraunces','Georgia',serif;--fn:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--r:2px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
 body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
@@ -28,8 +23,12 @@ a{color:inherit;text-decoration:none}
 .logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
 .logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
 .logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
-.nav{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:10px 18px;border-radius:999px;border:1px solid var(--brd);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);font-weight:500;cursor:pointer;background:transparent}
+.nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{padding:10px 18px;border-radius:999px;border:1px solid var(--brd);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);font-weight:500;cursor:pointer;background:transparent}
 .pill:hover{border-color:var(--ac);color:var(--ac)}.pill.ac{background:var(--ac);color:#fff;border-color:var(--ac)}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
 .hero{padding:54px 0 30px}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
 .eyebrow{display:inline-block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tm);margin-bottom:16px;font-weight:500}
 h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-size:17px;max-width:680px;margin-bottom:20px}
@@ -47,44 +46,193 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 .price-card{border:1px solid var(--brd);background:var(--card);padding:22px 24px;cursor:pointer;transition:.2s}.price-card:hover{border-color:var(--ac)}.price-card.selected{background:var(--ac);border-color:var(--ac);color:#fff}.price-card.selected p,.price-card.selected .muted{color:rgba(255,255,255,.78)}
 .price-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px}.price-name{font-family:var(--fd);font-size:25px}.price-value{font-family:var(--fd);font-size:32px;letter-spacing:-.04em}.muted{color:var(--tm)}.mini{font-size:12px;color:var(--tl);line-height:1.6}
 .summary-list{border-top:1px solid var(--brd);margin-top:10px}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--brd);padding:14px 0}.summary-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);min-width:110px}.summary-value{text-align:right;line-height:1.55}
-.kpi{padding:22px;border:1px solid var(--brd);background:var(--card)}.kpi .num{font-family:var(--fd);font-size:40px;line-height:1}.kpi .lbl{font-size:11px;color:var(--tm);letter-spacing:.12em;text-transform:uppercase;margin-top:8px}.bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
 .footer{background:var(--card2);border-top:1px solid var(--brd);padding:38px 0;margin-top:48px}.footer-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--tm);font-size:13px}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
 @media(max-width:980px){.hero-grid,.layout,.grid2,.grid3{grid-template-columns:1fr}.sticky{position:static!important}}
-@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav{display:none}}
+@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav .pill{display:none}}
 </style>
 </head>
 <body>
-<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/">Startseite</a><a class="pill" href="/dashboard.html">Dashboard</a><a class="pill ac" href="/register.html">Registrierung</a></nav></div></header>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/" id="navHome">Startseite</a><a class="pill" href="/dashboard.html" id="navDash">Dashboard</a><a class="pill ac" href="/register.html" id="navReg">Registrierung</a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></nav></div></header>
 
-<section class="hero">
-  <div class="wrap narrow">
-    <div class="hero-grid">
-      <div>
-        <span class="eyebrow" id="heroEyebrow">Registrierung</span>
-        <h1 id="heroTitle">ClubCheck anlegen und Mitgliederbefragung starten.</h1>
-        <p class="lead" id="heroLead">Lege den ClubCheck in vier klaren Schritten an. Nach bestätigter Zahlung erhältst du den Club-Code, den Mitglieder-Link und den Zugang zum Dashboard.</p>
-        <div class="meta" id="heroChips"><div class="chip">Sichere Bezahlung</div><div class="chip">Mitglieder-Link</div><div class="chip">PDF-Bericht</div></div>
-      </div>
-      <div class="card soft card-p" id="heroSide"></div>
-    </div>
-  </div>
-</section>
+<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow" id="heroEyebrow">Registrierung</span><h1 id="heroTitle">ClubCheck anlegen und Mitgliederbefragung starten.</h1><p class="lead" id="heroLead">Lege den ClubCheck in vier klaren Schritten an. Nach bestätigter Zahlung erhältst du den Club-Code, den Mitglieder-Link und den Zugang zum Dashboard.</p><div class="meta" id="heroChips"></div></div><div class="card soft card-p" id="heroSide"></div></div></div></section>
 
-<main class="section" style="padding-top:6px">
-  <div class="wrap narrow">
-    <div class="layout">
-      <section><div id="app"></div></section>
-      <aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside>
-    </div>
-  </div>
-</main>
+<main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
 
-<footer class="footer"><div class="wrap footer-in"><div>Humatrix ClubCheck — Registrierung.</div><div class="footer-links"><a href="/">Startseite</a><a href="/survey.html">Umfrage</a><a href="/dashboard.html">Dashboard</a></div></div></footer>
+<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Registrierung.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/survey.html" id="footerSurvey">Umfrage</a><a href="/dashboard.html" id="footerDash">Dashboard</a><a href="/impressum.html" id="footerImp">Impressum</a><a href="/datenschutz.html" id="footerPrv">Datenschutz</a></div></div></footer>
+
 <script>
+const I18N = {
+  de: {
+    navHome:"Startseite", navDash:"Dashboard", navReg:"Registrierung",
+    footerCopy:"Humatrix ClubCheck — Registrierung.",
+    footerHome:"Startseite", footerSurvey:"Umfrage", footerDash:"Dashboard", footerImp:"Impressum", footerPrv:"Datenschutz",
+    heroEyebrow:"Registrierung",
+    heroTitle:"ClubCheck anlegen und Mitgliederbefragung starten.",
+    heroLead:"Lege den ClubCheck in vier klaren Schritten an. Nach bestätigter Zahlung erhältst du den Club-Code, den Mitglieder-Link und den Zugang zum Dashboard.",
+    chip1:"Sichere Bezahlung", chip2:"Mitglieder-Link", chip3:"PDF-Bericht",
+    sideTitle:"Ablauf",
+    sideText:"Konto anlegen, Paket auswählen, Vereinsdaten ergänzen und bezahlen. Danach kannst du den Link direkt mit deinen Mitgliedern teilen.",
+    sStep:"Schritt", sStep1:"Konto", sStep2:"Paket", sStep3:"Verein", sStep4:"Bezahlung",
+    sumTitle:"Zusammenfassung",
+    sumPackage:"Paket", sumPrice:"Preis", sumContact:"Kontakt", sumClub:"Verein", sumQ:"Vereinsfragen", sumOf:"von",
+    sumOpen:"Noch offen",
+    hintTitle:"Hinweis",
+    hintText:"Bitte bewahre dein Passwort gut auf. Damit meldest du dich später im Dashboard an.",
+    accTitle:"Konto anlegen", accDesc:"Diese Angaben werden für den Dashboard-Zugang und die Zahlungszuordnung verwendet.",
+    fFirst:"Vorname", fLast:"Nachname", fEmail:"E-Mail", fPhone:"Telefon optional",
+    fPwd:"Passwort", fPwd2:"Passwort wiederholen",
+    pPwd:"Mindestens 8 Zeichen", pPwd2:"Wiederholen",
+    next:"Weiter", back:"Zurück",
+    planTitle:"Paket wählen", planDesc:"Die Zahl der Rückmeldungen und eigenen Vereinsfragen richtet sich nach dem gewählten Paket.",
+    planBasicLbl:"Basic", planPlusLbl:"Plus", planPremLbl:"Premium",
+    planBasicDesc:"Bis 100 Rückmeldungen · 1 Vereinsfrage", planPlusDesc:"Bis 250 Rückmeldungen · bis zu 3 Vereinsfragen", planPremDesc:"Bis 500 Rückmeldungen · bis zu 5 Vereinsfragen",
+    clubTitle:"Vereinsdaten", clubDesc:"Der Vereinsname wird später auf der Umfrage und im Dashboard angezeigt. Eigene Vereinsfragen sind optional.",
+    fClub:"Vereinsname", pClub:"z. B. SC Musterverein",
+    fQ:"Eigene Vereinsfrage",
+    pQ:"z. B. Wie bewertest du die Kommunikation im Verein?",
+    fOpt:"optional",
+    nextPay:"Weiter zur Bezahlung",
+    payTitle:"Bezahlung", payDesc:"Prüfe deine Angaben. Mit dem nächsten Klick wirst du zur sicheren Bezahlung weitergeleitet.",
+    pProduct:"Produkt", pPrice:"Preis", pScope:"Umfang",
+    accept:"Ich akzeptiere die <a href='/impressum.html' target='_blank'>Bedingungen</a> und die <a href='/datenschutz.html' target='_blank'>Datenschutzerklärung</a> und möchte den ClubCheck kostenpflichtig bestellen.",
+    payBtn:"Jetzt sicher bezahlen",
+    payBtnLoading:"Bezahlung wird vorbereitet ...",
+    errFields:"Bitte alle Pflichtfelder ausfüllen.",
+    errEmail:"Bitte eine gültige E-Mail-Adresse eingeben.",
+    errPwdLen:"Das Passwort muss mindestens 8 Zeichen haben.",
+    errPwdMatch:"Die Passwörter stimmen nicht überein.",
+    errClubName:"Bitte den Vereinsnamen eingeben.",
+    errAccept:"Bitte bestätige die Bedingungen.",
+    errPay:"Die Bezahlung konnte nicht gestartet werden.",
+    errCancel:"Die Zahlung wurde abgebrochen. Du kannst den Vorgang erneut starten.",
+    payVerify:"Zahlung wird bestätigt …",
+    payVerifyDesc:"Bitte einen Moment Geduld.",
+    successEyebrow:"Zahlung erfolgreich",
+    successTitle:"Dein ClubCheck wird vorbereitet.",
+    successLead:"Einen Moment bitte. Wir bestätigen die Zahlung und bereiten deinen Mitglieder-Link vor.",
+    sChip1:"Club-Code", sChip2:"Mitglieder-Link", sChip3:"Dashboard",
+    sNext:"Nächste Schritte",
+    sNextText:"Nach der Bestätigung kannst du den Mitglieder-Link kopieren und dich im Dashboard anmelden.",
+    readyEyebrow:"ClubCheck ist bereit",
+    readyTitle:"Dein ClubCheck wurde erfolgreich angelegt.",
+    readyLead:"Du kannst jetzt den Mitglieder-Link teilen und dich im Dashboard anmelden. Bewahre den Club-Code gut auf.",
+    rNextText:"Teile den Mitglieder-Link in deiner Vereinsgruppe. Sobald Rückmeldungen eingehen, erscheinen sie im Dashboard.",
+    rs1:"Link kopieren", rs2:"Mitglieder einladen", rs3:"Dashboard prüfen",
+    rOk:"Zahlung erfolgreich. Dein ClubCheck ist bereit.",
+    rPending:"Falls der Mitglieder-Link in den nächsten Sekunden noch nicht öffnet, bitte kurz warten und erneut probieren.",
+    regDoneTitle:"Registrierung abgeschlossen", regDoneDesc:"Nutze den folgenden Link für die Befragung deiner Mitglieder.",
+    sCode:"Club-Code", sLink:"Mitglieder-Link",
+    copyLink:"Mitglieder-Link kopieren", openDash:"Dashboard öffnen",
+    accessTitle:"Zugangsdaten",
+    accessText:"Für das Dashboard brauchst du deinen Club-Code und das Passwort aus der Registrierung.",
+    sCodeShort:"Code",
+    copied:"Link kopiert.", copyManual:"Bitte Link manuell kopieren."
+  },
+  en: {
+    navHome:"Home", navDash:"Dashboard", navReg:"Sign up",
+    footerCopy:"Humatrix ClubCheck — Sign up.",
+    footerHome:"Home", footerSurvey:"Survey", footerDash:"Dashboard", footerImp:"Imprint", footerPrv:"Privacy",
+    heroEyebrow:"Sign up",
+    heroTitle:"Set up your ClubCheck and start the member survey.",
+    heroLead:"Set up the ClubCheck in four clear steps. After payment you'll receive the club code, the member link and dashboard access.",
+    chip1:"Secure payment", chip2:"Member link", chip3:"PDF report",
+    sideTitle:"How it works",
+    sideText:"Create an account, choose a package, add your club details and pay. Then you can share the link with your members straight away.",
+    sStep:"Step", sStep1:"Account", sStep2:"Package", sStep3:"Club", sStep4:"Payment",
+    sumTitle:"Summary",
+    sumPackage:"Package", sumPrice:"Price", sumContact:"Contact", sumClub:"Club", sumQ:"Club questions", sumOf:"of",
+    sumOpen:"Not yet set",
+    hintTitle:"Note",
+    hintText:"Please keep your password safe. You'll need it to sign in to the dashboard later.",
+    accTitle:"Create account", accDesc:"These details are used for dashboard access and payment matching.",
+    fFirst:"First name", fLast:"Last name", fEmail:"Email", fPhone:"Phone (optional)",
+    fPwd:"Password", fPwd2:"Repeat password",
+    pPwd:"At least 8 characters", pPwd2:"Repeat",
+    next:"Next", back:"Back",
+    planTitle:"Choose package", planDesc:"The number of responses and custom club questions depends on the chosen package.",
+    planBasicLbl:"Basic", planPlusLbl:"Plus", planPremLbl:"Premium",
+    planBasicDesc:"Up to 100 responses · 1 club question", planPlusDesc:"Up to 250 responses · up to 3 club questions", planPremDesc:"Up to 500 responses · up to 5 club questions",
+    clubTitle:"Club details", clubDesc:"The club name will appear on the survey and dashboard. Custom club questions are optional.",
+    fClub:"Club name", pClub:"e.g. Sample SC",
+    fQ:"Custom club question",
+    pQ:"e.g. How do you rate communication in the club?",
+    fOpt:"optional",
+    nextPay:"Continue to payment",
+    payTitle:"Payment", payDesc:"Review your details. Clicking next will redirect you to secure payment.",
+    pProduct:"Product", pPrice:"Price", pScope:"Scope",
+    accept:"I accept the <a href='/impressum.html' target='_blank'>terms</a> and the <a href='/datenschutz.html' target='_blank'>privacy policy</a> and want to order ClubCheck on a paid basis.",
+    payBtn:"Pay securely now",
+    payBtnLoading:"Preparing payment ...",
+    errFields:"Please fill in all required fields.",
+    errEmail:"Please enter a valid email address.",
+    errPwdLen:"Password must be at least 8 characters.",
+    errPwdMatch:"Passwords do not match.",
+    errClubName:"Please enter the club name.",
+    errAccept:"Please confirm the terms.",
+    errPay:"Payment could not be started.",
+    errCancel:"The payment was cancelled. You can start again.",
+    payVerify:"Verifying payment …",
+    payVerifyDesc:"One moment please.",
+    successEyebrow:"Payment successful",
+    successTitle:"Your ClubCheck is being prepared.",
+    successLead:"One moment please. We're confirming the payment and preparing your member link.",
+    sChip1:"Club code", sChip2:"Member link", sChip3:"Dashboard",
+    sNext:"Next steps",
+    sNextText:"After confirmation you can copy the member link and sign in to the dashboard.",
+    readyEyebrow:"ClubCheck is ready",
+    readyTitle:"Your ClubCheck has been set up successfully.",
+    readyLead:"You can now share the member link and sign in to the dashboard. Keep the club code safe.",
+    rNextText:"Share the member link with your club group. As responses come in, they will appear in the dashboard.",
+    rs1:"Copy link", rs2:"Invite members", rs3:"Check dashboard",
+    rOk:"Payment successful. Your ClubCheck is ready.",
+    rPending:"If the member link doesn't open in the next few seconds, please wait briefly and try again.",
+    regDoneTitle:"Sign-up complete", regDoneDesc:"Use the following link for your member survey.",
+    sCode:"Club code", sLink:"Member link",
+    copyLink:"Copy member link", openDash:"Open dashboard",
+    accessTitle:"Sign-in details",
+    accessText:"You need your club code and the password from sign-up to access the dashboard.",
+    sCodeShort:"Code",
+    copied:"Link copied.", copyManual:"Please copy the link manually."
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function t(k){ return (I18N[LANG] && I18N[LANG][k]) || I18N.de[k] || k; }
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l; localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l;
+  applyStaticI18n();
+  // Plan-Beschreibungen neu setzen
+  PLANS.basic.desc = t("planBasicDesc");
+  PLANS.plus.desc  = t("planPlusDesc");
+  PLANS.premium.desc = t("planPremDesc");
+  PLANS.basic.label = t("planBasicLbl");
+  PLANS.plus.label  = t("planPlusLbl");
+  PLANS.premium.label = t("planPremLbl");
+  if(params.get("status") === "success") renderSuccess(params.get("code") || "");
+  else render();
+}
+function applyStaticI18n(){
+  document.title = "ClubCheck — " + t("navReg");
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.getElementById("navHome").textContent = t("navHome");
+  document.getElementById("navDash").textContent = t("navDash");
+  document.getElementById("navReg").textContent = t("navReg");
+  document.getElementById("footerCopy").textContent = t("footerCopy");
+  document.getElementById("footerHome").textContent = t("footerHome");
+  document.getElementById("footerSurvey").textContent = t("footerSurvey");
+  document.getElementById("footerDash").textContent = t("footerDash");
+  document.getElementById("footerImp").textContent = t("footerImp");
+  document.getElementById("footerPrv").textContent = t("footerPrv");
+  document.getElementById("heroChips").innerHTML = `<div class="chip">${t("chip1")}</div><div class="chip">${t("chip2")}</div><div class="chip">${t("chip3")}</div>`;
+}
+
 const PLANS = {
-  basic: { label: "Basic", price: 199, desc: "Bis 100 Rückmeldungen · 1 Vereinsfrage", maxQuestions: 1 },
-  plus: { label: "Plus", price: 299, desc: "Bis 250 Rückmeldungen · bis zu 3 Vereinsfragen", maxQuestions: 3 },
-  premium: { label: "Premium", price: 499, desc: "Bis 500 Rückmeldungen · bis zu 5 Vereinsfragen", maxQuestions: 5 }
+  basic:   { label: "Basic",   price: 199, desc: "", maxQuestions: 1 },
+  plus:    { label: "Plus",    price: 299, desc: "", maxQuestions: 3 },
+  premium: { label: "Premium", price: 499, desc: "", maxQuestions: 5 }
 };
 
 let step = 1;
@@ -111,17 +259,19 @@ if (PLANS[initialPlan]) form.package = initialPlan;
 if (initialPlan === "starter") form.package = "basic";
 if (initialPlan === "standard") form.package = "plus";
 
+applyStaticI18n();
+PLANS.basic.desc = t("planBasicDesc"); PLANS.plus.desc = t("planPlusDesc"); PLANS.premium.desc = t("planPremDesc");
+PLANS.basic.label = t("planBasicLbl"); PLANS.plus.label = t("planPlusLbl"); PLANS.premium.label = t("planPremLbl");
+
 if (params.get("status") === "success") {
   renderSuccess(params.get("code") || "");
 } else {
-  if (params.get("status") === "cancelled") error = "Die Zahlung wurde abgebrochen. Du kannst den Vorgang erneut starten.";
+  if (params.get("status") === "cancelled") error = t("errCancel");
   render();
 }
 
 function esc(v) {
-  return String(v || "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  return String(v || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
 
 function bind(ids) {
@@ -133,7 +283,7 @@ function bind(ids) {
 }
 
 function renderStepper() {
-  const labels = ["Konto", "Paket", "Verein", "Bezahlung"];
+  const labels = [t("sStep1"), t("sStep2"), t("sStep3"), t("sStep4")];
   return `<div class="stepper">${labels.map((label, i) => {
     const n = i + 1;
     const cls = step === n ? "active" : step > n ? "done" : "disabled";
@@ -154,70 +304,68 @@ function render() {
   if (step === 4) return renderPayment();
 }
 
-function goStep(n) {
-  if (n < step) { step = n; error = ""; render(); }
-}
+function goStep(n) { if (n < step) { step = n; error = ""; render(); } }
 
 function setNormalHero() {
-  heroEyebrow.textContent = "Registrierung";
-  heroTitle.textContent = "ClubCheck anlegen und Mitgliederbefragung starten.";
-  heroLead.textContent = "Lege den ClubCheck in vier klaren Schritten an. Nach bestätigter Zahlung erhältst du den Club-Code, den Mitglieder-Link und den Zugang zum Dashboard.";
-  heroChips.innerHTML = `<div class="chip">Sichere Bezahlung</div><div class="chip">Mitglieder-Link</div><div class="chip">PDF-Bericht</div>`;
+  heroEyebrow.textContent = t("heroEyebrow");
+  heroTitle.textContent = t("heroTitle");
+  heroLead.textContent = t("heroLead");
+  heroChips.innerHTML = `<div class="chip">${t("chip1")}</div><div class="chip">${t("chip2")}</div><div class="chip">${t("chip3")}</div>`;
   heroSide.innerHTML = `
-    <h3 style="font-size:26px;margin-bottom:12px">Ablauf</h3>
-    <p>Konto anlegen, Paket auswählen, Vereinsdaten ergänzen und bezahlen. Danach kannst du den Link direkt mit deinen Mitgliedern teilen.</p>
+    <h3 style="font-size:26px;margin-bottom:12px">${t("sideTitle")}</h3>
+    <p>${t("sideText")}</p>
     <div class="summary-list">
-      <div class="summary-row"><div class="summary-label">Schritt 1</div><div class="summary-value">Konto</div></div>
-      <div class="summary-row"><div class="summary-label">Schritt 2</div><div class="summary-value">Paket</div></div>
-      <div class="summary-row"><div class="summary-label">Schritt 3</div><div class="summary-value">Verein</div></div>
-      <div class="summary-row"><div class="summary-label">Schritt 4</div><div class="summary-value">Bezahlung</div></div>
+      <div class="summary-row"><div class="summary-label">${t("sStep")} 1</div><div class="summary-value">${t("sStep1")}</div></div>
+      <div class="summary-row"><div class="summary-label">${t("sStep")} 2</div><div class="summary-value">${t("sStep2")}</div></div>
+      <div class="summary-row"><div class="summary-label">${t("sStep")} 3</div><div class="summary-value">${t("sStep3")}</div></div>
+      <div class="summary-row"><div class="summary-label">${t("sStep")} 4</div><div class="summary-value">${t("sStep4")}</div></div>
     </div>`;
 }
 
 function renderSide() {
   const plan = PLANS[form.package];
   if (!side) return;
-  const fullName = `${form.firstName} ${form.lastName}`.trim() || "Noch offen";
-  const club = form.clubName.trim() || "Noch offen";
+  const fullName = `${form.firstName} ${form.lastName}`.trim() || t("sumOpen");
+  const club = form.clubName.trim() || t("sumOpen");
   const questions = [form.q1, form.q2, form.q3, form.q4, form.q5].slice(0, plan.maxQuestions).filter(x => String(x || "").trim()).length;
   side.innerHTML = `
     <div class="card card-p">
-      <h3 style="font-size:24px;margin-bottom:12px">Zusammenfassung</h3>
+      <h3 style="font-size:24px;margin-bottom:12px">${t("sumTitle")}</h3>
       <div class="summary-list">
-        <div class="summary-row"><div class="summary-label">Paket</div><div class="summary-value">ClubCheck ${plan.label}</div></div>
-        <div class="summary-row"><div class="summary-label">Preis</div><div class="summary-value"><strong>${plan.price} €</strong></div></div>
-        <div class="summary-row"><div class="summary-label">Kontakt</div><div class="summary-value">${esc(fullName)}</div></div>
-        <div class="summary-row"><div class="summary-label">Verein</div><div class="summary-value">${esc(club)}</div></div>
-        <div class="summary-row"><div class="summary-label">Vereinsfragen</div><div class="summary-value">${questions} von ${plan.maxQuestions}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sumPackage")}</div><div class="summary-value">ClubCheck ${plan.label}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sumPrice")}</div><div class="summary-value"><strong>${plan.price} €</strong></div></div>
+        <div class="summary-row"><div class="summary-label">${t("sumContact")}</div><div class="summary-value">${esc(fullName)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sumClub")}</div><div class="summary-value">${esc(club)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sumQ")}</div><div class="summary-value">${questions} ${t("sumOf")} ${plan.maxQuestions}</div></div>
       </div>
     </div>
     <div class="card card-p" style="margin-top:18px">
-      <h3 style="font-size:22px;margin-bottom:10px">Hinweis</h3>
-      <p>Bitte bewahre dein Passwort gut auf. Damit meldest du dich später im Dashboard an.</p>
+      <h3 style="font-size:22px;margin-bottom:10px">${t("hintTitle")}</h3>
+      <p>${t("hintText")}</p>
     </div>`;
 }
 
 function renderAccount() {
   shell(`
-    <div class="section-head"><h2>Konto anlegen</h2><p>Diese Angaben werden für den Dashboard-Zugang und die Zahlungszuordnung verwendet.</p></div>
+    <div class="section-head"><h2>${t("accTitle")}</h2><p>${t("accDesc")}</p></div>
     <div class="field-row">
-      <div class="field"><label class="label">Vorname</label><input class="input" id="firstName" value="${esc(form.firstName)}" placeholder="Max"></div>
-      <div class="field"><label class="label">Nachname</label><input class="input" id="lastName" value="${esc(form.lastName)}" placeholder="Mustermann"></div>
+      <div class="field"><label class="label">${t("fFirst")}</label><input class="input" id="firstName" value="${esc(form.firstName)}" placeholder="Max"></div>
+      <div class="field"><label class="label">${t("fLast")}</label><input class="input" id="lastName" value="${esc(form.lastName)}" placeholder="Mustermann"></div>
     </div>
-    <div class="field"><label class="label">E-Mail</label><input class="input" type="email" id="email" value="${esc(form.email)}" placeholder="max@verein.at"></div>
-    <div class="field"><label class="label">Telefon optional</label><input class="input" id="phone" value="${esc(form.phone)}" placeholder="+43 ..."></div>
+    <div class="field"><label class="label">${t("fEmail")}</label><input class="input" type="email" id="email" value="${esc(form.email)}" placeholder="max@verein.at"></div>
+    <div class="field"><label class="label">${t("fPhone")}</label><input class="input" id="phone" value="${esc(form.phone)}" placeholder="+43 ..."></div>
     <div class="field-row">
-      <div class="field"><label class="label">Passwort</label><input class="input" type="password" id="password" value="${esc(form.password)}" placeholder="Mindestens 8 Zeichen"></div>
-      <div class="field"><label class="label">Passwort wiederholen</label><input class="input" type="password" id="password2" value="${esc(form.password2)}" placeholder="Wiederholen"></div>
+      <div class="field"><label class="label">${t("fPwd")}</label><input class="input" type="password" id="password" value="${esc(form.password)}" placeholder="${esc(t("pPwd"))}"></div>
+      <div class="field"><label class="label">${t("fPwd2")}</label><input class="input" type="password" id="password2" value="${esc(form.password2)}" placeholder="${esc(t("pPwd2"))}"></div>
     </div>
-    <div class="btn-row"><button class="btn bp" onclick="nextAccount()">Weiter</button></div>
+    <div class="btn-row"><button class="btn bp" onclick="nextAccount()">${t("next")}</button></div>
   `);
   bind(["firstName","lastName","email","phone","password","password2"]);
 }
 
 function renderPlan() {
   shell(`
-    <div class="section-head"><h2>Paket wählen</h2><p>Die Zahl der Rückmeldungen und eigenen Vereinsfragen richtet sich nach dem gewählten Paket.</p></div>
+    <div class="section-head"><h2>${t("planTitle")}</h2><p>${t("planDesc")}</p></div>
     <div class="grid3">
       ${Object.keys(PLANS).map(key => {
         const p = PLANS[key];
@@ -227,7 +375,7 @@ function renderPlan() {
         </div>`;
       }).join("")}
     </div>
-    <div class="btn-row"><button class="btn bp" onclick="step=3;error='';render()">Weiter</button><button class="btn bo" onclick="step=1;error='';render()">Zurück</button></div>
+    <div class="btn-row"><button class="btn bp" onclick="step=3;error='';render()">${t("next")}</button><button class="btn bo" onclick="step=1;error='';render()">${t("back")}</button></div>
   `);
 }
 
@@ -235,13 +383,13 @@ function renderClub() {
   const max = PLANS[form.package].maxQuestions;
   let qHtml = "";
   for (let i = 1; i <= max; i++) {
-    qHtml += `<div class="field"><label class="label">Eigene Vereinsfrage ${i} optional</label><textarea class="textarea" id="q${i}" placeholder="z. B. Wie bewertest du die Kommunikation im Verein?">${esc(form["q"+i])}</textarea></div>`;
+    qHtml += `<div class="field"><label class="label">${t("fQ")} ${i} ${t("fOpt")}</label><textarea class="textarea" id="q${i}" placeholder="${esc(t("pQ"))}">${esc(form["q"+i])}</textarea></div>`;
   }
   shell(`
-    <div class="section-head"><h2>Vereinsdaten</h2><p>Der Vereinsname wird später auf der Umfrage und im Dashboard angezeigt. Eigene Vereinsfragen sind optional.</p></div>
-    <div class="field"><label class="label">Vereinsname</label><input class="input" id="clubName" value="${esc(form.clubName)}" placeholder="z. B. SC Musterverein"></div>
+    <div class="section-head"><h2>${t("clubTitle")}</h2><p>${t("clubDesc")}</p></div>
+    <div class="field"><label class="label">${t("fClub")}</label><input class="input" id="clubName" value="${esc(form.clubName)}" placeholder="${esc(t("pClub"))}"></div>
     ${qHtml}
-    <div class="btn-row"><button class="btn bp" onclick="nextClub()">Weiter zur Bezahlung</button><button class="btn bo" onclick="step=2;error='';render()">Zurück</button></div>
+    <div class="btn-row"><button class="btn bp" onclick="nextClub()">${t("nextPay")}</button><button class="btn bo" onclick="step=2;error='';render()">${t("back")}</button></div>
   `);
   bind(["clubName","q1","q2","q3","q4","q5"]);
 }
@@ -249,42 +397,42 @@ function renderClub() {
 function renderPayment() {
   const p = PLANS[form.package];
   shell(`
-    <div class="section-head"><h2>Bezahlung</h2><p>Prüfe deine Angaben. Mit dem nächsten Klick wirst du zur sicheren Bezahlung weitergeleitet.</p></div>
+    <div class="section-head"><h2>${t("payTitle")}</h2><p>${t("payDesc")}</p></div>
     <div class="card soft card-p" style="margin-bottom:18px">
       <div class="summary-list" style="border-top:0;margin-top:0">
-        <div class="summary-row" style="padding-top:0"><div class="summary-label">Produkt</div><div class="summary-value">ClubCheck ${p.label}</div></div>
-        <div class="summary-row"><div class="summary-label">Preis</div><div class="summary-value"><strong>${p.price} €</strong></div></div>
-        <div class="summary-row"><div class="summary-label">Umfang</div><div class="summary-value">${p.desc}</div></div>
+        <div class="summary-row" style="padding-top:0"><div class="summary-label">${t("pProduct")}</div><div class="summary-value">ClubCheck ${p.label}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("pPrice")}</div><div class="summary-value"><strong>${p.price} €</strong></div></div>
+        <div class="summary-row"><div class="summary-label">${t("pScope")}</div><div class="summary-value">${p.desc}</div></div>
       </div>
     </div>
     <label style="display:flex;gap:12px;align-items:flex-start;color:var(--tm);line-height:1.65;margin:16px 0">
       <input id="acceptTerms" type="checkbox" style="margin-top:4px;accent-color:var(--ac)" ${form.acceptTerms ? "checked" : ""}>
-      <span>Ich akzeptiere die Bedingungen und möchte den ClubCheck kostenpflichtig bestellen.</span>
+      <span>${t("accept")}</span>
     </label>
-    <div class="btn-row"><button id="payBtn" class="btn bw full" onclick="startCheckout()">Jetzt sicher bezahlen</button><button class="btn bo" onclick="step=3;error='';render()">Zurück</button></div>
+    <div class="btn-row"><button id="payBtn" class="btn bw full" onclick="startCheckout()">${t("payBtn")}</button><button class="btn bo" onclick="step=3;error='';render()">${t("back")}</button></div>
   `);
   document.getElementById("acceptTerms").onchange = e => { form.acceptTerms = e.target.checked; };
 }
 
 function nextAccount() {
   ["firstName","lastName","email","phone","password","password2"].forEach(id => { const el = document.getElementById(id); if (el) form[id] = el.value; });
-  if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.password) { error = "Bitte alle Pflichtfelder ausfüllen."; return render(); }
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())) { error = "Bitte eine gültige E-Mail-Adresse eingeben."; return render(); }
-  if (form.password.length < 8) { error = "Das Passwort muss mindestens 8 Zeichen haben."; return render(); }
-  if (form.password !== form.password2) { error = "Die Passwörter stimmen nicht überein."; return render(); }
+  if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.password) { error = t("errFields"); return render(); }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())) { error = t("errEmail"); return render(); }
+  if (form.password.length < 8) { error = t("errPwdLen"); return render(); }
+  if (form.password !== form.password2) { error = t("errPwdMatch"); return render(); }
   error = ""; step = 2; render();
 }
 
 function nextClub() {
   ["clubName","q1","q2","q3","q4","q5"].forEach(id => { const el = document.getElementById(id); if (el) form[id] = el.value; });
-  if (!form.clubName.trim()) { error = "Bitte den Vereinsnamen eingeben."; return render(); }
+  if (!form.clubName.trim()) { error = t("errClubName"); return render(); }
   error = ""; step = 4; render();
 }
 
 async function startCheckout() {
-  if (!form.acceptTerms) { error = "Bitte bestätige die Bedingungen."; return render(); }
+  if (!form.acceptTerms) { error = t("errAccept"); return render(); }
   const btn = document.getElementById("payBtn");
-  btn.disabled = true; btn.textContent = "Bezahlung wird vorbereitet ...";
+  btn.disabled = true; btn.textContent = t("payBtnLoading");
   const max = PLANS[form.package].maxQuestions;
   const questions = [form.q1,form.q2,form.q3,form.q4,form.q5].slice(0,max).map(x => String(x || "").trim()).filter(Boolean).map(text => ({ text, type: "scale", opts: [] }));
 
@@ -303,10 +451,10 @@ async function startCheckout() {
       })
     });
     const data = await res.json();
-    if (!res.ok || !data.ok || !data.url) throw new Error(data.error || "Die Bezahlung konnte nicht gestartet werden.");
+    if (!res.ok || !data.ok || !data.url) throw new Error(data.error || t("errPay"));
     location.href = data.url;
   } catch (e) {
-    error = e.message || "Die Bezahlung konnte nicht gestartet werden.";
+    error = e.message || t("errPay");
     render();
   }
 }
@@ -315,15 +463,15 @@ function renderSuccess(code) {
   const clean = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
   const sessionId = new URLSearchParams(location.search).get("session_id") || "";
 
-  heroEyebrow.textContent = "Zahlung erfolgreich";
-  heroTitle.textContent = "Dein ClubCheck wird vorbereitet.";
-  heroLead.textContent = "Einen Moment bitte. Wir bestätigen die Zahlung und bereiten deinen Mitglieder-Link vor.";
-  heroChips.innerHTML = `<div class="chip">Club-Code</div><div class="chip">Mitglieder-Link</div><div class="chip">Dashboard</div>`;
+  heroEyebrow.textContent = t("successEyebrow");
+  heroTitle.textContent = t("successTitle");
+  heroLead.textContent = t("successLead");
+  heroChips.innerHTML = `<div class="chip">${t("sChip1")}</div><div class="chip">${t("sChip2")}</div><div class="chip">${t("sChip3")}</div>`;
   heroSide.innerHTML = `
-    <h3 style="font-size:26px;margin-bottom:12px">Nächste Schritte</h3>
-    <p>Nach der Bestätigung kannst du den Mitglieder-Link kopieren und dich im Dashboard anmelden.</p>`;
+    <h3 style="font-size:26px;margin-bottom:12px">${t("sNext")}</h3>
+    <p>${t("sNextText")}</p>`;
 
-  app.innerHTML = `<div class="card card-p"><h2>Zahlung wird bestätigt …</h2><p>Bitte einen Moment Geduld.</p></div>`;
+  app.innerHTML = `<div class="card card-p"><h2>${t("payVerify")}</h2><p>${t("payVerifyDesc")}</p></div>`;
   side.innerHTML = "";
 
   if (sessionId) {
@@ -349,42 +497,42 @@ function showReady(code, confirmed) {
   const surveyUrl = `${location.origin}/survey.html?c=${encodeURIComponent(clean)}`;
   const dashUrl = `${location.origin}/dashboard.html?c=${encodeURIComponent(clean)}`;
 
-  heroEyebrow.textContent = "ClubCheck ist bereit";
-  heroTitle.textContent = "Dein ClubCheck wurde erfolgreich angelegt.";
-  heroLead.textContent = "Du kannst jetzt den Mitglieder-Link teilen und dich im Dashboard anmelden. Bewahre den Club-Code gut auf.";
+  heroEyebrow.textContent = t("readyEyebrow");
+  heroTitle.textContent = t("readyTitle");
+  heroLead.textContent = t("readyLead");
   heroSide.innerHTML = `
-    <h3 style="font-size:26px;margin-bottom:12px">Nächste Schritte</h3>
-    <p>Teile den Mitglieder-Link in deiner Vereinsgruppe. Sobald Rückmeldungen eingehen, erscheinen sie im Dashboard.</p>
+    <h3 style="font-size:26px;margin-bottom:12px">${t("sNext")}</h3>
+    <p>${t("rNextText")}</p>
     <div class="summary-list">
-      <div class="summary-row"><div class="summary-label">1</div><div class="summary-value">Link kopieren</div></div>
-      <div class="summary-row"><div class="summary-label">2</div><div class="summary-value">Mitglieder einladen</div></div>
-      <div class="summary-row"><div class="summary-label">3</div><div class="summary-value">Dashboard prüfen</div></div>
+      <div class="summary-row"><div class="summary-label">1</div><div class="summary-value">${t("rs1")}</div></div>
+      <div class="summary-row"><div class="summary-label">2</div><div class="summary-value">${t("rs2")}</div></div>
+      <div class="summary-row"><div class="summary-label">3</div><div class="summary-value">${t("rs3")}</div></div>
     </div>`;
 
   app.innerHTML = `
-    <div class="ok">Zahlung erfolgreich. Dein ClubCheck ist bereit.</div>
-    ${confirmed ? "" : `<div class="note">Falls der Mitglieder-Link in den nächsten Sekunden noch nicht öffnet, bitte kurz warten und erneut probieren.</div>`}
+    <div class="ok">${t("rOk")}</div>
+    ${confirmed ? "" : `<div class="note">${t("rPending")}</div>`}
     <div class="card card-p">
-      <div class="section-head"><h2>Registrierung abgeschlossen</h2><p>Nutze den folgenden Link für die Befragung deiner Mitglieder.</p></div>
+      <div class="section-head"><h2>${t("regDoneTitle")}</h2><p>${t("regDoneDesc")}</p></div>
       <div class="summary-list">
-        <div class="summary-row"><div class="summary-label">Club-Code</div><div class="summary-value"><strong>${esc(clean)}</strong></div></div>
-        <div class="summary-row"><div class="summary-label">Mitglieder-Link</div><div class="summary-value" style="word-break:break-all;text-align:left">${esc(surveyUrl)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sCode")}</div><div class="summary-value"><strong>${esc(clean)}</strong></div></div>
+        <div class="summary-row"><div class="summary-label">${t("sLink")}</div><div class="summary-value" style="word-break:break-all;text-align:left">${esc(surveyUrl)}</div></div>
       </div>
       <div class="btn-row">
-        <button class="btn bp" onclick="copyText('${surveyUrl}')">Mitglieder-Link kopieren</button>
-        <button class="btn bo" onclick="location.href='${dashUrl}'">Dashboard öffnen</button>
+        <button class="btn bp" onclick="copyText('${surveyUrl}')">${t("copyLink")}</button>
+        <button class="btn bo" onclick="location.href='${dashUrl}'">${t("openDash")}</button>
       </div>
     </div>`;
   side.innerHTML = `
     <div class="card card-p">
-      <h3 style="font-size:24px;margin-bottom:12px">Zugangsdaten</h3>
-      <p>Für das Dashboard brauchst du deinen Club-Code und das Passwort aus der Registrierung.</p>
-      <div class="summary-list"><div class="summary-row"><div class="summary-label">Code</div><div class="summary-value"><strong>${esc(clean)}</strong></div></div></div>
+      <h3 style="font-size:24px;margin-bottom:12px">${t("accessTitle")}</h3>
+      <p>${t("accessText")}</p>
+      <div class="summary-list"><div class="summary-row"><div class="summary-label">${t("sCodeShort")}</div><div class="summary-value"><strong>${esc(clean)}</strong></div></div></div>
     </div>`;
 }
 
 function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => alert("Link kopiert.")).catch(() => alert("Bitte Link manuell kopieren."));
+  navigator.clipboard.writeText(text).then(() => alert(t("copied"))).catch(() => alert(t("copyManual")));
 }
 </script>
 </body>

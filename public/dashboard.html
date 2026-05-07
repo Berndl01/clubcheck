@@ -49,6 +49,9 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 .summary-list{border-top:1px solid var(--brd);margin-top:10px}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--brd);padding:14px 0}.summary-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);min-width:110px}.summary-value{text-align:right;line-height:1.55}
 .kpi{padding:22px;border:1px solid var(--brd);background:var(--card)}.kpi .num{font-family:var(--fd);font-size:40px;line-height:1}.kpi .lbl{font-size:11px;color:var(--tm);letter-spacing:.12em;text-transform:uppercase;margin-top:8px}.bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
 .footer{background:var(--card2);border-top:1px solid var(--brd);padding:38px 0;margin-top:48px}.footer-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--tm);font-size:13px}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
 @media(max-width:980px){.hero-grid,.layout,.grid2,.grid3{grid-template-columns:1fr}.sticky{position:static!important}}
 @media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav{display:none}}
 
@@ -56,13 +59,191 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 </style>
 </head>
 <body>
-<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/">Startseite</a><a class="pill" href="/register.html">Registrierung</a><a class="pill ac" href="/dashboard.html">Dashboard</a></nav></div></header>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><nav class="nav"><a class="pill" href="/" id="navHome">Startseite</a><a class="pill" href="/register.html" id="navReg">Registrierung</a><a class="pill ac" href="/dashboard.html" id="navDash">Dashboard</a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></nav></div></header>
 
-<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px">Auswertung</h3><p>Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
+<section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow" id="heroEyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px" id="heroSideTitle">Auswertung</h3><p id="heroSideText">Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
 
 <main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
-<footer class="footer"><div class="wrap footer-in"><div>Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/">Startseite</a><a href="/register.html">Registrierung</a></div></div></footer>
+<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/register.html" id="footerReg">Registrierung</a><a href="/impressum.html" id="footerImp">Impressum</a><a href="/datenschutz.html" id="footerPrv">Datenschutz</a></div></div></footer>
 <script>
+// ===== I18N =====
+const I18N = {
+  de: {
+    navHome:"Startseite", navReg:"Registrierung", navDash:"Dashboard",
+    heroEyebrow:"Vorstand-Dashboard",
+    heroLogin:"Dashboard öffnen.",
+    heroLoginLead:"Melde dich mit Club-Code und Passwort an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.",
+    heroSideTitle:"Auswertung",
+    heroSideText:"Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.",
+    heroForgotTitle:"Passwort zurücksetzen.",
+    heroForgotLead:"Gib Club-Code und E-Mail-Adresse ein. Wenn die Daten passen, wird ein Link zum Zurücksetzen gesendet.",
+    heroResetTitle:"Neues Passwort setzen.",
+    heroResetLead:"Wähle ein neues Passwort für dein ClubCheck-Dashboard.",
+    heroLoadTitle:"Dashboard wird geladen.",
+    heroLoadLead:"Bitte einen Moment Geduld.",
+    heroDashLead:"Hier findest du die aktuellen Rückmeldungen, zentrale Kennzahlen und den PDF-Bericht.",
+    footerCopy:"Humatrix ClubCheck — Dashboard.",
+    footerHome:"Startseite", footerReg:"Registrierung", footerImp:"Impressum", footerPrv:"Datenschutz",
+    loginTitle:"Anmelden", loginDesc:"Verwende den Club-Code und das Passwort aus der Registrierung.",
+    fCode:"Club-Code", fPwd:"Passwort",
+    pCode:"z. B. SVW9791", pPwd:"Passwort",
+    btnOpen:"Dashboard öffnen", btnForgot:"Passwort vergessen",
+    sideDashTitle:"Dashboard",
+    sideDashText:"Nach der Anmeldung siehst du die Beteiligung, Bewertungsbereiche, Rollenverteilung und den PDF-Export.",
+    forgotTitle:"Passwort vergessen", forgotDesc:"Aus Sicherheitsgründen zeigen wir nicht an, ob ein Konto gefunden wurde.",
+    fEmail:"E-Mail",
+    pEmailReset:"E-Mail aus der Registrierung",
+    btnRequestReset:"Link anfordern", btnBack:"Zurück",
+    sideForgotTitle:"Hinweis",
+    sideForgotText:"Der Link ist zeitlich begrenzt. Prüfe auch deinen Spam-Ordner.",
+    resetMsgFallback:"Falls die Daten passen, wurde ein Link versendet.",
+    resetCheckTitle:"Prüfe deine E-Mails",
+    resetCheckText:"Du kannst danach ein neues Passwort setzen und dich erneut anmelden.",
+    btnToLogin:"Zur Anmeldung",
+    resetTitle:"Neues Passwort", resetDesc:"Das Passwort muss mindestens 8 Zeichen haben.",
+    fNewPwd:"Neues Passwort", fNewPwd2:"Wiederholen",
+    pNewPwd:"Mindestens 8 Zeichen", pNewPwd2:"Wiederholen",
+    btnSavePwd:"Passwort speichern",
+    sideResetTitle:"Sicherheit",
+    sideResetText:"Der Link kann nur einmal verwendet werden.",
+    errPwdLen:"Das Passwort muss mindestens 8 Zeichen haben.",
+    errPwdMatch:"Die Passwörter stimmen nicht überein.",
+    errResetFail:"Das Passwort konnte nicht gespeichert werden.",
+    pwdChanged:"Das Passwort wurde geändert.",
+    canLoginNow:"Du kannst dich jetzt anmelden.",
+    loginFail:"Anmeldung fehlgeschlagen.",
+    loadingTitle:"Dashboard wird geladen …",
+    loadingDesc:"Die aktuellen Rückmeldungen werden abgerufen.",
+    loadFail:"Bitte erneut anmelden.",
+    loadFailDash:"Dashboard konnte nicht geladen werden.",
+    kpiResp:"Rückmeldungen", kpiTotal:"Gesamtwert / 7", kpiNps:"Empfehlungswert",
+    areasTitle:"Bewertungsbereiche", areasDesc:"Durchschnittswerte auf einer Skala von 1 bis 7.",
+    areaOrg:"Organisation", areaSport:"Sport", areaExt:"Außenwirkung", areaFut:"Zukunft", areaCustom:"Eigene Vereinsfragen",
+    rolesTitle:"Rollen",
+    recoTitle:"Empfehlung",
+    promoters:"Promotoren", passives:"Passive", critics:"Kritiker",
+    freitextTitle:"Freitext-Rückmeldungen",
+    freitextDesc:"Freitexte werden erst ab mehreren Rückmeldungen angezeigt, um Einzelpersonen besser zu schützen.",
+    freitextEmpty:"Aktuell sind keine freigegebenen Freitexte vorhanden.",
+    anonRole:"Anonym",
+    btnPdf:"PDF-Bericht herunterladen",
+    btnCopyLink:"Mitglieder-Link kopieren",
+    btnLogout:"Abmelden",
+    sideLink:"Mitglieder-Link",
+    sideLinkBtn:"Link kopieren",
+    sidePackage:"Paket",
+    sCode:"Code", sPkg:"Paket", sLimit:"Limit", sMode:"Test-Modus",
+    modePulse:"Einstiegstest (Pulse)", modeCore:"Premium-Test (Core)",
+    pkgBasic:"Basic", pkgPlus:"Plus", pkgPremium:"Premium",
+    scoreStrong:"Stark", scoreOk:"Stabil", scoreWeak:"Handlungsbedarf",
+    pdfFail:"Der PDF-Bericht konnte nicht erstellt werden. Bitte später erneut versuchen.",
+    copied:"Link kopiert.", copyManual:"Bitte manuell kopieren.",
+    noData:"Noch keine Daten."
+  },
+  en: {
+    navHome:"Home", navReg:"Sign up", navDash:"Dashboard",
+    heroEyebrow:"Board dashboard",
+    heroLogin:"Open dashboard.",
+    heroLoginLead:"Sign in with club code and password to see responses, analyses and the PDF report.",
+    heroSideTitle:"Analysis",
+    heroSideText:"The dashboard shows key indicators and reveals where the club is strongest and where action is needed.",
+    heroForgotTitle:"Reset password.",
+    heroForgotLead:"Enter club code and email. If the details match, a reset link will be sent.",
+    heroResetTitle:"Set a new password.",
+    heroResetLead:"Choose a new password for your ClubCheck dashboard.",
+    heroLoadTitle:"Loading dashboard.",
+    heroLoadLead:"One moment please.",
+    heroDashLead:"Here you'll find current responses, key indicators and the PDF report.",
+    footerCopy:"Humatrix ClubCheck — Dashboard.",
+    footerHome:"Home", footerReg:"Sign up", footerImp:"Imprint", footerPrv:"Privacy",
+    loginTitle:"Sign in", loginDesc:"Use the club code and password from sign-up.",
+    fCode:"Club code", fPwd:"Password",
+    pCode:"e.g. SVW9791", pPwd:"Password",
+    btnOpen:"Open dashboard", btnForgot:"Forgot password",
+    sideDashTitle:"Dashboard",
+    sideDashText:"After signing in you'll see participation, score areas, role distribution and the PDF export.",
+    forgotTitle:"Forgot password", forgotDesc:"For security reasons we do not show whether an account was found.",
+    fEmail:"Email",
+    pEmailReset:"Email used at sign-up",
+    btnRequestReset:"Request link", btnBack:"Back",
+    sideForgotTitle:"Note",
+    sideForgotText:"The link is time-limited. Please also check your spam folder.",
+    resetMsgFallback:"If the details match, a link has been sent.",
+    resetCheckTitle:"Check your emails",
+    resetCheckText:"You can then set a new password and sign in again.",
+    btnToLogin:"Go to sign in",
+    resetTitle:"New password", resetDesc:"Password must be at least 8 characters.",
+    fNewPwd:"New password", fNewPwd2:"Repeat",
+    pNewPwd:"At least 8 characters", pNewPwd2:"Repeat",
+    btnSavePwd:"Save password",
+    sideResetTitle:"Security",
+    sideResetText:"The link can only be used once.",
+    errPwdLen:"Password must be at least 8 characters.",
+    errPwdMatch:"Passwords do not match.",
+    errResetFail:"Password could not be saved.",
+    pwdChanged:"Password has been changed.",
+    canLoginNow:"You can sign in now.",
+    loginFail:"Sign-in failed.",
+    loadingTitle:"Loading dashboard …",
+    loadingDesc:"Fetching current responses.",
+    loadFail:"Please sign in again.",
+    loadFailDash:"Dashboard could not be loaded.",
+    kpiResp:"Responses", kpiTotal:"Overall score / 7", kpiNps:"Recommendation",
+    areasTitle:"Score areas", areasDesc:"Average values on a scale from 1 to 7.",
+    areaOrg:"Organisation", areaSport:"Sport", areaExt:"External image", areaFut:"Future", areaCustom:"Custom club questions",
+    rolesTitle:"Roles",
+    recoTitle:"Recommendation",
+    promoters:"Promoters", passives:"Passives", critics:"Detractors",
+    freitextTitle:"Free-text responses",
+    freitextDesc:"Free-text answers are only shown once several responses have arrived, to better protect individuals.",
+    freitextEmpty:"No free-text answers available yet.",
+    anonRole:"Anonymous",
+    btnPdf:"Download PDF report",
+    btnCopyLink:"Copy member link",
+    btnLogout:"Sign out",
+    sideLink:"Member link",
+    sideLinkBtn:"Copy link",
+    sidePackage:"Package",
+    sCode:"Code", sPkg:"Package", sLimit:"Limit", sMode:"Survey mode",
+    modePulse:"Entry survey (Pulse)", modeCore:"Premium survey (Core)",
+    pkgBasic:"Basic", pkgPlus:"Plus", pkgPremium:"Premium",
+    scoreStrong:"Strong", scoreOk:"Stable", scoreWeak:"Action required",
+    pdfFail:"The PDF report could not be created. Please try again later.",
+    copied:"Link copied.", copyManual:"Please copy manually.",
+    noData:"No data yet."
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function t(k){ return (I18N[LANG] && I18N[LANG][k]) || I18N.de[k] || k; }
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l; localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l;
+  applyStaticI18n();
+  // Re-render aktuelle View
+  if (resetToken) renderResetPassword();
+  else if (dashboard) renderDashboard();
+  else if (token) renderLogin();
+  else renderLogin();
+}
+function applyStaticI18n(){
+  document.title = "ClubCheck — " + t("navDash");
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.getElementById("navHome").textContent = t("navHome");
+  document.getElementById("navReg").textContent = t("navReg");
+  document.getElementById("navDash").textContent = t("navDash");
+  document.getElementById("heroEyebrow").textContent = t("heroEyebrow");
+  document.getElementById("heroSideTitle").textContent = t("heroSideTitle");
+  document.getElementById("heroSideText").textContent = t("heroSideText");
+  document.getElementById("footerCopy").textContent = t("footerCopy");
+  document.getElementById("footerHome").textContent = t("footerHome");
+  document.getElementById("footerReg").textContent = t("footerReg");
+  document.getElementById("footerImp").textContent = t("footerImp");
+  document.getElementById("footerPrv").textContent = t("footerPrv");
+}
+
 const app = document.getElementById("app");
 const side = document.getElementById("side");
 const storeKey = "clubcheck_dashboard_token";
@@ -73,6 +254,7 @@ const params = new URLSearchParams(location.search);
 const resetToken = params.get("reset") || "";
 const initialCode = (params.get("c") || "").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12);
 
+applyStaticI18n();
 if (resetToken) renderResetPassword();
 else if (token) loadDashboard();
 else renderLogin();
@@ -87,16 +269,16 @@ function setHero(title, lead){
 }
 
 function renderLogin(){
-  setHero("Dashboard öffnen.", "Melde dich mit Club-Code und Passwort an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.");
+  setHero(t("heroLogin"), t("heroLoginLead"));
   app.innerHTML = `
     ${error ? `<div class="err">${esc(error)}</div>` : ""}
     <div class="card card-p">
-      <div class="section-head"><h2>Anmelden</h2><p>Verwende den Club-Code und das Passwort aus der Registrierung.</p></div>
-      <div class="field"><label class="label">Club-Code</label><input class="input" id="code" value="${esc(initialCode)}" placeholder="z. B. SVW9791"></div>
-      <div class="field"><label class="label">Passwort</label><input class="input" id="password" type="password" placeholder="Passwort"></div>
-      <div class="btn-row"><button class="btn bp" onclick="login()">Dashboard öffnen</button><button class="btn bo" onclick="renderForgot()">Passwort vergessen</button></div>
+      <div class="section-head"><h2>${t("loginTitle")}</h2><p>${t("loginDesc")}</p></div>
+      <div class="field"><label class="label">${t("fCode")}</label><input class="input" id="code" value="${esc(initialCode)}" placeholder="${esc(t("pCode"))}"></div>
+      <div class="field"><label class="label">${t("fPwd")}</label><input class="input" id="password" type="password" placeholder="${esc(t("pPwd"))}"></div>
+      <div class="btn-row"><button class="btn bp" onclick="login()">${t("btnOpen")}</button><button class="btn bo" onclick="renderForgot()">${t("btnForgot")}</button></div>
     </div>`;
-  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Dashboard</h3><p>Nach der Anmeldung siehst du die Beteiligung, Bewertungsbereiche, Rollenverteilung und den PDF-Export.</p></div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">${t("sideDashTitle")}</h3><p>${t("sideDashText")}</p></div>`;
 }
 
 async function login(){
@@ -105,28 +287,28 @@ async function login(){
   try{
     const res = await fetch("/api/dashboard-login", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code,password}) });
     const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || "Anmeldung fehlgeschlagen.");
+    if(!res.ok || !data.ok) throw new Error(data.error || t("loginFail"));
     token = data.token;
     localStorage.setItem(storeKey, token);
     error = "";
     await loadDashboard();
   }catch(e){
-    error = e.message || "Anmeldung fehlgeschlagen.";
+    error = e.message || t("loginFail");
     renderLogin();
   }
 }
 
 function renderForgot(){
-  setHero("Passwort zurücksetzen.", "Gib Club-Code und E-Mail-Adresse ein. Wenn die Daten passen, wird ein Link zum Zurücksetzen gesendet.");
+  setHero(t("heroForgotTitle"), t("heroForgotLead"));
   app.innerHTML = `
     ${error ? `<div class="err">${esc(error)}</div>` : ""}
     <div class="card card-p">
-      <div class="section-head"><h2>Passwort vergessen</h2><p>Aus Sicherheitsgründen zeigen wir nicht an, ob ein Konto gefunden wurde.</p></div>
-      <div class="field"><label class="label">Club-Code</label><input class="input" id="resetCode" value="${esc(initialCode)}" placeholder="Club-Code"></div>
-      <div class="field"><label class="label">E-Mail</label><input class="input" id="resetEmail" type="email" placeholder="E-Mail aus der Registrierung"></div>
-      <div class="btn-row"><button class="btn bp" onclick="requestReset()">Link anfordern</button><button class="btn bo" onclick="error='';renderLogin()">Zurück</button></div>
+      <div class="section-head"><h2>${t("forgotTitle")}</h2><p>${t("forgotDesc")}</p></div>
+      <div class="field"><label class="label">${t("fCode")}</label><input class="input" id="resetCode" value="${esc(initialCode)}" placeholder="${esc(t("fCode"))}"></div>
+      <div class="field"><label class="label">${t("fEmail")}</label><input class="input" id="resetEmail" type="email" placeholder="${esc(t("pEmailReset"))}"></div>
+      <div class="btn-row"><button class="btn bp" onclick="requestReset()">${t("btnRequestReset")}</button><button class="btn bo" onclick="error='';renderLogin()">${t("btnBack")}</button></div>
     </div>`;
-  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Hinweis</h3><p>Der Link ist zeitlich begrenzt. Prüfe auch deinen Spam-Ordner.</p></div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">${t("sideForgotTitle")}</h3><p>${t("sideForgotText")}</p></div>`;
 }
 
 async function requestReset(){
@@ -135,121 +317,126 @@ async function requestReset(){
   try{
     const res = await fetch("/api/request-password-reset", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code,email}) });
     const data = await res.json();
-    app.innerHTML = `<div class="ok">${esc(data.message || "Falls die Daten passen, wurde ein Link versendet.")}</div><div class="card card-p"><h2>Prüfe deine E-Mails</h2><p>Du kannst danach ein neues Passwort setzen und dich erneut anmelden.</p><div class="btn-row"><button class="btn bo" onclick="renderLogin()">Zur Anmeldung</button></div></div>`;
+    app.innerHTML = `<div class="ok">${esc(data.message || t("resetMsgFallback"))}</div><div class="card card-p"><h2>${t("resetCheckTitle")}</h2><p>${t("resetCheckText")}</p><div class="btn-row"><button class="btn bo" onclick="renderLogin()">${t("btnToLogin")}</button></div></div>`;
   }catch(e){
-    app.innerHTML = `<div class="ok">Falls die Daten passen, wurde ein Link versendet.</div>`;
+    app.innerHTML = `<div class="ok">${t("resetMsgFallback")}</div>`;
   }
 }
 
 function renderResetPassword(){
-  setHero("Neues Passwort setzen.", "Wähle ein neues Passwort für dein ClubCheck-Dashboard.");
+  setHero(t("heroResetTitle"), t("heroResetLead"));
   app.innerHTML = `
     ${error ? `<div class="err">${esc(error)}</div>` : ""}
     <div class="card card-p">
-      <div class="section-head"><h2>Neues Passwort</h2><p>Das Passwort muss mindestens 8 Zeichen haben.</p></div>
-      <div class="field"><label class="label">Neues Passwort</label><input class="input" id="newPassword" type="password" placeholder="Mindestens 8 Zeichen"></div>
-      <div class="field"><label class="label">Wiederholen</label><input class="input" id="newPassword2" type="password" placeholder="Wiederholen"></div>
-      <div class="btn-row"><button class="btn bp" onclick="resetPassword()">Passwort speichern</button></div>
+      <div class="section-head"><h2>${t("resetTitle")}</h2><p>${t("resetDesc")}</p></div>
+      <div class="field"><label class="label">${t("fNewPwd")}</label><input class="input" id="newPassword" type="password" placeholder="${esc(t("pNewPwd"))}"></div>
+      <div class="field"><label class="label">${t("fNewPwd2")}</label><input class="input" id="newPassword2" type="password" placeholder="${esc(t("pNewPwd2"))}"></div>
+      <div class="btn-row"><button class="btn bp" onclick="resetPassword()">${t("btnSavePwd")}</button></div>
     </div>`;
-  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">Sicherheit</h3><p>Der Link kann nur einmal verwendet werden.</p></div>`;
+  side.innerHTML = `<div class="card card-p"><h3 style="font-size:24px;margin-bottom:10px">${t("sideResetTitle")}</h3><p>${t("sideResetText")}</p></div>`;
 }
 
 async function resetPassword(){
   const p1 = document.getElementById("newPassword").value;
   const p2 = document.getElementById("newPassword2").value;
-  if(p1.length < 8){ error = "Das Passwort muss mindestens 8 Zeichen haben."; return renderResetPassword(); }
-  if(p1 !== p2){ error = "Die Passwörter stimmen nicht überein."; return renderResetPassword(); }
+  if(p1.length < 8){ error = t("errPwdLen"); return renderResetPassword(); }
+  if(p1 !== p2){ error = t("errPwdMatch"); return renderResetPassword(); }
   try{
     const res = await fetch("/api/reset-password", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({token: resetToken, password: p1}) });
     const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || "Das Passwort konnte nicht gespeichert werden.");
+    if(!res.ok || !data.ok) throw new Error(data.error || t("errResetFail"));
     localStorage.removeItem(storeKey);
-    app.innerHTML = `<div class="ok">Das Passwort wurde geändert.</div><div class="card card-p"><h2>Du kannst dich jetzt anmelden.</h2><div class="btn-row"><button class="btn bp" onclick="location.href='/dashboard.html'">Zur Anmeldung</button></div></div>`;
+    app.innerHTML = `<div class="ok">${t("pwdChanged")}</div><div class="card card-p"><h2>${t("canLoginNow")}</h2><div class="btn-row"><button class="btn bp" onclick="location.href='/dashboard.html'">${t("btnToLogin")}</button></div></div>`;
   }catch(e){
-    error = e.message || "Das Passwort konnte nicht gespeichert werden.";
+    error = e.message || t("errResetFail");
     renderResetPassword();
   }
 }
 
 async function loadDashboard(){
-  setHero("Dashboard wird geladen.", "Bitte einen Moment Geduld.");
-  app.innerHTML = `<div class="card card-p"><h2>Dashboard wird geladen …</h2><p>Die aktuellen Rückmeldungen werden abgerufen.</p></div>`;
+  setHero(t("heroLoadTitle"), t("heroLoadLead"));
+  app.innerHTML = `<div class="card card-p"><h2>${t("loadingTitle")}</h2><p>${t("loadingDesc")}</p></div>`;
   side.innerHTML = "";
   try{
     const res = await fetch("/api/get-dashboard", { headers: { "Authorization": `Bearer ${token}` } });
     const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || "Dashboard konnte nicht geladen werden.");
+    if(!res.ok || !data.ok) throw new Error(data.error || t("loadFailDash"));
     dashboard = data.dashboard;
     renderDashboard();
   }catch(e){
     localStorage.removeItem(storeKey);
     token = "";
-    error = e.message || "Bitte erneut anmelden.";
+    error = e.message || t("loadFail");
     renderLogin();
   }
 }
 
-function scoreClass(v){ if(v === null || v === undefined) return "—"; return v >= 5.5 ? "Stark" : v >= 4 ? "Stabil" : "Handlungsbedarf"; }
+function scoreClass(v){ if(v === null || v === undefined) return "—"; return v >= 5.5 ? t("scoreStrong") : v >= 4 ? t("scoreOk") : t("scoreWeak"); }
 
 function renderDashboard(){
   const d = dashboard;
   const surveyUrl = `${location.origin}/survey.html?c=${encodeURIComponent(d.club.code)}`;
-  setHero(d.club.name, "Hier findest du die aktuellen Rückmeldungen, zentrale Kennzahlen und den PDF-Bericht.");
+  setHero(d.club.name, t("heroDashLead"));
+  // Modus aus Paket ableiten (Server-Logik gespiegelt)
+  const mode = d.club.package === "basic" ? "pulse" : "core";
+  const modeLabel = mode === "core" ? t("modeCore") : t("modePulse");
+  const pkgLabel = d.club.package === "basic" ? t("pkgBasic") : d.club.package === "plus" ? t("pkgPlus") : t("pkgPremium");
   app.innerHTML = `
     <div class="grid3">
-      <div class="kpi"><div class="num">${d.count}</div><div class="lbl">Rückmeldungen</div></div>
-      <div class="kpi"><div class="num">${fmt(d.scores.total)}</div><div class="lbl">Gesamtwert / 7</div></div>
-      <div class="kpi"><div class="num">${fmt(d.nps.score)}</div><div class="lbl">Empfehlungswert</div></div>
+      <div class="kpi"><div class="num">${d.count}</div><div class="lbl">${t("kpiResp")}</div></div>
+      <div class="kpi"><div class="num">${fmt(d.scores.total)}</div><div class="lbl">${t("kpiTotal")}</div></div>
+      <div class="kpi"><div class="num">${fmt(d.nps.score)}</div><div class="lbl">${t("kpiNps")}</div></div>
     </div>
 
     <div class="card card-p" style="margin-top:22px">
-      <div class="section-head"><h2>Bewertungsbereiche</h2><p>Durchschnittswerte auf einer Skala von 1 bis 7.</p></div>
-      ${scoreRow("Organisation", d.scores.intern)}
-      ${scoreRow("Sport", d.scores.sport)}
-      ${scoreRow("Außenwirkung", d.scores.extern)}
-      ${scoreRow("Zukunft", d.scores.zukunft)}
-      ${d.scores.custom ? scoreRow("Eigene Vereinsfragen", d.scores.custom) : ""}
+      <div class="section-head"><h2>${t("areasTitle")}</h2><p>${t("areasDesc")}</p></div>
+      ${scoreRow(t("areaOrg"), d.scores.intern)}
+      ${scoreRow(t("areaSport"), d.scores.sport)}
+      ${scoreRow(t("areaExt"), d.scores.extern)}
+      ${scoreRow(t("areaFut"), d.scores.zukunft)}
+      ${d.scores.custom ? scoreRow(t("areaCustom"), d.scores.custom) : ""}
     </div>
 
     <div class="grid2" style="margin-top:22px">
       <div class="card card-p">
-        <h2 style="font-size:30px;margin-bottom:14px">Rollen</h2>
+        <h2 style="font-size:30px;margin-bottom:14px">${t("rolesTitle")}</h2>
         ${bars(d.roles)}
       </div>
       <div class="card card-p">
-        <h2 style="font-size:30px;margin-bottom:14px">Empfehlung</h2>
+        <h2 style="font-size:30px;margin-bottom:14px">${t("recoTitle")}</h2>
         <div class="summary-list">
-          <div class="summary-row"><div class="summary-label">Promotoren</div><div class="summary-value">${d.nps.promoters}</div></div>
-          <div class="summary-row"><div class="summary-label">Passive</div><div class="summary-value">${d.nps.passives}</div></div>
-          <div class="summary-row"><div class="summary-label">Kritiker</div><div class="summary-value">${d.nps.critics}</div></div>
+          <div class="summary-row"><div class="summary-label">${t("promoters")}</div><div class="summary-value">${d.nps.promoters}</div></div>
+          <div class="summary-row"><div class="summary-label">${t("passives")}</div><div class="summary-value">${d.nps.passives}</div></div>
+          <div class="summary-row"><div class="summary-label">${t("critics")}</div><div class="summary-value">${d.nps.critics}</div></div>
         </div>
       </div>
     </div>
 
     <div class="card card-p" style="margin-top:22px">
-      <div class="section-head"><h2>Freitext-Rückmeldungen</h2><p>Freitexte werden erst ab mehreren Rückmeldungen angezeigt, um Einzelpersonen besser zu schützen.</p></div>
-      ${d.freitexts.length ? d.freitexts.map(x => `<div class="note"><strong>${esc(x.role || "Anonym")}:</strong> ${esc(x.text)}</div>`).join("") : `<p>Aktuell sind keine freigegebenen Freitexte vorhanden.</p>`}
+      <div class="section-head"><h2>${t("freitextTitle")}</h2><p>${t("freitextDesc")}</p></div>
+      ${d.freitexts.length ? d.freitexts.map(x => `<div class="note"><strong>${esc(x.role || t("anonRole"))}:</strong> ${esc(x.text)}</div>`).join("") : `<p>${t("freitextEmpty")}</p>`}
     </div>
 
     <div class="btn-row">
-      <button class="btn bp" onclick="downloadPdf()">PDF-Bericht herunterladen</button>
-      <button class="btn bo" onclick="copyText('${surveyUrl}')">Mitglieder-Link kopieren</button>
-      <button class="btn bo" onclick="logout()">Abmelden</button>
+      <button class="btn bp" onclick="downloadPdf()">${t("btnPdf")}</button>
+      <button class="btn bo" onclick="copyText('${surveyUrl}')">${t("btnCopyLink")}</button>
+      <button class="btn bo" onclick="logout()">${t("btnLogout")}</button>
     </div>
   `;
 
   side.innerHTML = `
     <div class="card card-p">
-      <h3 style="font-size:24px;margin-bottom:10px">Mitglieder-Link</h3>
+      <h3 style="font-size:24px;margin-bottom:10px">${t("sideLink")}</h3>
       <p style="word-break:break-all">${esc(surveyUrl)}</p>
-      <div class="btn-row"><button class="btn bp full" onclick="copyText('${surveyUrl}')">Link kopieren</button></div>
+      <div class="btn-row"><button class="btn bp full" onclick="copyText('${surveyUrl}')">${t("sideLinkBtn")}</button></div>
     </div>
     <div class="card card-p" style="margin-top:18px">
-      <h3 style="font-size:24px;margin-bottom:10px">Paket</h3>
+      <h3 style="font-size:24px;margin-bottom:10px">${t("sidePackage")}</h3>
       <div class="summary-list">
-        <div class="summary-row"><div class="summary-label">Code</div><div class="summary-value">${esc(d.club.code)}</div></div>
-        <div class="summary-row"><div class="summary-label">Paket</div><div class="summary-value">${esc(d.club.package)}</div></div>
-        <div class="summary-row"><div class="summary-label">Limit</div><div class="summary-value">${d.count} / ${d.club.maxMembers}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sCode")}</div><div class="summary-value">${esc(d.club.code)}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sPkg")}</div><div class="summary-value">${pkgLabel}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sMode")}</div><div class="summary-value">${modeLabel}</div></div>
+        <div class="summary-row"><div class="summary-label">${t("sLimit")}</div><div class="summary-value">${d.count} / ${d.club.maxMembers}</div></div>
       </div>
     </div>`;
 }
@@ -261,12 +448,12 @@ function scoreRow(label, value){
 
 function bars(obj){
   const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length) return "<p>Noch keine Daten.</p>";
+  if(!entries.length) return `<p>${t("noData")}</p>`;
   const max = Math.max(...entries.map(x=>x[1]), 1);
   return entries.map(([k,v]) => `<div style="margin-bottom:14px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(k)}</div><div class="summary-value">${v}</div></div><div class="bar"><span style="width:${Math.round((v/max)*100)}%"></span></div></div>`).join("");
 }
 
-function copyText(text){ navigator.clipboard.writeText(text).then(()=>alert("Link kopiert.")).catch(()=>alert("Bitte manuell kopieren.")); }
+function copyText(text){ navigator.clipboard.writeText(text).then(()=>alert(t("copied"))).catch(()=>alert(t("copyManual"))); }
 function logout(){ localStorage.removeItem(storeKey); token=""; dashboard=null; error=""; renderLogin(); }
 
 function downloadPdf(){
@@ -280,16 +467,233 @@ function downloadPdf(){
     doc.save(filename);
   }catch(e){
     console.error(e);
-    alert("Der PDF-Bericht konnte nicht erstellt werden. Bitte später erneut versuchen.");
+    alert(t("pdfFail"));
   }
 }
 
-// === Premium PDF generator ===
+// === Premium PDF generator (DE/EN) ===
 // Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
-// Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
-// Returns the rendered jsPDF document. Pass in jsPDF constructor + dashboard data.
+// Sprache wird über die globale LANG-Variable des Dashboards gesteuert (DE/EN).
 function generateClubCheckPdf(jsPDF, d) {
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
+
+  // ============================================================
+  // SPRACH-TEXTE
+  // ============================================================
+  const TEXTS = {
+    de: {
+      reportLabel: "Auswertungsbericht",
+      pageLabel: "Seite",
+      months: ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
+      // scoreLabel / npsLabel
+      sStrong:"Stark", sStable:"Stabil", sWeak:"Handlungsbedarf", sNoData:"Keine Daten",
+      // participation
+      pSolid:"Belastbar", pIndic:"Indikativ", pFirst:"Erste Signale",
+      // packageLabel
+      pkgBasic:"Basic Auswertung", pkgPlus:"Plus Auswertung", pkgPremium:"Premium Auswertung", pkgFallback:"Vorstand-Auswertung",
+      // areas
+      areaIntern:"Organisation", areaSport:"Sport", areaExtern:"Außenwirkung", areaZukunft:"Zukunft",
+      areaIntern_hint:"Klare Rollen, regelmäßige Kommunikation und nachvollziehbare Entscheidungen stärken die Organisation. Wenn dieser Bereich schwach ist, fehlen oft strukturierte Abläufe oder eindeutige Zuständigkeiten.",
+      areaIntern_strong:"Verschriftlichte Rollenbeschreibungen, ein moderiertes Vorstandsritual (z. B. monatliches Stand-up) und ein offen einsehbarer Entscheidungspfad sichern den Vorsprung.",
+      areaIntern_weak:"Eine schlanke Rollenmatrix erstellen, einen festen Kommunikationskanal etablieren und Entscheidungen schriftlich begründen — sichtbar für alle Mitglieder.",
+      areaSport_hint:"Trainingsbedingungen, sportliche Entwicklung und Trainer:innen-Qualität sind die zentralen Hebel der sportlichen Wahrnehmung des Vereins.",
+      areaSport_strong:"Trainings-Konzept dokumentieren und Trainer:innen-Entwicklung gezielt fortführen. Regelmäßige Trainings-Hospitationen zwischen den Teams stärken die Linie.",
+      areaSport_weak:"Mit den Trainer:innen kurze Quartalsgespräche führen, Trainingspläne sichten und Infrastruktur-Engpässe priorisieren. Externe Fortbildung kann hier viel bewegen.",
+      areaExtern_hint:"Konsistente Außenkommunikation und ein erkennbares Profil stärken die Wahrnehmung des Vereins in Ort, Verband und Sponsoring.",
+      areaExtern_strong:"Ein klar geführter Kommunikationskalender und ein bewusstes Sponsoring-Konzept halten den Vorsprung. Erfolgsgeschichten regelmäßig erzählen.",
+      areaExtern_weak:"Eine Person für Vereinskommunikation benennen, einen einfachen Inhaltsplan entwickeln und Auftritte (Webseite, Social, lokale Medien) sprachlich vereinheitlichen.",
+      areaZukunft_hint:"Langfristige Strategie, Nachfolgeplanung und Mitgliedergewinnung sichern die Stabilität über Jahre hinweg.",
+      areaZukunft_strong:"Strategie alle 12–18 Monate überprüfen, Nachfolger:innen aktiv aufbauen und Mitgliedergewinnung als laufenden Prozess verankern.",
+      areaZukunft_weak:"Einen kompakten Strategieworkshop einplanen (halbtags reicht), eine schlanke Nachfolge-Roadmap erstellen und Schlüsselrollen früh entlasten.",
+      // Cover
+      coverCode:"Vereinscode", coverDate:"Datum", coverPart:"Beteiligung",
+      kpiTotal:"Gesamtwert", kpiNps:"Empfehlung", kpiPart:"Beteiligung",
+      kpiTotalUnit:"auf Skala 1–7", kpiNpsUnit:"Net Promoter",
+      kpiPartUnitFn: function(maxMembers){ return "von " + maxMembers + " Mitgliedern"; },
+      coverFraming:"Einordnung",
+      eval_nodata:"Für eine belastbare Interpretation sollten weitere Rückmeldungen gesammelt werden. Die folgenden Kennzahlen sind als erste Signale zu verstehen.",
+      eval_strong:"Die Gesamtbewertung ist stark. Der Verein sollte vorhandene Stärken sichern und gezielt weiterentwickeln. Im Anschluss wird sichtbar, welche Bereiche besonders tragen und wo bewusst nachgeschärft werden kann.",
+      eval_stable:"Die Gesamtbewertung ist stabil. Einzelne Bereiche sollten priorisiert und in konkrete Maßnahmen übersetzt werden. Die folgenden Detailwerte zeigen die wirksamsten Hebel.",
+      eval_weak:"Die Gesamtbewertung zeigt klaren Handlungsbedarf. Der Vorstand sollte wenige, konkrete Verbesserungsmaßnahmen priorisieren. Die Detailwerte machen sichtbar, wo zuerst angesetzt werden kann.",
+      // Executive Summary
+      execTitle:"Executive Summary", execHead:"Die wichtigsten Erkenntnisse.",
+      execIntro:"Diese Seite fasst die zentralen Ergebnisse für Vorstand und Sportleitung in drei Blöcken zusammen: was trägt, was bremst und welcher Hebel zuerst gezogen werden sollte.",
+      execStrongLbl:"Was trägt", execStrongPrefix:"Dieser Bereich ist die belastbarste Säule des Vereins. ",
+      execWeakLbl:"Was bremst", execWeakPrefix:"Hier liegt der wirksamste Ansatzpunkt. ",
+      execNpsLbl:"Empfehlungsbereitschaft", execNpsPrefix:"Net Promoter Score · ",
+      execNps_nodata:"Es liegen noch keine ausreichenden NPS-Daten vor.",
+      execNps_strong:"Die emotionale Bindung ist stark — Promotoren überwiegen deutlich. Diese Energie kann gezielt für Mitgliedergewinnung genutzt werden.",
+      execNps_neutral:"Die emotionale Bindung ist neutral. Wenige aber gezielte Verbesserungen können die Promotorenquote spürbar erhöhen.",
+      execNps_critical:"Die emotionale Bindung ist kritisch. Kritiker sollten kurzfristig in den Dialog geholt werden, um Hauptursachen zu klären.",
+      // Scores
+      scoresTitle:"Bewertungsbereiche", scoresHead:"Wo der Verein steht.",
+      scoresIntro:"Durchschnittswerte auf einer Skala von 1 (sehr schwach) bis 7 (sehr stark). Die Werte beruhen auf den anonymen Rückmeldungen aller teilnehmenden Mitglieder.",
+      scoresCustomLbl:"Eigene Vereinsfragen",
+      scoresScale:"Skala",
+      scoresLegend1:"1,0–3,9  Handlungsbedarf",
+      scoresLegend2:"4,0–5,4  Stabil",
+      scoresLegend3:"5,5–7,0  Stark",
+      // NPS Inline
+      npsInlineNum:"02 — Empfehlung", npsInlineHead:"Würden Mitglieder den Verein weiterempfehlen?",
+      npsInlineIntro:"Der Empfehlungswert (Net Promoter Score) liegt zwischen -100 und +100. Er ergibt sich aus dem Anteil Promotoren minus Kritiker und ist ein robuster Indikator für die emotionale Bindung der Mitglieder.",
+      // NPS Cards
+      npsPromoters:"Promotoren", npsPassives:"Passive", npsCritics:"Kritiker",
+      npsPromotersScale:"Skala 9–10", npsPassivesScale:"Skala 7–8", npsCriticsScale:"Skala 0–6",
+      // NPS Detailed
+      npsDetailSuffix:" — Empfehlung", npsDetailHead:"Würden Mitglieder den Verein weiterempfehlen?",
+      npsDetailIntro:"Der Empfehlungswert (Net Promoter Score) gehört zu den belastbarsten Messgrößen für Mitgliederbindung. Er liegt zwischen -100 und +100 und ergibt sich aus Promotoren minus Kritikern.",
+      npsRangesTitle:"Wie der Wert zu lesen ist",
+      npsR1Range:"+30 bis +100", npsR1Lbl:"Stark", npsR1Txt:"Hohe emotionale Bindung. Empfehlungsbereitschaft kann aktiv für Mitgliedergewinnung genutzt werden.",
+      npsR2Range:"0 bis +29", npsR2Lbl:"Stabil", npsR2Txt:"Neutrale Grundstimmung. Gezielte Verbesserungen können Promotoren-Anteil deutlich erhöhen.",
+      npsR3Range:"-100 bis -1", npsR3Lbl:"Handlungsbedarf", npsR3Txt:"Mehr Kritiker als Promotoren. Ursachen sollten kurzfristig im offenen Dialog geklärt werden.",
+      npsRecoTitle:"Empfehlung für deinen Verein",
+      npsReco_nodata:"Sobald genügend Rückmeldungen vorliegen, erscheint hier eine konkrete Handlungsempfehlung auf Basis des Empfehlungswerts.",
+      npsReco_strong:"Die Empfehlungsbereitschaft ist stark. Promotoren können in einem strukturierten Mitgliedergewinnungs-Programm aktiv eingebunden werden — etwa über Empfehlungs-Aktionen oder als Botschafter:innen.",
+      npsReco_neutral:"Die Empfehlungsbereitschaft ist stabil. Wenige aber gezielte Maßnahmen — vor allem bei den Passiven — können den NPS deutlich erhöhen. Eine kurze Befragung zur Frage „Was würde dich zum Promotor machen?“ liefert oft die wirksamsten Hebel.",
+      npsReco_critical:"Die Empfehlungsbereitschaft ist kritisch. Ein moderiertes Gespräch mit Kritiker:innen (anonym, in Kleingruppen) bringt fast immer wertvolle Aufschlüsse. Erst danach Maßnahmen ableiten — sonst besteht das Risiko, an Symptomen zu arbeiten.",
+      // Custom Questions
+      customSuffix:" — Eigene Vereinsfragen", customHead:"Was ihr selbst gefragt habt.",
+      customIntro:"Durchschnittswerte zu den vom Verein hinterlegten Fragen. Skala 1–7. Antworten beruhen auf denselben anonymen Rückmeldungen wie die Hauptauswertung.",
+      customEmpty:"Für diesen Verein wurden keine eigenen Vereinsfragen hinterlegt.",
+      customQNoun:"Frage", customQFallback:"Eigene Vereinsfrage",
+      // Roles + Voices
+      rolesSuffix:" — Rollenverteilung", rolesHead:"Wer hat geantwortet.",
+      rolesIntro:"Die Rollenverteilung zeigt, aus welchen Perspektiven die Rückmeldungen stammen. Ein ausgewogenes Bild entsteht, wenn mehrere Rollen vertreten sind.",
+      rolesEmpty:"Noch keine Rückmeldungen erfasst.",
+      voicesSuffix:" — Stimmen aus dem Verein", voicesHead:"Was Mitglieder sagen.",
+      voicesEmpty:"Aktuell sind keine freigegebenen Freitexte vorhanden. Freitexte werden anonym ausgewiesen, sobald genügend Rückmeldungen vorliegen.",
+      voicesIntro:"Auswahl anonymer Originalantworten. Die Reihenfolge folgt der zeitlichen Erfassung.",
+      voicesAnonym:"Anonym",
+      // Recommendations
+      recsSuffix:" — Handlungsempfehlungen", recsHead:"Wo der Verein zuerst ansetzen kann.",
+      recsIntro:"Empfehlungen basieren auf den Bewertungsbereichen und sind als Ausgangspunkt für die Vorstandsdiskussion gedacht — nicht als fertiger Maßnahmenkatalog.",
+      recsStrong:"Stärke sichern", recsLever:"Hebel",
+      // Roadmap
+      roadSuffix:" — Maßnahmen-Roadmap", roadHead:"Vom Bericht zur Umsetzung.",
+      roadIntro:"Eine schlanke Roadmap in drei Horizonten. Wichtig ist nicht Vollständigkeit, sondern dass jede Phase klare Eigentümer:innen und ein sichtbares Ergebnis hat.",
+      roadP1Lbl:"Sofort · 0–4 Wochen",
+      roadP1Body:"Die Ergebnisse im Vorstand besprechen, einen Owner pro Hebel benennen und kurzfristig sichtbare Quick Wins definieren. Mitgliedern eine kurze Rückmeldung geben, dass die Umfrage gewirkt hat — das ist der wichtigste Schritt für Glaubwürdigkeit.",
+      roadP2Lbl:"Kurzfristig · 4–12 Wochen",
+      roadP2Body:"Den größten Hebel angehen. Einen klaren Mini-Plan (3–5 Schritte) aufsetzen, intern kommunizieren und an einer Stelle dokumentieren. Erste Wirkung sollte spürbar werden — wenn nicht, früh nachsteuern.",
+      roadP3Lbl:"Mittelfristig · 3–9 Monate",
+      roadP3Body:"Die Strukturen festigen, die geholfen haben. Eine zweite ClubCheck-Runde am Ende des Zyklus liefert eine belastbare Vorher-Nachher-Sicht und sichert den Lerneffekt im Verein.",
+      // Tips
+      tipsSuffix:" — Tipps für die Vereinsentwicklung", tipsHead:"Aus der Praxis für die Praxis.",
+      tip1T:"Ergebnisse sichtbar machen.",
+      tip1B:"Die wichtigste Regel: Mitglieder müssen erleben, dass ihre Rückmeldungen wirken. Eine kurze, ehrliche Zusammenfassung in WhatsApp-Gruppe, Vereins-Newsletter oder bei der nächsten Versammlung schafft Vertrauen für die nächste Befragung.",
+      tip2T:"Wenig, aber gut gemacht.",
+      tip2B:"Drei konsequent verfolgte Maßnahmen schlagen zehn halbherzige. Lieber einen Hebel ernsthaft ziehen als überall ein bisschen schrauben. Das gilt besonders bei knappen Ehrenamts-Ressourcen.",
+      tip3T:"Rollen vor Personen.",
+      tip3B:"Vereinsentwicklung wird oft an einzelnen engagierten Personen aufgehängt. Wer Strukturen über Rollen statt Namen denkt, baut Belastbarkeit auf. Eine kurze Rollenmatrix wirkt oft stärker als ein dickes Vereinsstatut.",
+      tip4T:"Externe Sicht einholen.",
+      tip4B:"Wer im Verein steckt, sieht manche Muster nicht mehr. Eine externe Moderation für Strategie- oder Konfliktthemen kann den Unterschied machen — gerade dann, wenn der Vorstand selbst Teil der Dynamik ist.",
+      // Contact
+      contactBrand:"Humatrix · The Mind Club Company",
+      contactHead:"Wir begleiten Vereine über den Bericht hinaus.",
+      contactBody:"Wenn ihr die Ergebnisse vertiefen, einen Strategieworkshop aufsetzen oder eine zweite ClubCheck-Runde planen wollt — wir unterstützen euch gerne. Antworte einfach direkt auf eine unserer E-Mails oder schreib uns:",
+      contactEmail:"E-Mail", contactWeb:"Web", contactSeat:"Sitz",
+      contactSeatVal:"Tirol, Österreich"
+    },
+    en: {
+      reportLabel: "Analysis report",
+      pageLabel: "Page",
+      months: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+      sStrong:"Strong", sStable:"Stable", sWeak:"Action required", sNoData:"No data",
+      pSolid:"Solid", pIndic:"Indicative", pFirst:"First signals",
+      pkgBasic:"Basic analysis", pkgPlus:"Plus analysis", pkgPremium:"Premium analysis", pkgFallback:"Board analysis",
+      areaIntern:"Organisation", areaSport:"Sport", areaExtern:"External image", areaZukunft:"Future",
+      areaIntern_hint:"Clear roles, regular communication and comprehensible decisions strengthen the organisation. When this area is weak, structured processes or clear responsibilities are usually missing.",
+      areaIntern_strong:"Written role descriptions, a moderated board ritual (e.g. monthly stand-up) and an openly visible decision path will secure the lead.",
+      areaIntern_weak:"Build a lean role matrix, establish a fixed communication channel and document decisions in writing — visible for all members.",
+      areaSport_hint:"Training conditions, athletic development and coach quality are the central levers for the sporting perception of the club.",
+      areaSport_strong:"Document the training concept and continue coach development in a focused way. Regular cross-team training visits strengthen alignment.",
+      areaSport_weak:"Hold short quarterly conversations with the coaches, review training plans and prioritise infrastructure bottlenecks. External training can move a lot here.",
+      areaExtern_hint:"Consistent external communication and a recognisable profile strengthen the perception of the club in town, federation and sponsoring.",
+      areaExtern_strong:"A well-managed communication calendar and a deliberate sponsoring concept maintain the lead. Tell success stories regularly.",
+      areaExtern_weak:"Name one person responsible for club communication, develop a simple content plan and unify external touchpoints (website, social, local media) in tone.",
+      areaZukunft_hint:"Long-term strategy, succession planning and member acquisition secure stability over years.",
+      areaZukunft_strong:"Review the strategy every 12–18 months, actively build successors and anchor member acquisition as an ongoing process.",
+      areaZukunft_weak:"Plan a compact strategy workshop (half a day is enough), build a lean succession roadmap and relieve key roles early.",
+      coverCode:"Club code", coverDate:"Date", coverPart:"Participation",
+      kpiTotal:"Overall score", kpiNps:"Recommendation", kpiPart:"Participation",
+      kpiTotalUnit:"on a 1–7 scale", kpiNpsUnit:"Net Promoter",
+      kpiPartUnitFn: function(maxMembers){ return "of " + maxMembers + " members"; },
+      coverFraming:"Framing",
+      eval_nodata:"More responses should be collected for a robust interpretation. The following indicators should be read as first signals only.",
+      eval_strong:"The overall result is strong. The club should secure existing strengths and develop them in a focused way. The detail values below show which areas carry the club especially well and where to deliberately sharpen.",
+      eval_stable:"The overall result is stable. Selected areas should be prioritised and translated into concrete measures. The detail values below show the most effective levers.",
+      eval_weak:"The overall result clearly indicates the need for action. The board should prioritise a few concrete improvement measures. The detail values reveal where to start first.",
+      execTitle:"Executive Summary", execHead:"The most important findings.",
+      execIntro:"This page summarises the key results for board and coaching staff in three blocks: what carries the club, what slows it down and which lever should be pulled first.",
+      execStrongLbl:"What carries", execStrongPrefix:"This area is the most resilient pillar of the club. ",
+      execWeakLbl:"What slows it down", execWeakPrefix:"This is the most effective starting point. ",
+      execNpsLbl:"Recommendation readiness", execNpsPrefix:"Net Promoter Score · ",
+      execNps_nodata:"There is not yet enough NPS data available.",
+      execNps_strong:"Emotional bonding is strong — promoters clearly outweigh. This energy can be used in a focused way for member acquisition.",
+      execNps_neutral:"Emotional bonding is neutral. A few targeted improvements can noticeably increase the share of promoters.",
+      execNps_critical:"Emotional bonding is critical. Detractors should be brought into dialogue at short notice to clarify the main causes.",
+      scoresTitle:"Score areas", scoresHead:"Where the club stands.",
+      scoresIntro:"Average values on a scale from 1 (very weak) to 7 (very strong). Values are based on the anonymous responses of all participating members.",
+      scoresCustomLbl:"Custom club questions",
+      scoresScale:"Scale",
+      scoresLegend1:"1.0–3.9  Action required",
+      scoresLegend2:"4.0–5.4  Stable",
+      scoresLegend3:"5.5–7.0  Strong",
+      npsInlineNum:"02 — Recommendation", npsInlineHead:"Would members recommend the club?",
+      npsInlineIntro:"The Net Promoter Score ranges from -100 to +100. It is the share of promoters minus detractors and is a robust indicator of the emotional bonding of members.",
+      npsPromoters:"Promoters", npsPassives:"Passives", npsCritics:"Detractors",
+      npsPromotersScale:"Scale 9–10", npsPassivesScale:"Scale 7–8", npsCriticsScale:"Scale 0–6",
+      npsDetailSuffix:" — Recommendation", npsDetailHead:"Would members recommend the club?",
+      npsDetailIntro:"The Net Promoter Score is one of the most resilient measures for member loyalty. It ranges from -100 to +100 and is the share of promoters minus detractors.",
+      npsRangesTitle:"How to read the score",
+      npsR1Range:"+30 to +100", npsR1Lbl:"Strong", npsR1Txt:"High emotional bonding. Recommendation readiness can be used actively for member acquisition.",
+      npsR2Range:"0 to +29", npsR2Lbl:"Stable", npsR2Txt:"Neutral baseline. Targeted improvements can noticeably increase the promoter share.",
+      npsR3Range:"-100 to -1", npsR3Lbl:"Action required", npsR3Txt:"More detractors than promoters. Causes should be clarified in open dialogue at short notice.",
+      npsRecoTitle:"Recommendation for your club",
+      npsReco_nodata:"As soon as there are enough responses, a concrete action recommendation based on the recommendation score will appear here.",
+      npsReco_strong:"Recommendation readiness is strong. Promoters can be involved in a structured member acquisition programme — for example through referral campaigns or as ambassadors.",
+      npsReco_neutral:"Recommendation readiness is stable. A few targeted measures — especially for the passives — can clearly increase the NPS. A short survey on \u201CWhat would make you a promoter?\u201D often reveals the most effective levers.",
+      npsReco_critical:"Recommendation readiness is critical. A moderated conversation with detractors (anonymous, in small groups) almost always provides valuable insights. Only after that derive measures — otherwise there is the risk of working on symptoms.",
+      customSuffix:" — Custom club questions", customHead:"What you asked yourselves.",
+      customIntro:"Average values for the questions you set up. Scale 1–7. Answers are based on the same anonymous responses as the main analysis.",
+      customEmpty:"No custom club questions have been set up for this club.",
+      customQNoun:"Question", customQFallback:"Custom club question",
+      rolesSuffix:" — Role distribution", rolesHead:"Who answered.",
+      rolesIntro:"The role distribution shows from which perspectives the responses come. A balanced picture emerges when several roles are represented.",
+      rolesEmpty:"No responses recorded yet.",
+      voicesSuffix:" — Voices from the club", voicesHead:"What members say.",
+      voicesEmpty:"No released free-text answers available yet. Free-text answers are shown anonymously once enough responses have arrived.",
+      voicesIntro:"Selection of anonymous original answers. Order follows the time of submission.",
+      voicesAnonym:"Anonymous",
+      recsSuffix:" — Action recommendations", recsHead:"Where the club can start first.",
+      recsIntro:"Recommendations are based on the score areas and are intended as a starting point for the board discussion — not as a finished catalogue of measures.",
+      recsStrong:"Secure the strength", recsLever:"Lever",
+      roadSuffix:" — Action roadmap", roadHead:"From report to implementation.",
+      roadIntro:"A lean roadmap with three horizons. What matters is not completeness but that each phase has clear owners and a visible result.",
+      roadP1Lbl:"Immediate · 0–4 weeks",
+      roadP1Body:"Discuss the results in the board, name an owner per lever and define quick wins that become visible in the short term. Give members a short feedback that the survey had impact — that's the most important step for credibility.",
+      roadP2Lbl:"Short term · 4–12 weeks",
+      roadP2Body:"Tackle the biggest lever. Set up a clear mini plan (3–5 steps), communicate it internally and document it in one place. First impact should become noticeable — if not, adjust early.",
+      roadP3Lbl:"Mid term · 3–9 months",
+      roadP3Body:"Cement the structures that helped. A second ClubCheck round at the end of the cycle delivers a robust before/after view and secures the learning effect within the club.",
+      tipsSuffix:" — Tips for club development", tipsHead:"From practice for practice.",
+      tip1T:"Make results visible.",
+      tip1B:"The most important rule: members must experience that their feedback has impact. A short, honest summary in the WhatsApp group, the club newsletter or at the next assembly creates trust for the next survey.",
+      tip2T:"Less, but well done.",
+      tip2B:"Three consistently pursued measures beat ten half-hearted ones. Better pull one lever seriously than tweak everything a bit. This applies especially with scarce volunteer resources.",
+      tip3T:"Roles before persons.",
+      tip3B:"Club development is often hung on individual committed people. Those who think structures via roles instead of names build resilience. A short role matrix often works more strongly than a thick set of bylaws.",
+      tip4T:"Get an outside view.",
+      tip4B:"Those inside the club no longer see some patterns. External moderation for strategy or conflict topics can make the difference — especially when the board itself is part of the dynamic.",
+      contactBrand:"Humatrix · The Mind Club Company",
+      contactHead:"We support clubs beyond the report.",
+      contactBody:"If you want to deepen the results, set up a strategy workshop or plan a second ClubCheck round — we'd be happy to support you. Just reply directly to one of our emails or write to us:",
+      contactEmail:"Email", contactWeb:"Web", contactSeat:"Based in",
+      contactSeatVal:"Tyrol, Austria"
+    }
+  };
+  // LANG ist eine globale Variable des Dashboards (de/en)
+  const T = TEXTS[(typeof LANG !== "undefined" && TEXTS[LANG]) ? LANG : "de"];
 
   const C = {
     bg:        [245, 243, 238],
@@ -337,12 +741,12 @@ function generateClubCheckPdf(jsPDF, d) {
     rgb(color, "text");
     font("helvetica", weight);
     doc.setFontSize(size);
-    const t = String(text || "").toUpperCase();
+    const tt = String(text || "").toUpperCase();
     doc.setCharSpace(charSpace);
     let actualX = x;
-    if (align === "right") actualX = x - trackedWidth(t, charSpace);
-    else if (align === "center") actualX = x - trackedWidth(t, charSpace) / 2;
-    doc.text(t, actualX, y);
+    if (align === "right") actualX = x - trackedWidth(tt, charSpace);
+    else if (align === "center") actualX = x - trackedWidth(tt, charSpace) / 2;
+    doc.text(tt, actualX, y);
     doc.setCharSpace(0);
   }
   function serif(text, x, y, size, weight, color, align) {
@@ -378,13 +782,13 @@ function generateClubCheckPdf(jsPDF, d) {
   }
   function pageHeader() {
     caps("Humatrix · ClubCheck", M, 14, { color: C.inkSoft, size: 7.2, charSpace: 1.0, weight: "bold" });
-    caps("Auswertungsbericht", W - M, 14, { color: C.inkLight, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
+    caps(T.reportLabel, W - M, 14, { color: C.inkLight, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
     thinLine(M, 17, W - M, 17, C.lineSoft, 0.2);
   }
   function pageFooter(num) {
     thinLine(M, H - 17, W - M, H - 17, C.lineSoft, 0.2);
     sans("humatrix.cc", M, H - 11, 7.5, "normal", C.inkLight);
-    caps("Seite " + String(num).padStart(2, "0"), W - M, H - 11, { color: C.inkSoft, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
+    caps(T.pageLabel + " " + String(num).padStart(2, "0"), W - M, H - 11, { color: C.inkSoft, size: 7.2, charSpace: 1.0, weight: "normal", align: "right" });
   }
   function startPage(isFirst) {
     if (!isFirst) doc.addPage();
@@ -396,29 +800,31 @@ function generateClubCheckPdf(jsPDF, d) {
     if (v === null || v === undefined) return "—";
     const n = Number(v);
     if (!isFinite(n)) return "—";
-    return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ",");
+    // Bei EN: Punkt als Dezimaltrenner; bei DE: Komma
+    const txt = Number.isInteger(n) ? String(n) : n.toFixed(1);
+    return (typeof LANG !== "undefined" && LANG === "en") ? txt : txt.replace(".", ",");
   }
   function fmt(v) { return v === null || v === undefined ? "—" : String(v); }
   function scoreLabel(v) {
-    if (v === null || v === undefined) return "Keine Daten";
-    return v >= 5.5 ? "Stark" : v >= 4 ? "Stabil" : "Handlungsbedarf";
+    if (v === null || v === undefined) return T.sNoData;
+    return v >= 5.5 ? T.sStrong : v >= 4 ? T.sStable : T.sWeak;
   }
   function scoreColor(v) {
     if (v === null || v === undefined) return C.inkLight;
     return v >= 5.5 ? C.green : v >= 4 ? C.gold : C.red;
   }
   function npsLabel(v) {
-    if (v === null || v === undefined) return "Keine Daten";
-    return v >= 30 ? "Stark" : v >= 0 ? "Stabil" : "Handlungsbedarf";
+    if (v === null || v === undefined) return T.sNoData;
+    return v >= 30 ? T.sStrong : v >= 0 ? T.sStable : T.sWeak;
   }
   function npsColor(v) {
     if (v === null || v === undefined) return C.inkLight;
     return v >= 30 ? C.green : v >= 0 ? C.gold : C.red;
   }
   function participationLabel(c) {
-    if (c >= 30) return "Belastbar";
-    if (c >= 10) return "Indikativ";
-    return "Erste Signale";
+    if (c >= 30) return T.pSolid;
+    if (c >= 10) return T.pIndic;
+    return T.pFirst;
   }
   function participationColor(c) {
     if (c >= 30) return C.green;
@@ -427,15 +833,18 @@ function generateClubCheckPdf(jsPDF, d) {
   }
   function packageLabel(pkg) {
     var p = String(pkg || "").toLowerCase();
-    if (p === "basic")   return "Basic Auswertung";
-    if (p === "plus")    return "Plus Auswertung";
-    if (p === "premium") return "Premium Auswertung";
-    return "Vorstand-Auswertung";
+    if (p === "basic")   return T.pkgBasic;
+    if (p === "plus")    return T.pkgPlus;
+    if (p === "premium") return T.pkgPremium;
+    return T.pkgFallback;
   }
   function dateStr() {
     const dt = new Date();
-    const months = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-    return dt.getDate() + ". " + months[dt.getMonth()] + " " + dt.getFullYear();
+    if (typeof LANG !== "undefined" && LANG === "en") {
+      // englisch: "May 7, 2026"
+      return T.months[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear();
+    }
+    return dt.getDate() + ". " + T.months[dt.getMonth()] + " " + dt.getFullYear();
   }
 
   // === DATA HELPERS ===
@@ -445,22 +854,14 @@ function generateClubCheckPdf(jsPDF, d) {
   const isPremium = pkg === "premium";
 
   const ALL_AREAS = [
-    { key: "intern",  lbl: "Organisation",  val: d.scores.intern,
-      hint: "Klare Rollen, regelmäßige Kommunikation und nachvollziehbare Entscheidungen stärken die Organisation. Wenn dieser Bereich schwach ist, fehlen oft strukturierte Abläufe oder eindeutige Zuständigkeiten.",
-      tipsStrong: "Verschriftlichte Rollenbeschreibungen, ein moderiertes Vorstandsritual (z. B. monatliches Stand-up) und ein offen einsehbarer Entscheidungspfad sichern den Vorsprung.",
-      tipsWeak:   "Eine schlanke Rollenmatrix erstellen, einen festen Kommunikationskanal etablieren und Entscheidungen schriftlich begründen — sichtbar für alle Mitglieder." },
-    { key: "sport",   lbl: "Sport",         val: d.scores.sport,
-      hint: "Trainingsbedingungen, sportliche Entwicklung und Trainer:innen-Qualität sind die zentralen Hebel der sportlichen Wahrnehmung des Vereins.",
-      tipsStrong: "Trainings-Konzept dokumentieren und Trainer:innen-Entwicklung gezielt fortführen. Regelmäßige Trainings-Hospitationen zwischen den Teams stärken die Linie.",
-      tipsWeak:   "Mit den Trainer:innen kurze Quartalsgespräche führen, Trainingspläne sichten und Infrastruktur-Engpässe priorisieren. Externe Fortbildung kann hier viel bewegen." },
-    { key: "extern",  lbl: "Außenwirkung",  val: d.scores.extern,
-      hint: "Konsistente Außenkommunikation und ein erkennbares Profil stärken die Wahrnehmung des Vereins in Ort, Verband und Sponsoring.",
-      tipsStrong: "Ein klar geführter Kommunikationskalender und ein bewusstes Sponsoring-Konzept halten den Vorsprung. Erfolgsgeschichten regelmäßig erzählen.",
-      tipsWeak:   "Eine Person für Vereinskommunikation benennen, einen einfachen Inhaltsplan entwickeln und Auftritte (Webseite, Social, lokale Medien) sprachlich vereinheitlichen." },
-    { key: "zukunft", lbl: "Zukunft",       val: d.scores.zukunft,
-      hint: "Langfristige Strategie, Nachfolgeplanung und Mitgliedergewinnung sichern die Stabilität über Jahre hinweg.",
-      tipsStrong: "Strategie alle 12–18 Monate überprüfen, Nachfolger:innen aktiv aufbauen und Mitgliedergewinnung als laufenden Prozess verankern.",
-      tipsWeak:   "Einen kompakten Strategieworkshop einplanen (halbtags reicht), eine schlanke Nachfolge-Roadmap erstellen und Schlüsselrollen früh entlasten." }
+    { key: "intern",  lbl: T.areaIntern,  val: d.scores.intern,
+      hint: T.areaIntern_hint, tipsStrong: T.areaIntern_strong, tipsWeak: T.areaIntern_weak },
+    { key: "sport",   lbl: T.areaSport,   val: d.scores.sport,
+      hint: T.areaSport_hint, tipsStrong: T.areaSport_strong, tipsWeak: T.areaSport_weak },
+    { key: "extern",  lbl: T.areaExtern,  val: d.scores.extern,
+      hint: T.areaExtern_hint, tipsStrong: T.areaExtern_strong, tipsWeak: T.areaExtern_weak },
+    { key: "zukunft", lbl: T.areaZukunft, val: d.scores.zukunft,
+      hint: T.areaZukunft_hint, tipsStrong: T.areaZukunft_strong, tipsWeak: T.areaZukunft_weak }
   ];
   const sortedAreas = ALL_AREAS.filter(function(a){ return a.val !== null && a.val !== undefined; })
                                 .sort(function(a, b){ return a.val - b.val; });
@@ -483,15 +884,15 @@ function generateClubCheckPdf(jsPDF, d) {
     titleLines.slice(0, 2).forEach(function(ln, i) { doc.text(ln, M, ty + i * 14); });
     let cursor = ty + Math.min(titleLines.length, 2) * 14 - 2;
 
-    serif("Auswertungsbericht", M, cursor + 10, 16, "italic", C.inkSoft);
+    serif(T.reportLabel, M, cursor + 10, 16, "italic", C.inkSoft);
     cursor += 18;
 
     thinLine(M, cursor, M + 60, cursor, C.line, 0.4);
     cursor += 8;
 
-    caps("Vereinscode",  M,        cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
-    caps("Datum",        M + 55,   cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
-    caps("Beteiligung",  M + 110,  cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.coverCode, M,        cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.coverDate, M + 55,   cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.coverPart, M + 110,  cursor, { color: C.inkLight, size: 7, charSpace: 1.2 });
     cursor += 6;
     sans(d.club.code, M, cursor, 12, "bold", C.ink);
     sans(dateStr(), M + 55, cursor, 12, "normal", C.ink);
@@ -506,9 +907,9 @@ function generateClubCheckPdf(jsPDF, d) {
 
     const colW = CW / 3;
     const kpis = [
-      { lbl: "Gesamtwert",   val: fmtNum(d.scores.total),  unit: "auf Skala 1–7", note: scoreLabel(d.scores.total),    color: scoreColor(d.scores.total) },
-      { lbl: "Empfehlung",   val: fmt(d.nps.score),         unit: "Net Promoter",  note: npsLabel(d.nps.score),         color: npsColor(d.nps.score) },
-      { lbl: "Beteiligung",  val: String(d.count),          unit: "von " + d.club.maxMembers + " Mitgliedern", note: participationLabel(d.count), color: participationColor(d.count) }
+      { lbl: T.kpiTotal, val: fmtNum(d.scores.total),  unit: T.kpiTotalUnit, note: scoreLabel(d.scores.total),    color: scoreColor(d.scores.total) },
+      { lbl: T.kpiNps,   val: fmt(d.nps.score),         unit: T.kpiNpsUnit,  note: npsLabel(d.nps.score),         color: npsColor(d.nps.score) },
+      { lbl: T.kpiPart,  val: String(d.count),          unit: T.kpiPartUnitFn(d.club.maxMembers), note: participationLabel(d.count), color: participationColor(d.count) }
     ];
     kpis.forEach(function(k, i) {
       const x = heroX + i * colW;
@@ -529,18 +930,18 @@ function generateClubCheckPdf(jsPDF, d) {
     });
     cursor = heroY + heroH + 16;
 
-    caps("Einordnung", M, cursor, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(T.coverFraming, M, cursor, { color: C.gold, size: 8.5, charSpace: 1.6 });
     cursor += 8;
     let evalText;
     const total = d.scores.total;
     if (total === null || total === undefined) {
-      evalText = "Für eine belastbare Interpretation sollten weitere Rückmeldungen gesammelt werden. Die folgenden Kennzahlen sind als erste Signale zu verstehen.";
+      evalText = T.eval_nodata;
     } else if (total >= 5.5) {
-      evalText = "Die Gesamtbewertung ist stark. Der Verein sollte vorhandene Stärken sichern und gezielt weiterentwickeln. Im Anschluss wird sichtbar, welche Bereiche besonders tragen und wo bewusst nachgeschärft werden kann.";
+      evalText = T.eval_strong;
     } else if (total >= 4) {
-      evalText = "Die Gesamtbewertung ist stabil. Einzelne Bereiche sollten priorisiert und in konkrete Maßnahmen übersetzt werden. Die folgenden Detailwerte zeigen die wirksamsten Hebel.";
+      evalText = T.eval_stable;
     } else {
-      evalText = "Die Gesamtbewertung zeigt klaren Handlungsbedarf. Der Vorstand sollte wenige, konkrete Verbesserungsmaßnahmen priorisieren. Die Detailwerte machen sichtbar, wo zuerst angesetzt werden kann.";
+      evalText = T.eval_weak;
     }
     rgb(C.gold, "fill"); doc.rect(M, cursor + 1, 1.2, 18, "F");
     rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(13);
@@ -556,14 +957,11 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderExecutiveSummary() {
     startPage();
     let y = 32;
-    caps("01 — Executive Summary", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps("01 — " + T.execTitle, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Die wichtigsten Erkenntnisse.", M, y, 28, "normal", C.ink);
+    serif(T.execHead, M, y, 28, "normal", C.ink);
     y += 8;
-    paragraph(
-      "Diese Seite fasst die zentralen Ergebnisse für Vorstand und Sportleitung in drei Blöcken zusammen: was trägt, was bremst und welcher Hebel zuerst gezogen werden sollte.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.execIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 18;
 
     const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
@@ -581,26 +979,26 @@ function generateClubCheckPdf(jsPDF, d) {
     }
 
     if (strongest) {
-      y = summaryBlock(y, C.green, "Was trägt",
+      y = summaryBlock(y, C.green, T.execStrongLbl,
         strongest.lbl + " · " + fmtNum(strongest.val) + " / 7",
-        "Dieser Bereich ist die belastbarste Säule des Vereins. " + strongest.tipsStrong);
+        T.execStrongPrefix + strongest.tipsStrong);
     }
     if (weakest && (!strongest || weakest.key !== strongest.key)) {
-      y = summaryBlock(y, scoreColor(weakest.val), "Was bremst",
+      y = summaryBlock(y, scoreColor(weakest.val), T.execWeakLbl,
         weakest.lbl + " · " + fmtNum(weakest.val) + " / 7",
-        "Hier liegt der wirksamste Ansatzpunkt. " + weakest.tipsWeak);
+        T.execWeakPrefix + weakest.tipsWeak);
     }
 
     // NPS block
     const npsTxt = d.nps.score === null || d.nps.score === undefined
-      ? "Es liegen noch keine ausreichenden NPS-Daten vor."
+      ? T.execNps_nodata
       : (d.nps.score >= 30
-          ? "Die emotionale Bindung ist stark — Promotoren überwiegen deutlich. Diese Energie kann gezielt für Mitgliedergewinnung genutzt werden."
+          ? T.execNps_strong
           : d.nps.score >= 0
-            ? "Die emotionale Bindung ist neutral. Wenige aber gezielte Verbesserungen können die Promotorenquote spürbar erhöhen."
-            : "Die emotionale Bindung ist kritisch. Kritiker sollten kurzfristig in den Dialog geholt werden, um Hauptursachen zu klären.");
-    y = summaryBlock(y, npsColor(d.nps.score), "Empfehlungsbereitschaft",
-      "Net Promoter Score · " + fmt(d.nps.score), npsTxt);
+            ? T.execNps_neutral
+            : T.execNps_critical);
+    y = summaryBlock(y, npsColor(d.nps.score), T.execNpsLbl,
+      T.execNpsPrefix + fmt(d.nps.score), npsTxt);
 
     pageFooter(pageNum);
   }
@@ -611,19 +1009,16 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderScores(includeNps) {
     startPage();
     let y = 32;
-    caps("01 — Bewertungsbereiche", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps("01 — " + T.scoresTitle, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Wo der Verein steht.", M, y, 28, "normal", C.ink);
+    serif(T.scoresHead, M, y, 28, "normal", C.ink);
     y += 8;
-    paragraph(
-      "Durchschnittswerte auf einer Skala von 1 (sehr schwach) bis 7 (sehr stark). Die Werte beruhen auf den anonymen Rückmeldungen aller teilnehmenden Mitglieder.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.scoresIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 16;
 
     const areas = ALL_AREAS.map(function(a){ return [a.lbl, a.val]; });
     if (d.scores.custom !== null && d.scores.custom !== undefined) {
-      areas.push(["Eigene Vereinsfragen", d.scores.custom]);
+      areas.push([T.scoresCustomLbl, d.scores.custom]);
     }
 
     const barW = CW;
@@ -659,15 +1054,15 @@ function generateClubCheckPdf(jsPDF, d) {
     });
 
     y += 2;
-    caps("Skala", M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
+    caps(T.scoresScale, M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
     y += 6;
     function legendDot(x, color, label) {
       rgb(color, "fill"); doc.circle(x + 1.2, y - 1.1, 1.1, "F");
       sans(label, x + 4, y, 8.5, "normal", C.inkSoft);
     }
-    legendDot(M, C.red, "1,0–3,9  Handlungsbedarf");
-    legendDot(M + 60, C.gold, "4,0–5,4  Stabil");
-    legendDot(M + 110, C.green, "5,5–7,0  Stark");
+    legendDot(M, C.red, T.scoresLegend1);
+    legendDot(M + 60, C.gold, T.scoresLegend2);
+    legendDot(M + 110, C.green, T.scoresLegend3);
 
     if (includeNps) {
       y += 12;
@@ -682,14 +1077,11 @@ function generateClubCheckPdf(jsPDF, d) {
   // NPS rendered inline at given y (for Basic) — returns final y
   function renderNpsInline(yStart) {
     let y = yStart;
-    caps("02 — Empfehlung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(T.npsInlineNum, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Würden Mitglieder den Verein weiterempfehlen?", M, y, 22, "normal", C.ink);
+    serif(T.npsInlineHead, M, y, 22, "normal", C.ink);
     y += 7;
-    paragraph(
-      "Der Empfehlungswert (Net Promoter Score) liegt zwischen -100 und +100. Er ergibt sich aus dem Anteil Promotoren minus Kritiker und ist ein robuster Indikator für die emotionale Bindung der Mitglieder.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.npsInlineIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 18;
     drawNpsCards(y);
   }
@@ -697,9 +1089,9 @@ function generateClubCheckPdf(jsPDF, d) {
   function drawNpsCards(yStart) {
     const npsTotal = (d.nps.promoters || 0) + (d.nps.passives || 0) + (d.nps.critics || 0);
     const items = [
-      { lbl: "Promotoren", val: d.nps.promoters || 0, color: C.green, sub: "Skala 9–10" },
-      { lbl: "Passive",    val: d.nps.passives  || 0, color: C.gold,  sub: "Skala 7–8"  },
-      { lbl: "Kritiker",   val: d.nps.critics   || 0, color: C.red,   sub: "Skala 0–6"  }
+      { lbl: T.npsPromoters, val: d.nps.promoters || 0, color: C.green, sub: T.npsPromotersScale },
+      { lbl: T.npsPassives,  val: d.nps.passives  || 0, color: C.gold,  sub: T.npsPassivesScale  },
+      { lbl: T.npsCritics,   val: d.nps.critics   || 0, color: C.red,   sub: T.npsCriticsScale   }
     ];
     const colW = CW / 3;
     const cardH = 36;
@@ -727,26 +1119,23 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderNpsDetailed(sectionLabel) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Empfehlung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.npsDetailSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Würden Mitglieder den Verein weiterempfehlen?", M, y, 26, "normal", C.ink);
+    serif(T.npsDetailHead, M, y, 26, "normal", C.ink);
     y += 7;
-    paragraph(
-      "Der Empfehlungswert (Net Promoter Score) gehört zu den belastbarsten Messgrößen für Mitgliederbindung. Er liegt zwischen -100 und +100 und ergibt sich aus Promotoren minus Kritikern.",
-      M, y, CW, { size: 10.5, color: C.inkSoft, lineH: 1.6 }
-    );
+    paragraph(T.npsDetailIntro, M, y, CW, { size: 10.5, color: C.inkSoft, lineH: 1.6 });
     y += 18;
 
     drawNpsCards(y);
     y += 36 + 14;
 
     // Erläuterung
-    caps("Wie der Wert zu lesen ist", M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
+    caps(T.npsRangesTitle, M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
     y += 7;
     const ranges = [
-      { range: "+30 bis +100", label: "Stark", color: C.green, txt: "Hohe emotionale Bindung. Empfehlungsbereitschaft kann aktiv für Mitgliedergewinnung genutzt werden." },
-      { range: "0 bis +29",    label: "Stabil", color: C.gold, txt: "Neutrale Grundstimmung. Gezielte Verbesserungen können Promotoren-Anteil deutlich erhöhen." },
-      { range: "-100 bis -1",  label: "Handlungsbedarf", color: C.red, txt: "Mehr Kritiker als Promotoren. Ursachen sollten kurzfristig im offenen Dialog geklärt werden." }
+      { range: T.npsR1Range, label: T.npsR1Lbl, color: C.green, txt: T.npsR1Txt },
+      { range: T.npsR2Range, label: T.npsR2Lbl, color: C.gold,  txt: T.npsR2Txt },
+      { range: T.npsR3Range, label: T.npsR3Lbl, color: C.red,   txt: T.npsR3Txt }
     ];
     ranges.forEach(function(r) {
       rgb(r.color, "fill"); doc.circle(M + 1.4, y - 1.2, 1.4, "F");
@@ -760,17 +1149,17 @@ function generateClubCheckPdf(jsPDF, d) {
     y += 4;
     thinLine(M, y, W - M, y, C.line, 0.3);
     y += 10;
-    caps("Empfehlung für deinen Verein", M, y, { color: C.gold, size: 8, charSpace: 1.4 });
+    caps(T.npsRecoTitle, M, y, { color: C.gold, size: 8, charSpace: 1.4 });
     y += 7;
     let emp;
     if (d.nps.score === null || d.nps.score === undefined) {
-      emp = "Sobald genügend Rückmeldungen vorliegen, erscheint hier eine konkrete Handlungsempfehlung auf Basis des Empfehlungswerts.";
+      emp = T.npsReco_nodata;
     } else if (d.nps.score >= 30) {
-      emp = "Die Empfehlungsbereitschaft ist stark. Promotoren können in einem strukturierten Mitgliedergewinnungs-Programm aktiv eingebunden werden — etwa über Empfehlungs-Aktionen oder als Botschafter:innen.";
+      emp = T.npsReco_strong;
     } else if (d.nps.score >= 0) {
-      emp = "Die Empfehlungsbereitschaft ist stabil. Wenige aber gezielte Maßnahmen — vor allem bei den Passiven — können den NPS deutlich erhöhen. Eine kurze Befragung zur Frage „Was würde dich zum Promotor machen?“ liefert oft die wirksamsten Hebel.";
+      emp = T.npsReco_neutral;
     } else {
-      emp = "Die Empfehlungsbereitschaft ist kritisch. Ein moderiertes Gespräch mit Kritiker:innen (anonym, in Kleingruppen) bringt fast immer wertvolle Aufschlüsse. Erst danach Maßnahmen ableiten — sonst besteht das Risiko, an Symptomen zu arbeiten.";
+      emp = T.npsReco_critical;
     }
     rgb(C.gold, "fill"); doc.rect(M, y, 1.2, 18, "F");
     rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11.5);
@@ -786,23 +1175,20 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderCustomQuestions(sectionLabel) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Eigene Vereinsfragen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.customSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Was ihr selbst gefragt habt.", M, y, 28, "normal", C.ink);
+    serif(T.customHead, M, y, 28, "normal", C.ink);
     y += 8;
-    paragraph(
-      "Durchschnittswerte zu den vom Verein hinterlegten Fragen. Skala 1–7. Antworten beruhen auf denselben anonymen Rückmeldungen wie die Hauptauswertung.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.customIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 16;
 
     const customQs = (d.questions && d.questions.length) ? d.questions : [];
     if (customQs.length === 0) {
-      paragraph("Für diesen Verein wurden keine eigenen Vereinsfragen hinterlegt.",
+      paragraph(T.customEmpty,
         M, y, CW, { size: 11, color: C.inkLight, weight: "italic", family: "times" });
     } else {
       customQs.slice(0, 5).forEach(function(q, i) {
-        const label = "Frage " + (i + 1);
+        const label = T.customQNoun + " " + (i + 1);
         caps(label, M, y, { color: C.inkLight, size: 7.2, charSpace: 1.2 });
         const valText = fmtNum(q.avg) + " / 7";
         const statusText = scoreLabel(q.avg);
@@ -819,7 +1205,7 @@ function generateClubCheckPdf(jsPDF, d) {
         rgb(C.inkLight, "text"); doc.text(sepText, valX + valW, y);
         y += 5;
         rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11);
-        const qLines = doc.splitTextToSize("\u201E" + (q.text || "Eigene Vereinsfrage") + "\u201C", CW - 4);
+        const qLines = doc.splitTextToSize("\u201E" + (q.text || T.customQFallback) + "\u201C", CW - 4);
         qLines.forEach(function(ln, idx) { doc.text(ln, M, y + idx * 5.2); });
         y += qLines.length * 5.2 + 3;
         rgb(C.lineSoft, "fill"); doc.rect(M, y, CW, 4, "F");
@@ -835,24 +1221,21 @@ function generateClubCheckPdf(jsPDF, d) {
   }
 
   // ============================================================
-  // SECTION: ROLES + VOICES (always — voice density depends on package)
+  // SECTION: ROLES + VOICES
   // ============================================================
   function renderRolesVoices(sectionRoles, sectionVoices, voiceLimit) {
     startPage();
     let y = 32;
-    caps(sectionRoles + " — Rollenverteilung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionRoles + T.rolesSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Wer hat geantwortet.", M, y, 26, "normal", C.ink);
+    serif(T.rolesHead, M, y, 26, "normal", C.ink);
     y += 7;
-    paragraph(
-      "Die Rollenverteilung zeigt, aus welchen Perspektiven die Rückmeldungen stammen. Ein ausgewogenes Bild entsteht, wenn mehrere Rollen vertreten sind.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.rolesIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 14;
 
     const roleEntries = Object.entries(d.roles || {}).sort(function(a, b) { return b[1] - a[1]; });
     if (roleEntries.length === 0) {
-      paragraph("Noch keine Rückmeldungen erfasst.", M, y, CW, { size: 11, color: C.inkLight, weight: "italic" });
+      paragraph(T.rolesEmpty, M, y, CW, { size: 11, color: C.inkLight, weight: "italic" });
       y += 10;
     } else {
       const maxRole = Math.max.apply(null, roleEntries.map(function(p) { return p[1]; }).concat(1));
@@ -873,30 +1256,26 @@ function generateClubCheckPdf(jsPDF, d) {
     thinLine(M, y, W - M, y, C.line, 0.3);
     y += 12;
 
-    caps(sectionVoices + " — Stimmen aus dem Verein", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionVoices + T.voicesSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Was Mitglieder sagen.", M, y, 26, "normal", C.ink);
+    serif(T.voicesHead, M, y, 26, "normal", C.ink);
     y += 7;
 
     const freitexts = (d.freitexts || []).slice(0, voiceLimit);
     if (freitexts.length === 0) {
-      paragraph(
-        "Aktuell sind keine freigegebenen Freitexte vorhanden. Freitexte werden anonym ausgewiesen, sobald genügend Rückmeldungen vorliegen.",
+      paragraph(T.voicesEmpty,
         M, y, CW - 20, { size: 10.5, color: C.inkLight, weight: "italic", family: "times" }
       );
     } else {
-      paragraph(
-        "Auswahl anonymer Originalantworten. Die Reihenfolge folgt der zeitlichen Erfassung.",
-        M, y, CW - 30, { size: 10, color: C.inkSoft }
-      );
+      paragraph(T.voicesIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
       y += 12;
-      freitexts.forEach(function(t) {
-        const text = "\u201E" + t.text + "\u201C";
-        const role = (t.role || "Anonym");
+      freitexts.forEach(function(ft) {
+        const text = "\u201E" + ft.text + "\u201C";
+        const role = (ft.role || T.voicesAnonym);
         font("times", "italic"); doc.setFontSize(11);
         const lines = doc.splitTextToSize(text, CW - 14);
         const blockH = 6 + lines.length * 5.2 + 3;
-        if (y + blockH + 5 > H - 25) return; // stop if no space — limit was set to fit
+        if (y + blockH + 5 > H - 25) return;
         rgb(C.gold, "fill"); doc.rect(M, y + 1, 1, blockH - 4, "F");
         caps(role, M + 7, y + 5, { color: C.inkLight, size: 7, charSpace: 1.2 });
         rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11);
@@ -914,16 +1293,16 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderRecsContactBasic(sectionLabel) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Handlungsempfehlungen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.recsSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Wo der Verein zuerst ansetzen kann.", M, y, 26, "normal", C.ink);
+    serif(T.recsHead, M, y, 26, "normal", C.ink);
     y += 8;
 
     const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
     const weakest = sortedAreas.slice(0, 2);
 
     if (strongest) {
-      caps("Stärke sichern", M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
+      caps(T.recsStrong, M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
       y += 5;
       sans(strongest.lbl + " · " + fmtNum(strongest.val) + " / 7", M, y, 11, "bold", C.ink);
       y += 5;
@@ -931,7 +1310,7 @@ function generateClubCheckPdf(jsPDF, d) {
       y += 8;
     }
     weakest.forEach(function(area, i) {
-      caps("Hebel " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
+      caps(T.recsLever + " " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
       y += 5;
       sans(area.lbl + " · " + fmtNum(area.val) + " / 7", M, y, 11, "bold", C.ink);
       y += 5;
@@ -939,7 +1318,6 @@ function generateClubCheckPdf(jsPDF, d) {
       y += 8;
     });
 
-    // Kontakt
     y += 6;
     thinLine(M, y, W - M, y, C.line, 0.3);
     y += 10;
@@ -954,21 +1332,18 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderRecsDetailed(sectionLabel) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Handlungsempfehlungen", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.recsSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Wo der Verein zuerst ansetzen kann.", M, y, 26, "normal", C.ink);
+    serif(T.recsHead, M, y, 26, "normal", C.ink);
     y += 8;
-    paragraph(
-      "Empfehlungen basieren auf den Bewertungsbereichen und sind als Ausgangspunkt für die Vorstandsdiskussion gedacht — nicht als fertiger Maßnahmenkatalog.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.recsIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 16;
 
     const strongest = sortedAreas.length ? sortedAreas[sortedAreas.length - 1] : null;
     const weakest = sortedAreas.slice(0, 3);
 
     if (strongest) {
-      caps("Stärke sichern", M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
+      caps(T.recsStrong, M, y, { color: C.green, size: 7.2, charSpace: 1.2 });
       y += 5;
       sans(strongest.lbl + " · " + fmtNum(strongest.val) + " / 7", M, y, 11.5, "bold", C.ink);
       y += 5;
@@ -976,7 +1351,7 @@ function generateClubCheckPdf(jsPDF, d) {
       y += 9;
     }
     weakest.forEach(function(area, i) {
-      caps("Hebel " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
+      caps(T.recsLever + " " + (i + 1), M, y, { color: scoreColor(area.val), size: 7.2, charSpace: 1.2 });
       y += 5;
       sans(area.lbl + " · " + fmtNum(area.val) + " / 7", M, y, 11.5, "bold", C.ink);
       y += 5;
@@ -993,23 +1368,17 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderRoadmapContact(sectionLabel, withContact) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Maßnahmen-Roadmap", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.roadSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Vom Bericht zur Umsetzung.", M, y, 26, "normal", C.ink);
+    serif(T.roadHead, M, y, 26, "normal", C.ink);
     y += 8;
-    paragraph(
-      "Eine schlanke Roadmap in drei Horizonten. Wichtig ist nicht Vollständigkeit, sondern dass jede Phase klare Eigentümer:innen und ein sichtbares Ergebnis hat.",
-      M, y, CW - 30, { size: 10, color: C.inkSoft }
-    );
+    paragraph(T.roadIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
     y += 16;
 
     const phases = [
-      { eyebrow: "Sofort · 0–4 Wochen", color: C.red,
-        body: "Die Ergebnisse im Vorstand besprechen, einen Owner pro Hebel benennen und kurzfristig sichtbare Quick Wins definieren. Mitgliedern eine kurze Rückmeldung geben, dass die Umfrage gewirkt hat — das ist der wichtigste Schritt für Glaubwürdigkeit." },
-      { eyebrow: "Kurzfristig · 4–12 Wochen", color: C.gold,
-        body: "Den größten Hebel angehen. Einen klaren Mini-Plan (3–5 Schritte) aufsetzen, intern kommunizieren und an einer Stelle dokumentieren. Erste Wirkung sollte spürbar werden — wenn nicht, früh nachsteuern." },
-      { eyebrow: "Mittelfristig · 3–9 Monate", color: C.green,
-        body: "Die Strukturen festigen, die geholfen haben. Eine zweite ClubCheck-Runde am Ende des Zyklus liefert eine belastbare Vorher-Nachher-Sicht und sichert den Lerneffekt im Verein." }
+      { eyebrow: T.roadP1Lbl, color: C.red,   body: T.roadP1Body },
+      { eyebrow: T.roadP2Lbl, color: C.gold,  body: T.roadP2Body },
+      { eyebrow: T.roadP3Lbl, color: C.green, body: T.roadP3Body }
     ];
     phases.forEach(function(ph) {
       const blockH = 32;
@@ -1037,25 +1406,21 @@ function generateClubCheckPdf(jsPDF, d) {
   function renderTipsContact(sectionLabel) {
     startPage();
     let y = 32;
-    caps(sectionLabel + " — Tipps für die Vereinsentwicklung", M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps(sectionLabel + T.tipsSuffix, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
-    serif("Aus der Praxis für die Praxis.", M, y, 26, "normal", C.ink);
+    serif(T.tipsHead, M, y, 26, "normal", C.ink);
     y += 8;
 
     const tips = [
-      { title: "Ergebnisse sichtbar machen.",
-        body: "Die wichtigste Regel: Mitglieder müssen erleben, dass ihre Rückmeldungen wirken. Eine kurze, ehrliche Zusammenfassung in WhatsApp-Gruppe, Vereins-Newsletter oder bei der nächsten Versammlung schafft Vertrauen für die nächste Befragung." },
-      { title: "Wenig, aber gut gemacht.",
-        body: "Drei konsequent verfolgte Maßnahmen schlagen zehn halbherzige. Lieber einen Hebel ernsthaft ziehen als überall ein bisschen schrauben. Das gilt besonders bei knappen Ehrenamts-Ressourcen." },
-      { title: "Rollen vor Personen.",
-        body: "Vereinsentwicklung wird oft an einzelnen engagierten Personen aufgehängt. Wer Strukturen über Rollen statt Namen denkt, baut Belastbarkeit auf. Eine kurze Rollenmatrix wirkt oft stärker als ein dickes Vereinsstatut." },
-      { title: "Externe Sicht einholen.",
-        body: "Wer im Verein steckt, sieht manche Muster nicht mehr. Eine externe Moderation für Strategie- oder Konfliktthemen kann den Unterschied machen — gerade dann, wenn der Vorstand selbst Teil der Dynamik ist." }
+      { title: T.tip1T, body: T.tip1B },
+      { title: T.tip2T, body: T.tip2B },
+      { title: T.tip3T, body: T.tip3B },
+      { title: T.tip4T, body: T.tip4B }
     ];
-    tips.forEach(function(t) {
-      sans(t.title, M, y, 12, "bold", C.ink);
+    tips.forEach(function(tp) {
+      sans(tp.title, M, y, 12, "bold", C.ink);
       y += 6;
-      y = paragraph(t.body, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
+      y = paragraph(tp.body, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
       y += 8;
     });
 
@@ -1070,14 +1435,11 @@ function generateClubCheckPdf(jsPDF, d) {
   // === SHARED CONTACT BLOCK ===
   function renderContactBlock(yStart) {
     let y = yStart;
-    caps("Humatrix · The Mind Club Company", M, y, { color: C.gold, size: 8, charSpace: 1.4 });
+    caps(T.contactBrand, M, y, { color: C.gold, size: 8, charSpace: 1.4 });
     y += 7;
-    serif("Wir begleiten Vereine über den Bericht hinaus.", M, y, 16, "italic", C.ink);
+    serif(T.contactHead, M, y, 16, "italic", C.ink);
     y += 9;
-    paragraph(
-      "Wenn ihr die Ergebnisse vertiefen, einen Strategieworkshop aufsetzen oder eine zweite ClubCheck-Runde planen wollt — wir unterstützen euch gerne. Antworte einfach direkt auf eine unserer E-Mails oder schreib uns:",
-      M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 }
-    );
+    paragraph(T.contactBody, M, y, CW, { size: 10, color: C.inkSoft, lineH: 1.55 });
     y += 16;
 
     // Contact card
@@ -1087,44 +1449,37 @@ function generateClubCheckPdf(jsPDF, d) {
     rgb(C.gold, "fill"); doc.rect(M, y, CW, 0.6, "F");
 
     const colW = CW / 3;
-    caps("E-Mail",     M + 6,                  y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
-    caps("Web",        M + 6 + colW,           y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
-    caps("Sitz",       M + 6 + 2 * colW,       y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.contactEmail, M + 6,                  y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.contactWeb,   M + 6 + colW,           y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
+    caps(T.contactSeat,  M + 6 + 2 * colW,       y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
     sans("office@humatrix.cc",          M + 6,            y + 18, 10.5, "bold", C.ink);
     sans("humatrix.cc",                 M + 6 + colW,     y + 18, 10.5, "bold", C.ink);
-    sans("Tirol, Österreich",           M + 6 + 2 * colW, y + 18, 10.5, "bold", C.ink);
+    sans(T.contactSeatVal,              M + 6 + 2 * colW, y + 18, 10.5, "bold", C.ink);
   }
-
-  // ============================================================
-  // SECTION: METHODIK FOOTER (always last — inline at bottom of last page)
-  // ============================================================
-  // Note: we don't add a separate page; we append disclaimer inline if there's room
 
   // ============================================================
   // RENDER PIPELINE — package-aware
   // ============================================================
   if (isBasic) {
-    // 4 pages
     renderCover();                       // P1
     renderScores(true);                  // P2 (scores + NPS combined)
     renderRolesVoices("03", "04", 4);    // P3
     renderRecsContactBasic("05");        // P4 (recs short + contact)
   } else if (isPlus) {
-    // 6 pages
     renderCover();                                  // P1
     renderScores(false);                            // P2
     renderNpsDetailed("02");                        // P3
     renderCustomQuestions("03");                    // P4
     renderRolesVoices("04", "05", 4);               // P5
-    renderRoadmapContact("06", true);               // P6 (roadmap + contact, no detailed recs)
+    renderRoadmapContact("06", true);               // P6
   } else {
-    // PREMIUM — 8 pages
+    // PREMIUM
     renderCover();                                  // P1
     renderExecutiveSummary();                       // P2
     renderScores(false);                            // P3
     renderNpsDetailed("03");                        // P4
     renderCustomQuestions("04");                    // P5
-    renderRolesVoices("05", "06", 8);               // P6 (more voices)
+    renderRolesVoices("05", "06", 8);               // P6
     renderRecsDetailed("07");                       // P7
     renderTipsContact("08");                        // P8
   }

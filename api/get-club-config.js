@@ -6,6 +6,11 @@ const {
   clubQuestionsFromRow
 } = require("./_lib");
 
+// Pulse = Einstiegstest (basic). Core = Premium-Test (plus, premium).
+function modeForPackage(pkg) {
+  return pkg === "basic" ? "pulse" : "core";
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return methodNotAllowed(res);
 
@@ -47,6 +52,7 @@ module.exports = async function handler(req, res) {
         code: club.code,
         name: club.name,
         package: club.package,
+        mode: modeForPackage(club.package), // <-- vom Server vorgegeben
         maxMembers: club.max_members,
         remaining: Math.max(0, Number(club.max_members || 0) - Number(count || 0)),
         questions: clubQuestionsFromRow(club)

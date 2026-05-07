@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Impressum — Humatrix ClubCheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--brd:#e5e2da;--tx:#1a1a1a;--tm:#5a5650;--ac:#1a1a1a;--gold:#8a6d3b;--fd:'Fraunces','Georgia',serif;--fn:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;line-height:1.7}
+h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.02em}
+a{color:var(--gold)}
+.wrap{max-width:780px;margin:0 auto;padding:0 28px}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(245,243,238,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd)}
+.hdr-in{max-width:1180px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
+.logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
+.logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
+main{padding:54px 0 80px}
+h1{font-size:42px;margin-bottom:28px}
+h2{font-size:22px;margin:30px 0 10px}
+p{color:var(--tm);margin-bottom:14px}
+.box{background:var(--card);border:1px solid var(--brd);padding:28px;margin-top:6px}
+.muted{color:#9c978d;font-size:13px;margin-top:30px}
+.footer{border-top:1px solid var(--brd);padding:24px 0;color:var(--tm);font-size:13px;margin-top:40px;text-align:center}
+.footer a{color:var(--tm);margin:0 10px}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/" style="text-decoration:none;color:inherit"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></div></header>
+
+<main><div class="wrap"><div id="content"></div></div></main>
+<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></div></footer>
+
+<script>
+const I18N = {
+  de: {
+    title:"Impressum",
+    h_provider:"Humatrix by Bernhard Lampl",
+    p_provider:"Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA<br>CEO &amp; Founder<br>Ried 80<br>6363 Westendorf<br>Tirol, Österreich",
+    h_contact:"Kontakt",
+    p_contact:"Telefon: +43 676 916 60 20<br>E-Mail: <a href='mailto:office@humatrix.cc'>office@humatrix.cc</a><br>Web: <a href='https://clubcheck.humatrix.cc'>clubcheck.humatrix.cc</a>",
+    h_purpose:"Unternehmensgegenstand",
+    p_purpose:"Beratung und Analyse im Bereich Sportorganisation, Vereins- und Verbandsentwicklung, wissenschaftlich fundierte Leistungs- und Strukturanalyse sowie strategische Beratung im Sport.",
+    h_gisa:"GISA-Nummer",
+    p_gisa:"39461841",
+    h_supervisor:"Aufsichtsbehörde",
+    p_supervisor:"Bezirkshauptmannschaft Kitzbühel<br>Tirol, Österreich",
+    h_member:"Mitgliedschaften",
+    p_member:"Wirtschaftskammer Österreich – Fachgruppe Unternehmensberatung",
+    h_law:"Berufsrechtliche Vorschriften",
+    p_law:"Gewerbeordnung (GewO), abrufbar unter <a href='https://www.ris.bka.gv.at' target='_blank' rel='noopener'>www.ris.bka.gv.at</a>",
+    h_media:"Medieninhaber und Herausgeber",
+    p_media:"Bernhard Lampl by Humatrix<br>Ried 80<br>6363 Westendorf<br>Österreich",
+    h_blattlinie:"Blattlinie",
+    p_blattlinie:"Die Website informiert über Leistungen und Projekte der Sportanalyse- und Beratungsagentur Humatrix sowie über die Anwendung „ClubCheck“ zur Vereinsdiagnostik.",
+    h_eu:"Online-Streitbeilegung (EU)",
+    p_eu:"Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit: <a href='https://ec.europa.eu/consumers/odr' target='_blank' rel='noopener'>ec.europa.eu/consumers/odr</a>. Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.",
+    h_disclaimer:"Haftungsausschluss",
+    p_disclaimer:"Die Inhalte dieser Website werden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte wird jedoch keine Gewähr übernommen. Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.",
+    h_copyright:"Urheberrecht",
+    p_copyright:"Die Inhalte und Werke auf dieser Website unterliegen dem Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.",
+    updated:"© 2026 Humatrix by Bernhard Lampl"
+  },
+  en: {
+    title:"Imprint",
+    h_provider:"Humatrix by Bernhard Lampl",
+    p_provider:"Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA<br>CEO &amp; Founder<br>Ried 80<br>6363 Westendorf<br>Tyrol, Austria",
+    h_contact:"Contact",
+    p_contact:"Phone: +43 676 916 60 20<br>Email: <a href='mailto:office@humatrix.cc'>office@humatrix.cc</a><br>Web: <a href='https://clubcheck.humatrix.cc'>clubcheck.humatrix.cc</a>",
+    h_purpose:"Business purpose",
+    p_purpose:"Consulting and analysis in sport organisation, club and federation development, scientifically grounded performance and structural analysis, and strategic consulting in sport.",
+    h_gisa:"GISA number (Austrian commercial register)",
+    p_gisa:"39461841",
+    h_supervisor:"Supervisory authority",
+    p_supervisor:"District Authority Kitzbühel (Bezirkshauptmannschaft Kitzbühel)<br>Tyrol, Austria",
+    h_member:"Memberships",
+    p_member:"Austrian Economic Chamber (Wirtschaftskammer Österreich) – Trade Group for Management Consulting",
+    h_law:"Applicable professional law",
+    p_law:"Austrian Trade Regulation Act (Gewerbeordnung – GewO), available at <a href='https://www.ris.bka.gv.at' target='_blank' rel='noopener'>www.ris.bka.gv.at</a>",
+    h_media:"Media owner and publisher",
+    p_media:"Bernhard Lampl by Humatrix<br>Ried 80<br>6363 Westendorf<br>Austria",
+    h_blattlinie:"Editorial line",
+    p_blattlinie:"The website informs about services and projects of the sport analysis and consulting agency Humatrix as well as about the \u201CClubCheck\u201D application for club diagnostics.",
+    h_eu:"EU online dispute resolution",
+    p_eu:"The European Commission provides a platform for online dispute resolution: <a href='https://ec.europa.eu/consumers/odr' target='_blank' rel='noopener'>ec.europa.eu/consumers/odr</a>. We are neither obliged nor willing to participate in dispute resolution proceedings before a consumer arbitration board.",
+    h_disclaimer:"Disclaimer",
+    p_disclaimer:"The contents of this website are created with the greatest possible care. However, no guarantee is given for the correctness, completeness or topicality of the contents. Despite careful review, we assume no liability for the content of external links. The operators of the linked pages are solely responsible for their content.",
+    h_copyright:"Copyright",
+    p_copyright:"The contents and works on this website are subject to copyright. Contributions by third parties are marked as such. Reproduction, editing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator.",
+    updated:"© 2026 Humatrix by Bernhard Lampl"
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l; localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l; render();
+}
+function t(k){ return I18N[LANG][k] || I18N.de[k] || k; }
+function render(){
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.title = t("title") + " — Humatrix ClubCheck";
+  document.getElementById("content").innerHTML = `
+    <h1>${t("title")}</h1>
+    <div class="box">
+      <h2>${t("h_provider")}</h2><p>${t("p_provider")}</p>
+      <h2>${t("h_contact")}</h2><p>${t("p_contact")}</p>
+      <h2>${t("h_purpose")}</h2><p>${t("p_purpose")}</p>
+      <h2>${t("h_gisa")}</h2><p>${t("p_gisa")}</p>
+      <h2>${t("h_supervisor")}</h2><p>${t("p_supervisor")}</p>
+      <h2>${t("h_member")}</h2><p>${t("p_member")}</p>
+      <h2>${t("h_law")}</h2><p>${t("p_law")}</p>
+      <h2>${t("h_media")}</h2><p>${t("p_media")}</p>
+      <h2>${t("h_blattlinie")}</h2><p>${t("p_blattlinie")}</p>
+      <h2>${t("h_eu")}</h2><p>${t("p_eu")}</p>
+      <h2>${t("h_disclaimer")}</h2><p>${t("p_disclaimer")}</p>
+      <h2>${t("h_copyright")}</h2><p>${t("p_copyright")}</p>
+      <p class="muted">${t("updated")}</p>
+    </div>`;
+}
+render();
+</script>
+</body>
+</html>

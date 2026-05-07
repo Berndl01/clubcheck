@@ -48,6 +48,9 @@
     .nav-links a{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding:11px 14px;border:1px solid transparent;border-radius:999px;transition:.2s ease}
     .nav-links a:hover{color:var(--text);border-color:var(--line)}
     .nav-links .nav-cta{background:var(--cream);color:#15110d;border-color:var(--cream);font-weight:700}
+    .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-left:8px}
+    .lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--fn);text-transform:uppercase}
+    .lang button.on{background:var(--cream);color:#15110d}
     .hero{padding:76px 0 34px}
     .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.75fr);gap:48px;align-items:center}
     .kicker{display:inline-flex;align-items:center;gap:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:11px;font-weight:700;margin-bottom:22px}
@@ -173,13 +176,14 @@
         <div><div class="brand-small">Humatrix</div><div class="brand-name">ClubCheck</div></div>
       </a>
       <div class="nav-links">
-        <a href="#problem">Problem</a>
-        <a href="#pakete">Pakete</a>
-        <a href="#auswertung">Auswertung</a>
-        <a href="#ablauf">Ablauf</a>
-        <a href="#mitglieder">Mitglieder-Zugang</a>
-        <a href="/dashboard.html">Login</a>
-        <a class="nav-cta" href="/register.html">Starten</a>
+        <a href="#problem" id="navProblem">Problem</a>
+        <a href="#pakete" id="navPakete">Pakete</a>
+        <a href="#auswertung" id="navAuswertung">Auswertung</a>
+        <a href="#ablauf" id="navAblauf">Ablauf</a>
+        <a href="#mitglieder" id="navMember">Mitglieder-Zugang</a>
+        <a href="/dashboard.html" id="navLogin">Login</a>
+        <a class="nav-cta" href="/register.html" id="navStart">Starten</a>
+        <span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span>
       </div>
     </div>
   </nav>
@@ -187,30 +191,30 @@
   <header id="top" class="hero">
     <div class="wrap hero-grid">
       <div>
-        <div class="kicker">für Fußball · Sportvereine · Nachwuchs · Vorstand</div>
-        <h1>Was läuft in deinem Verein wirklich?</h1>
-        <p class="lead"><strong>ClubCheck macht sichtbar, was sonst nur gespürt wird.</strong> Anonymes Feedback von Spielern, Eltern, Trainern und Funktionären — ausgewertet zu klaren Handlungsfeldern für Führung, Kommunikation, Organisation und Vereinsentwicklung.</p>
+        <div class="kicker" id="heroKicker">für Fußball · Sportvereine · Nachwuchs · Vorstand</div>
+        <h1 id="heroH1">Was läuft in deinem Verein wirklich?</h1>
+        <p class="lead" id="heroLead"><strong>ClubCheck macht sichtbar, was sonst nur gespürt wird.</strong> Anonymes Feedback von Spielern, Eltern, Trainern und Funktionären — ausgewertet zu klaren Handlungsfeldern für Führung, Kommunikation, Organisation und Vereinsentwicklung.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="/register.html">ClubCheck starten →</a>
-          <a class="btn btn-secondary" href="#mitglieder">Ich habe einen Code →</a>
+          <a class="btn btn-primary" href="/register.html" id="ctaStart">ClubCheck starten →</a>
+          <a class="btn btn-secondary" href="#mitglieder" id="ctaCode">Ich habe einen Code →</a>
         </div>
         <div class="hero-tags">
-          <span class="tag">anonymes Vereinsfeedback</span>
-          <span class="tag">Dashboard + PDF-Bericht</span>
-          <span class="tag">12 Wochen Laufzeit</span>
-          <span class="tag">für bis zu 500 Mitglieder</span>
+          <span class="tag" id="tag1">anonymes Vereinsfeedback</span>
+          <span class="tag" id="tag2">Dashboard + PDF-Bericht</span>
+          <span class="tag" id="tag3">12 Wochen Laufzeit</span>
+          <span class="tag" id="tag4">für bis zu 500 Mitglieder</span>
         </div>
       </div>
 
       <aside class="insight-card" aria-label="Beispielauswertung">
-        <div class="live"><span class="dot"></span> Live · Sample Insight</div>
-        <div class="score"><div class="score-main">73</div><div class="score-sub">/100<br>Vereinsklima</div></div>
-        <div class="quote">„Die Bindung im Verein ist stark — aber Kommunikation und Rollenklarheit bremsen Entwicklung.“</div>
+        <div class="live"><span class="dot"></span> <span id="insightLive">Live · Sample Insight</span></div>
+        <div class="score"><div class="score-main">73</div><div class="score-sub" id="insightSub">/100<br>Vereinsklima</div></div>
+        <div class="quote" id="insightQuote">„Die Bindung im Verein ist stark — aber Kommunikation und Rollenklarheit bremsen Entwicklung.“</div>
         <div class="axis">
-          <div class="axis-row"><span>Zusammenhalt</span><div class="bar"><div class="fill"></div></div><span class="grade">A−</span></div>
-          <div class="axis-row"><span>Kommunikation</span><div class="bar"><div class="fill"></div></div><span class="grade">B</span></div>
-          <div class="axis-row"><span>Organisation</span><div class="bar"><div class="fill"></div></div><span class="grade">C+</span></div>
-          <div class="axis-row"><span>Vertrauen</span><div class="bar"><div class="fill"></div></div><span class="grade">B+</span></div>
+          <div class="axis-row"><span id="axis1">Zusammenhalt</span><div class="bar"><div class="fill"></div></div><span class="grade">A−</span></div>
+          <div class="axis-row"><span id="axis2">Kommunikation</span><div class="bar"><div class="fill"></div></div><span class="grade">B</span></div>
+          <div class="axis-row"><span id="axis3">Organisation</span><div class="bar"><div class="fill"></div></div><span class="grade">C+</span></div>
+          <div class="axis-row"><span id="axis4">Vertrauen</span><div class="bar"><div class="fill"></div></div><span class="grade">B+</span></div>
         </div>
       </aside>
     </div>
@@ -220,18 +224,18 @@
     <div class="wrap">
       <div class="member-card">
         <div class="member-text">
-          <div class="member-eyebrow">Für Mitglieder</div>
-          <h2>Code eingeben, anonym Feedback geben.</h2>
-          <p>Du hast den Mitglieder-Link oder einen Club-Code von deinem Verein bekommen? Hier geht's direkt zur anonymen Befragung. Keine Anmeldung, keine Speicherung deines Namens.</p>
+          <div class="member-eyebrow" id="memberEyebrow">Für Mitglieder</div>
+          <h2 id="memberH2">Code eingeben, anonym Feedback geben.</h2>
+          <p id="memberLead">Du hast den Mitglieder-Link oder einen Club-Code von deinem Verein bekommen? Hier geht's direkt zur anonymen Befragung. Keine Anmeldung, keine Speicherung deines Namens.</p>
         </div>
         <div class="member-form">
-          <label for="memberCode" class="member-label">Club-Code</label>
+          <label for="memberCode" class="member-label" id="memberLabel">Club-Code</label>
           <div class="member-row">
             <input id="memberCode" class="member-input" type="text" placeholder="z. B. SCH5023" autocomplete="off" inputmode="latin" maxlength="12" />
-            <button class="btn btn-primary member-btn" onclick="goToSurvey()">Zur Umfrage →</button>
+            <button class="btn btn-primary member-btn" onclick="goToSurvey()" id="memberBtn">Zur Umfrage →</button>
           </div>
           <div id="memberError" class="member-error" style="display:none"></div>
-          <div class="member-hint">Den Code findest du in der Mail oder auf dem Aushang deines Vereins.</div>
+          <div class="member-hint" id="memberHint">Den Code findest du in der Mail oder auf dem Aushang deines Vereins.</div>
         </div>
       </div>
     </div>
@@ -239,10 +243,10 @@
 
   <div class="stats">
     <div class="wrap stats-grid">
-      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Pakete von Basic bis Premium</div></div>
-      <div class="stat"><div class="stat-num">12</div><div class="stat-label">Wochen aktiver ClubCheck</div></div>
-      <div class="stat"><div class="stat-num">500</div><div class="stat-label">Mitglieder im größten Paket</div></div>
-      <div class="stat"><div class="stat-num">PDF</div><div class="stat-label">Bericht für Vorstand & Sportleitung</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label" id="stat1">Pakete von Basic bis Premium</div></div>
+      <div class="stat"><div class="stat-num">12</div><div class="stat-label" id="stat2">Wochen aktiver ClubCheck</div></div>
+      <div class="stat"><div class="stat-num">500</div><div class="stat-label" id="stat3">Mitglieder im größten Paket</div></div>
+      <div class="stat"><div class="stat-num">PDF</div><div class="stat-label" id="stat4">Bericht für Vorstand & Sportleitung</div></div>
     </div>
   </div>
 
@@ -268,58 +272,58 @@
   <section id="pakete">
     <div class="wrap">
       <div class="section-head">
-        <div class="sec-no">02 — Drei Pakete</div>
+        <div class="sec-no" id="pkgSecNo">02 — Drei Pakete</div>
         <div>
-          <h2>Vom ersten Vereinsbild bis zur großen Analyse.</h2>
-          <p class="section-copy">Wähle das Paket passend zur Vereinsgröße. Alle Pakete enthalten anonyme Rückmeldungen, Dashboard-Auswertung und einen PDF-Bericht.</p>
+          <h2 id="pkgH2">Vom ersten Vereinsbild bis zur großen Analyse.</h2>
+          <p class="section-copy" id="pkgIntro">Wähle das Paket passend zur Vereinsgröße. Alle Pakete enthalten anonyme Rückmeldungen, Dashboard-Auswertung und einen PDF-Bericht.</p>
         </div>
       </div>
       <div class="packages">
         <article class="package">
-          <div class="pkg-kicker">01 · Einstieg</div>
+          <div class="pkg-kicker" id="pkgBasicKicker">01 · Einstieg</div>
           <h3>Basic</h3>
-          <div class="pkg-sub">Für kleine Vereine und erste Standortbestimmung.</div>
+          <div class="pkg-sub" id="pkgBasicSub">Für kleine Vereine und erste Standortbestimmung.</div>
           <div class="price">199€</div>
-          <div class="pkg-note">einmalig · 12 Wochen</div>
-          <ul class="feature-list">
+          <div class="pkg-note" id="pkgNote1">einmalig · 12 Wochen</div>
+          <ul class="feature-list" id="pkgBasicFeatures">
             <li>bis 100 Mitglieder</li>
             <li>anonymer Mitglieder-Link</li>
             <li>1 eigene Vereinsfrage</li>
             <li>Dashboard-Auswertung</li>
             <li>PDF-Bericht für Vorstand & Team</li>
           </ul>
-          <a class="btn btn-secondary" href="/register.html?pkg=basic">Basic starten →</a>
+          <a class="btn btn-secondary" href="/register.html?pkg=basic" id="pkgBasicCta">Basic starten →</a>
         </article>
         <article class="package featured">
-          <div class="ribbon">Empfohlen</div>
-          <div class="pkg-kicker">02 · Beliebt</div>
+          <div class="ribbon" id="pkgRibbon">Empfohlen</div>
+          <div class="pkg-kicker" id="pkgPlusKicker">02 · Beliebt</div>
           <h3>Plus</h3>
-          <div class="pkg-sub">Für Vereine, die mehr Tiefe und Vergleich brauchen.</div>
+          <div class="pkg-sub" id="pkgPlusSub">Für Vereine, die mehr Tiefe und Vergleich brauchen.</div>
           <div class="price">299€</div>
-          <div class="pkg-note">einmalig · 12 Wochen</div>
-          <ul class="feature-list">
+          <div class="pkg-note" id="pkgNote2">einmalig · 12 Wochen</div>
+          <ul class="feature-list" id="pkgPlusFeatures">
             <li>bis 250 Mitglieder</li>
             <li>anonymer Mitglieder-Link</li>
             <li>bis zu 3 eigene Vereinsfragen</li>
             <li>erweiterte Dashboard-Auswertung</li>
             <li>PDF-Bericht mit zentralen Handlungsfeldern</li>
           </ul>
-          <a class="btn btn-primary" href="/register.html?pkg=plus">Plus starten →</a>
+          <a class="btn btn-primary" href="/register.html?pkg=plus" id="pkgPlusCta">Plus starten →</a>
         </article>
         <article class="package">
-          <div class="pkg-kicker">03 · Groß</div>
+          <div class="pkg-kicker" id="pkgPremKicker">03 · Groß</div>
           <h3>Premium</h3>
-          <div class="pkg-sub">Für größere Vereinsstrukturen und breite Beteiligung.</div>
+          <div class="pkg-sub" id="pkgPremSub">Für größere Vereinsstrukturen und breite Beteiligung.</div>
           <div class="price">499€</div>
-          <div class="pkg-note">einmalig · 12 Wochen</div>
-          <ul class="feature-list">
+          <div class="pkg-note" id="pkgNote3">einmalig · 12 Wochen</div>
+          <ul class="feature-list" id="pkgPremFeatures">
             <li>bis 500 Mitglieder</li>
             <li>anonymer Mitglieder-Link</li>
             <li>bis zu 5 eigene Vereinsfragen</li>
             <li>vollständige Auswertung für große Gruppen</li>
             <li>PDF-Bericht für professionelle Weiterarbeit</li>
           </ul>
-          <a class="btn btn-secondary" href="/register.html?pkg=premium">Premium starten →</a>
+          <a class="btn btn-secondary" href="/register.html?pkg=premium" id="pkgPremCta">Premium starten →</a>
         </article>
       </div>
     </div>
@@ -348,30 +352,30 @@
   <section id="auswertung">
     <div class="wrap">
       <div class="section-head">
-        <div class="sec-no">04 — Ergebnis</div>
+        <div class="sec-no" id="auswSecNo">04 — Ergebnis</div>
         <div>
-          <h2>Auswertung, die man im Verein verwenden kann.</h2>
-          <p class="section-copy">Am Ende steht kein Zahlenfriedhof, sondern ein klares Bild: Was ist stark, was bremst, wo muss der Verein zuerst ansetzen?</p>
+          <h2 id="auswH2">Auswertung, die man im Verein verwenden kann.</h2>
+          <p class="section-copy" id="auswIntro">Am Ende steht kein Zahlenfriedhof, sondern ein klares Bild: Was ist stark, was bremst, wo muss der Verein zuerst ansetzen?</p>
         </div>
       </div>
       <div class="report-grid">
         <div class="report-card">
-          <h3>PDF-Bericht</h3>
-          <p>Der Bericht bündelt die wichtigsten Ergebnisse für Vorstand, Sportleitung und interne Weiterarbeit — klar formuliert, verständlich und direkt besprechbar.</p>
+          <h3 id="reportH3">PDF-Bericht</h3>
+          <p id="reportP">Der Bericht bündelt die wichtigsten Ergebnisse für Vorstand, Sportleitung und interne Weiterarbeit — klar formuliert, verständlich und direkt besprechbar.</p>
           <div class="report-mini">
-            <div class="mini-row"><span class="mini-label">Inhalt</span><span class="mini-value">Gesamtbild + Handlungsfelder</span></div>
-            <div class="mini-row"><span class="mini-label">Nutzung</span><span class="mini-value">Vorstand · Sportleitung · Entwicklung</span></div>
-            <div class="mini-row"><span class="mini-label">Basis</span><span class="mini-value">anonyme Rückmeldungen</span></div>
+            <div class="mini-row"><span class="mini-label" id="rmL1">Inhalt</span><span class="mini-value" id="rmV1">Gesamtbild + Handlungsfelder</span></div>
+            <div class="mini-row"><span class="mini-label" id="rmL2">Nutzung</span><span class="mini-value" id="rmV2">Vorstand · Sportleitung · Entwicklung</span></div>
+            <div class="mini-row"><span class="mini-label" id="rmL3">Basis</span><span class="mini-value" id="rmV3">anonyme Rückmeldungen</span></div>
           </div>
-          <button class="btn" onclick="downloadSampleReport()" style="background:#15110d;color:#f3eadc;border-color:#15110d;margin-top:24px;width:100%">Beispiel-Bericht ansehen (PDF)</button>
+          <button class="btn" onclick="downloadSampleReport()" style="background:#15110d;color:#f3eadc;border-color:#15110d;margin-top:24px;width:100%" id="btnSample">Beispiel-Bericht ansehen (PDF)</button>
         </div>
         <div class="report-card dark">
-          <h3>Beispiel-Interpretation</h3>
-          <p>„Der Verein wird grundsätzlich als verbunden erlebt. Gleichzeitig zeigen die Rückmeldungen eine auffällige Streuung bei Kommunikation und Rollenklarheit. Das spricht weniger für fehlende Motivation als für unklare Abläufe und uneinheitliche Erwartungshaltung.“</p>
+          <h3 id="interpH3">Beispiel-Interpretation</h3>
+          <p id="interpP">„Der Verein wird grundsätzlich als verbunden erlebt. Gleichzeitig zeigen die Rückmeldungen eine auffällige Streuung bei Kommunikation und Rollenklarheit. Das spricht weniger für fehlende Motivation als für unklare Abläufe und uneinheitliche Erwartungshaltung.“</p>
           <div class="report-mini">
-            <div class="mini-row"><span class="mini-label">Stärke</span><span class="mini-value">Zusammenhalt</span></div>
-            <div class="mini-row"><span class="mini-label">Risiko</span><span class="mini-value">Kommunikationslücken</span></div>
-            <div class="mini-row"><span class="mini-label">Hebel</span><span class="mini-value">Rollen & Informationswege klären</span></div>
+            <div class="mini-row"><span class="mini-label" id="imL1">Stärke</span><span class="mini-value" id="imV1">Zusammenhalt</span></div>
+            <div class="mini-row"><span class="mini-label" id="imL2">Risiko</span><span class="mini-value" id="imV2">Kommunikationslücken</span></div>
+            <div class="mini-row"><span class="mini-label" id="imL3">Hebel</span><span class="mini-value" id="imV3">Rollen & Informationswege klären</span></div>
           </div>
         </div>
       </div>
@@ -381,14 +385,14 @@
   <section id="ablauf">
     <div class="wrap">
       <div class="section-head">
-        <div class="sec-no">05 — So funktioniert's</div>
-        <div><h2>Vier Schritte. Kaum Aufwand.</h2><p class="section-copy">ClubCheck ist so gebaut, dass Vereine ohne lange Vorbereitung starten können.</p></div>
+        <div class="sec-no" id="ablSecNo">05 — So funktioniert's</div>
+        <div><h2 id="ablH2">Vier Schritte. Kaum Aufwand.</h2><p class="section-copy" id="ablIntro">ClubCheck ist so gebaut, dass Vereine ohne lange Vorbereitung starten können.</p></div>
       </div>
       <div class="steps">
-        <div class="step"><div class="n">01</div><h3>Paket wählen</h3><p>Verein registrieren, Paket auswählen und ClubCheck sicher buchen.</p></div>
-        <div class="step"><div class="n">02</div><h3>Link teilen</h3><p>Den Mitglieder-Link an Spieler, Eltern, Trainer oder Funktionäre weitergeben.</p></div>
-        <div class="step"><div class="n">03</div><h3>Feedback sammeln</h3><p>Rückmeldungen anonym erfassen — einfach auf dem Smartphone oder Desktop.</p></div>
-        <div class="step"><div class="n">04</div><h3>Auswertung nutzen</h3><p>Dashboard öffnen, Ergebnisse verstehen und PDF-Bericht herunterladen.</p></div>
+        <div class="step"><div class="n">01</div><h3 id="step1H">Paket wählen</h3><p id="step1P">Verein registrieren, Paket auswählen und ClubCheck sicher buchen.</p></div>
+        <div class="step"><div class="n">02</div><h3 id="step2H">Link teilen</h3><p id="step2P">Den Mitglieder-Link an Spieler, Eltern, Trainer oder Funktionäre weitergeben.</p></div>
+        <div class="step"><div class="n">03</div><h3 id="step3H">Feedback sammeln</h3><p id="step3P">Rückmeldungen anonym erfassen — einfach auf dem Smartphone oder Desktop.</p></div>
+        <div class="step"><div class="n">04</div><h3 id="step4H">Auswertung nutzen</h3><p id="step4P">Dashboard öffnen, Ergebnisse verstehen und PDF-Bericht herunterladen.</p></div>
       </div>
     </div>
   </section>
@@ -425,12 +429,12 @@
 
   <section class="final">
     <div class="wrap">
-      <div class="sec-no" style="margin-bottom:18px">ClubCheck starten</div>
-      <h2>Mach sichtbar, was im Verein wirklich zählt.</h2>
-      <p>Starte jetzt mit ClubCheck und erhalte eine klare Grundlage für bessere Kommunikation, bessere Entscheidungen und gezielte Vereinsentwicklung.</p>
+      <div class="sec-no" style="margin-bottom:18px" id="finalKicker">ClubCheck starten</div>
+      <h2 id="finalH2">Mach sichtbar, was im Verein wirklich zählt.</h2>
+      <p id="finalP">Starte jetzt mit ClubCheck und erhalte eine klare Grundlage für bessere Kommunikation, bessere Entscheidungen und gezielte Vereinsentwicklung.</p>
       <div class="cta-row" style="justify-content:center">
-        <a class="btn btn-primary" href="/register.html">Jetzt registrieren →</a>
-        <a class="btn btn-secondary" href="#pakete">Pakete vergleichen</a>
+        <a class="btn btn-primary" href="/register.html" id="finalCta1">Jetzt registrieren →</a>
+        <a class="btn btn-secondary" href="#pakete" id="finalCta2">Pakete vergleichen</a>
       </div>
     </div>
   </section>
@@ -439,25 +443,216 @@
     <div class="wrap footer-grid">
       <div>
         <div class="brand" style="margin-bottom:16px"><div class="brand-mark">H</div><div><div class="brand-small">Humatrix</div><div class="brand-name">ClubCheck</div></div></div>
-        <p>Digitale Vereinsdiagnostik für Kommunikation, Führung, Teamklima und Entwicklung. Made in Tyrol, Austria.</p>
+        <p id="footerText">Digitale Vereinsdiagnostik für Kommunikation, Führung, Teamklima und Entwicklung. Made in Tyrol, Austria.</p>
       </div>
       <div class="footer-links">
-        <a href="#pakete">Pakete</a>
-        <a href="/register.html">Registrierung</a>
-        <a href="/dashboard.html">Login</a>
-        <a href="/impressum.html">Impressum</a>
-        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="#pakete" id="footerPakete">Pakete</a>
+        <a href="/register.html" id="footerReg">Registrierung</a>
+        <a href="/dashboard.html" id="footerLogin">Login</a>
+        <a href="/impressum.html" id="footerImp">Impressum</a>
+        <a href="/datenschutz.html" id="footerPrv">Datenschutz</a>
       </div>
     </div>
   </footer>
 <script>
+// ===== I18N für Landing-Page =====
+const I18N = {
+  de: {
+    docTitle:"Humatrix ClubCheck — Premium Vereinsanalyse",
+    navProblem:"Problem", navPakete:"Pakete", navAuswertung:"Auswertung", navAblauf:"Ablauf",
+    navMember:"Mitglieder-Zugang", navLogin:"Login", navStart:"Starten",
+    heroKicker:"für Fußball · Sportvereine · Nachwuchs · Vorstand",
+    heroH1:"Was läuft in deinem Verein wirklich?",
+    heroLeadHTML:"<strong>ClubCheck macht sichtbar, was sonst nur gespürt wird.</strong> Anonymes Feedback von Spielern, Eltern, Trainern und Funktionären — ausgewertet zu klaren Handlungsfeldern für Führung, Kommunikation, Organisation und Vereinsentwicklung.",
+    ctaStart:"ClubCheck starten →", ctaCode:"Ich habe einen Code →",
+    tag1:"anonymes Vereinsfeedback", tag2:"Dashboard + PDF-Bericht", tag3:"12 Wochen Laufzeit", tag4:"für bis zu 500 Mitglieder",
+    insightLive:"Live · Sample Insight",
+    insightSubHTML:"/100<br>Vereinsklima",
+    insightQuote:"„Die Bindung im Verein ist stark — aber Kommunikation und Rollenklarheit bremsen Entwicklung.“",
+    axis1:"Zusammenhalt", axis2:"Kommunikation", axis3:"Organisation", axis4:"Vertrauen",
+    memberEyebrow:"Für Mitglieder",
+    memberH2:"Code eingeben, anonym Feedback geben.",
+    memberLead:"Du hast den Mitglieder-Link oder einen Club-Code von deinem Verein bekommen? Hier geht's direkt zur anonymen Befragung. Keine Anmeldung, keine Speicherung deines Namens.",
+    memberLabel:"Club-Code", memberBtn:"Zur Umfrage →",
+    memberHint:"Den Code findest du in der Mail oder auf dem Aushang deines Vereins.",
+    errCode:"Bitte gib einen gültigen Club-Code ein (mindestens 4 Zeichen).",
+    stat1:"Pakete von Basic bis Premium", stat2:"Wochen aktiver ClubCheck",
+    stat3:"Mitglieder im größten Paket", stat4:"Bericht für Vorstand & Sportleitung",
+    pkgSecNo:"02 — Drei Pakete",
+    pkgH2:"Vom ersten Vereinsbild bis zur großen Analyse.",
+    pkgIntro:"Wähle das Paket passend zur Vereinsgröße. Alle Pakete enthalten anonyme Rückmeldungen, Dashboard-Auswertung und einen PDF-Bericht.",
+    pkgRibbon:"Empfohlen",
+    pkgBasicKicker:"01 · Einstieg", pkgBasicSub:"Für kleine Vereine und erste Standortbestimmung.",
+    pkgPlusKicker:"02 · Beliebt",  pkgPlusSub:"Für Vereine, die mehr Tiefe und Vergleich brauchen.",
+    pkgPremKicker:"03 · Groß",     pkgPremSub:"Für größere Vereinsstrukturen und breite Beteiligung.",
+    pkgNote:"einmalig · 12 Wochen",
+    pkgBasicFeat:["bis 100 Mitglieder","anonymer Mitglieder-Link","1 eigene Vereinsfrage","Dashboard-Auswertung","PDF-Bericht für Vorstand & Team"],
+    pkgPlusFeat:["bis 250 Mitglieder","anonymer Mitglieder-Link","bis zu 3 eigene Vereinsfragen","erweiterte Dashboard-Auswertung","PDF-Bericht mit zentralen Handlungsfeldern"],
+    pkgPremFeat:["bis 500 Mitglieder","anonymer Mitglieder-Link","bis zu 5 eigene Vereinsfragen","vollständige Auswertung für große Gruppen","PDF-Bericht für professionelle Weiterarbeit"],
+    pkgBasicCta:"Basic starten →", pkgPlusCta:"Plus starten →", pkgPremCta:"Premium starten →",
+    auswSecNo:"04 — Ergebnis",
+    auswH2:"Auswertung, die man im Verein verwenden kann.",
+    auswIntro:"Am Ende steht kein Zahlenfriedhof, sondern ein klares Bild: Was ist stark, was bremst, wo muss der Verein zuerst ansetzen?",
+    reportH3:"PDF-Bericht",
+    reportP:"Der Bericht bündelt die wichtigsten Ergebnisse für Vorstand, Sportleitung und interne Weiterarbeit — klar formuliert, verständlich und direkt besprechbar.",
+    rmL1:"Inhalt", rmV1:"Gesamtbild + Handlungsfelder",
+    rmL2:"Nutzung", rmV2:"Vorstand · Sportleitung · Entwicklung",
+    rmL3:"Basis", rmV3:"anonyme Rückmeldungen",
+    btnSample:"Beispiel-Bericht ansehen (PDF)",
+    interpH3:"Beispiel-Interpretation",
+    interpP:"„Der Verein wird grundsätzlich als verbunden erlebt. Gleichzeitig zeigen die Rückmeldungen eine auffällige Streuung bei Kommunikation und Rollenklarheit. Das spricht weniger für fehlende Motivation als für unklare Abläufe und uneinheitliche Erwartungshaltung.“",
+    imL1:"Stärke", imV1:"Zusammenhalt",
+    imL2:"Risiko", imV2:"Kommunikationslücken",
+    imL3:"Hebel", imV3:"Rollen & Informationswege klären",
+    ablSecNo:"05 — So funktioniert's",
+    ablH2:"Vier Schritte. Kaum Aufwand.",
+    ablIntro:"ClubCheck ist so gebaut, dass Vereine ohne lange Vorbereitung starten können.",
+    step1H:"Paket wählen", step1P:"Verein registrieren, Paket auswählen und ClubCheck sicher buchen.",
+    step2H:"Link teilen",  step2P:"Den Mitglieder-Link an Spieler, Eltern, Trainer oder Funktionäre weitergeben.",
+    step3H:"Feedback sammeln", step3P:"Rückmeldungen anonym erfassen — einfach auf dem Smartphone oder Desktop.",
+    step4H:"Auswertung nutzen", step4P:"Dashboard öffnen, Ergebnisse verstehen und PDF-Bericht herunterladen.",
+    finalKicker:"ClubCheck starten",
+    finalH2:"Mach sichtbar, was im Verein wirklich zählt.",
+    finalP:"Starte jetzt mit ClubCheck und erhalte eine klare Grundlage für bessere Kommunikation, bessere Entscheidungen und gezielte Vereinsentwicklung.",
+    finalCta1:"Jetzt registrieren →", finalCta2:"Pakete vergleichen",
+    footerText:"Digitale Vereinsdiagnostik für Kommunikation, Führung, Teamklima und Entwicklung. Made in Tyrol, Austria.",
+    footerPakete:"Pakete", footerReg:"Registrierung", footerLogin:"Login", footerImp:"Impressum", footerPrv:"Datenschutz",
+    deOnlyBanner:""
+  },
+  en: {
+    docTitle:"Humatrix ClubCheck — Premium club analysis",
+    navProblem:"Problem", navPakete:"Packages", navAuswertung:"Analysis", navAblauf:"How it works",
+    navMember:"Member access", navLogin:"Login", navStart:"Start",
+    heroKicker:"for football · sports clubs · youth · board",
+    heroH1:"What's really going on in your club?",
+    heroLeadHTML:"<strong>ClubCheck makes visible what is otherwise only felt.</strong> Anonymous feedback from players, parents, coaches and officers — turned into clear action areas for leadership, communication, organisation and club development.",
+    ctaStart:"Start ClubCheck →", ctaCode:"I have a code →",
+    tag1:"anonymous club feedback", tag2:"Dashboard + PDF report", tag3:"12-week run", tag4:"up to 500 members",
+    insightLive:"Live · Sample insight",
+    insightSubHTML:"/100<br>Club climate",
+    insightQuote:"\u201CClub bonding is strong — but communication and role clarity are slowing development.\u201D",
+    axis1:"Cohesion", axis2:"Communication", axis3:"Organisation", axis4:"Trust",
+    memberEyebrow:"For members",
+    memberH2:"Enter your code, give anonymous feedback.",
+    memberLead:"You received the member link or a club code from your club? Go directly to the anonymous survey here. No sign-in, no name stored.",
+    memberLabel:"Club code", memberBtn:"Go to survey →",
+    memberHint:"You'll find the code in the email or on a notice from your club.",
+    errCode:"Please enter a valid club code (at least 4 characters).",
+    stat1:"Packages from Basic to Premium", stat2:"weeks active per ClubCheck",
+    stat3:"members in the largest package", stat4:"report for the board & coaching team",
+    pkgSecNo:"02 — Three packages",
+    pkgH2:"From a first club picture to a full analysis.",
+    pkgIntro:"Choose the package that fits your club size. All packages include anonymous responses, dashboard analysis and a PDF report.",
+    pkgRibbon:"Recommended",
+    pkgBasicKicker:"01 · Entry", pkgBasicSub:"For small clubs and a first situation check.",
+    pkgPlusKicker:"02 · Popular", pkgPlusSub:"For clubs that need more depth and comparison.",
+    pkgPremKicker:"03 · Large",   pkgPremSub:"For larger club structures with broad participation.",
+    pkgNote:"one-off · 12 weeks",
+    pkgBasicFeat:["up to 100 members","anonymous member link","1 custom club question","dashboard analysis","PDF report for board & team"],
+    pkgPlusFeat:["up to 250 members","anonymous member link","up to 3 custom questions","extended dashboard analysis","PDF report with key action areas"],
+    pkgPremFeat:["up to 500 members","anonymous member link","up to 5 custom questions","full analysis for large groups","PDF report for professional follow-up"],
+    pkgBasicCta:"Start Basic →", pkgPlusCta:"Start Plus →", pkgPremCta:"Start Premium →",
+    auswSecNo:"04 — Result",
+    auswH2:"An analysis you can actually use in the club.",
+    auswIntro:"What you get isn't a graveyard of numbers but a clear picture: what's strong, what's slowing things down, where to start.",
+    reportH3:"PDF report",
+    reportP:"The report bundles the most important results for the board, coaching staff and internal follow-up — clearly worded, easy to read, ready to discuss.",
+    rmL1:"Content", rmV1:"Overall picture + action areas",
+    rmL2:"Use", rmV2:"Board · Coaching · Development",
+    rmL3:"Basis", rmV3:"anonymous responses",
+    btnSample:"View sample report (PDF)",
+    interpH3:"Sample interpretation",
+    interpP:"\u201CThe club is generally experienced as connected. At the same time the responses show a striking spread on communication and role clarity. This points less to a lack of motivation and more to unclear processes and inconsistent expectations.\u201D",
+    imL1:"Strength", imV1:"Cohesion",
+    imL2:"Risk", imV2:"Communication gaps",
+    imL3:"Lever", imV3:"Clarify roles & information flow",
+    ablSecNo:"05 — How it works",
+    ablH2:"Four steps. Hardly any effort.",
+    ablIntro:"ClubCheck is built so clubs can start without long preparation.",
+    step1H:"Choose package", step1P:"Sign up your club, choose the package and book ClubCheck securely.",
+    step2H:"Share link",     step2P:"Pass the member link on to players, parents, coaches or officers.",
+    step3H:"Collect feedback", step3P:"Capture responses anonymously — easily on phone or desktop.",
+    step4H:"Use the analysis", step4P:"Open the dashboard, understand the results and download the PDF report.",
+    finalKicker:"Start ClubCheck",
+    finalH2:"Make visible what really matters in your club.",
+    finalP:"Start ClubCheck now and get a clear basis for better communication, better decisions and targeted club development.",
+    finalCta1:"Sign up now →", finalCta2:"Compare packages",
+    footerText:"Digital club diagnostics for communication, leadership, team climate and development. Made in Tyrol, Austria.",
+    footerPakete:"Packages", footerReg:"Sign up", footerLogin:"Login", footerImp:"Imprint", footerPrv:"Privacy",
+    deOnlyBanner:"Some detail sections (\u201CProblem\u201D, \u201CWhat ClubCheck makes visible\u201D, \u201CFAQ\u201D) are currently only available in German."
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function t(k){ return (I18N[LANG] && I18N[LANG][k]) || I18N.de[k] || k; }
+function setText(id, v){ const el = document.getElementById(id); if(el) el.textContent = v; }
+function setHTML(id, v){ const el = document.getElementById(id); if(el) el.innerHTML = v; }
+function setList(id, arr){ const el = document.getElementById(id); if(!el || !Array.isArray(arr)) return; el.innerHTML = arr.map(x=>`<li>${x}</li>`).join(""); }
+
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l;
+  localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l;
+  applyI18n();
+}
+function applyI18n(){
+  document.title = t("docTitle");
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  // Nav
+  ["navProblem","navPakete","navAuswertung","navAblauf","navMember","navLogin","navStart"].forEach(id=>setText(id, t(id)));
+  // Hero
+  setText("heroKicker", t("heroKicker"));
+  setText("heroH1", t("heroH1"));
+  setHTML("heroLead", t("heroLeadHTML"));
+  setText("ctaStart", t("ctaStart"));
+  setText("ctaCode", t("ctaCode"));
+  ["tag1","tag2","tag3","tag4"].forEach(id=>setText(id, t(id)));
+  setText("insightLive", t("insightLive"));
+  setHTML("insightSub", t("insightSubHTML"));
+  setText("insightQuote", t("insightQuote"));
+  ["axis1","axis2","axis3","axis4"].forEach(id=>setText(id, t(id)));
+  // Member
+  ["memberEyebrow","memberH2","memberLead","memberLabel","memberBtn","memberHint"].forEach(id=>setText(id, t(id)));
+  // Stats
+  ["stat1","stat2","stat3","stat4"].forEach(id=>setText(id, t(id)));
+  // Pakete
+  ["pkgSecNo","pkgH2","pkgIntro","pkgRibbon","pkgBasicKicker","pkgBasicSub","pkgPlusKicker","pkgPlusSub","pkgPremKicker","pkgPremSub","pkgBasicCta","pkgPlusCta","pkgPremCta"].forEach(id=>setText(id, t(id)));
+  ["pkgNote1","pkgNote2","pkgNote3"].forEach(id=>setText(id, t("pkgNote")));
+  setList("pkgBasicFeatures", t("pkgBasicFeat"));
+  setList("pkgPlusFeatures", t("pkgPlusFeat"));
+  setList("pkgPremFeatures", t("pkgPremFeat"));
+  // Auswertung
+  ["auswSecNo","auswH2","auswIntro","reportH3","reportP","rmL1","rmV1","rmL2","rmV2","rmL3","rmV3","btnSample","interpH3","interpP","imL1","imV1","imL2","imV2","imL3","imV3"].forEach(id=>setText(id, t(id)));
+  // Ablauf
+  ["ablSecNo","ablH2","ablIntro","step1H","step1P","step2H","step2P","step3H","step3P","step4H","step4P"].forEach(id=>setText(id, t(id)));
+  // Final + Footer
+  ["finalKicker","finalH2","finalP","finalCta1","finalCta2","footerText","footerPakete","footerReg","footerLogin","footerImp","footerPrv"].forEach(id=>setText(id, t(id)));
+  // DE-only Hinweis bei EN
+  let banner = document.getElementById("deOnlyBanner");
+  const msg = t("deOnlyBanner");
+  if(msg){
+    if(!banner){
+      banner = document.createElement("div");
+      banner.id = "deOnlyBanner";
+      banner.style.cssText = "background:rgba(199,164,102,.12);border-bottom:1px solid var(--line2);color:var(--muted);font-size:12px;text-align:center;padding:10px 16px;letter-spacing:.04em";
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+    banner.textContent = msg;
+    banner.style.display = "";
+  } else if(banner){
+    banner.style.display = "none";
+  }
+}
+
 function goToSurvey(){
   const input = document.getElementById("memberCode");
   const errBox = document.getElementById("memberError");
   if(!input || !errBox) return;
   const raw = String(input.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
   if(raw.length < 4){
-    errBox.textContent = "Bitte gib einen gültigen Club-Code ein (mindestens 4 Zeichen).";
+    errBox.textContent = t("errCode");
     errBox.style.display = "block";
     input.focus();
     return;
@@ -465,6 +660,8 @@ function goToSurvey(){
   errBox.style.display = "none";
   location.href = "/survey.html?c=" + encodeURIComponent(raw);
 }
+
+applyI18n();
 
 (function(){
   const input = document.getElementById("memberCode");

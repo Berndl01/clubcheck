@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Datenschutz — Humatrix ClubCheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--brd:#e5e2da;--tx:#1a1a1a;--tm:#5a5650;--ac:#1a1a1a;--gold:#8a6d3b;--green:#3d6b4a;--green2:#eaefe8;--fd:'Fraunces','Georgia',serif;--fn:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;line-height:1.7}
+h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.02em}
+a{color:var(--gold)}
+.wrap{max-width:780px;margin:0 auto;padding:0 28px}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(245,243,238,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd)}
+.hdr-in{max-width:1180px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
+.logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
+.logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
+main{padding:54px 0 80px}
+.eu-banner{background:var(--green2);border-left:3px solid var(--green);padding:16px 18px;margin:18px 0 26px;color:#1f4226;font-size:14px;line-height:1.65}
+h1{font-size:42px;margin-bottom:18px}
+h2{font-size:22px;margin:30px 0 10px}
+h3{font-size:16px;margin:18px 0 6px;color:var(--tx)}
+p{color:var(--tm);margin-bottom:14px}
+ul{margin:8px 0 18px 24px;color:var(--tm)}
+li{margin-bottom:6px}
+.box{background:var(--card);border:1px solid var(--brd);padding:28px;margin-top:6px}
+.muted{color:#9c978d;font-size:13px;margin-top:30px}
+.proc{border:1px solid var(--brd);padding:14px 18px;margin:10px 0;background:#fafaf7}
+.proc strong{color:var(--tx)}
+.footer{border-top:1px solid var(--brd);padding:24px 0;color:var(--tm);font-size:13px;margin-top:40px;text-align:center}
+.footer a{color:var(--tm);margin:0 10px}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/" style="text-decoration:none;color:inherit"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></div></header>
+
+<main><div class="wrap"><div id="content"></div></div></main>
+<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></div></footer>
+
+<script>
+const I18N = {
+  de: {
+    title:"Datenschutzerklärung",
+    intro:"Der Schutz Ihrer persönlichen Daten ist uns ein besonderes Anliegen. Wir verarbeiten Ihre Daten daher ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, TKG). In dieser Datenschutzerklärung informieren wir Sie über die wichtigsten Aspekte der Datenverarbeitung im Rahmen von ClubCheck.",
+    eu_banner:"Alle Vereins- und Befragungsdaten werden in der Europäischen Union gespeichert. Die Datenbank wird über <strong>Supabase</strong> in der Region <strong>Frankfurt am Main, Deutschland</strong> betrieben. Zahlungen werden über <strong>Stripe Payments Europe Ltd. (Irland)</strong> abgewickelt; Karten- und Kontodaten werden zu keinem Zeitpunkt auf unseren Systemen gespeichert.",
+
+    h_resp:"Verantwortliche Stelle",
+    p_resp:"Verantwortlicher im Sinne der DSGVO:<br>Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA<br>Humatrix by Bernhard Lampl<br>Ried 80<br>6363 Westendorf<br>Tirol, Österreich<br>Telefon: +43 676 916 60 20<br>E-Mail: <a href='mailto:bernhard@humatrix.cc'>bernhard@humatrix.cc</a>",
+
+    h_data:"Welche Daten wir verarbeiten",
+    p_data:"Im Rahmen von ClubCheck verarbeiten wir folgende personenbezogene Daten:",
+    li_data1:"<strong>Vereins- und Vorstandsdaten:</strong> Vereinsname, Kontaktname, E-Mail-Adresse, Telefonnummer (optional), Passwort-Hash. Rechtsgrundlage: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO).",
+    li_data2:"<strong>Zahlungsdaten:</strong> werden ausschließlich von Stripe Payments Europe Ltd. verarbeitet. Wir erhalten lediglich den Zahlungsstatus und eine Stripe-Customer-ID — keine Karten-, Konto- oder Adressdaten der Zahlenden.",
+    li_data3:"<strong>Antworten der Vereinsmitglieder:</strong> Bewertungen auf einer Skala von 1–7, optionale Freitexte, optional die selbst gewählte Rolle (Spieler:in, Trainer:in, Vorstand, Funktionär:in, Elternteil, Mitglied) und Vereinszugehörigkeitsdauer. Standardmäßig erfolgt die Erfassung anonym; ein Name ist freiwillig und wird nur gespeichert, wenn das Mitglied ihn aktiv eingibt. Rechtsgrundlage: berechtigtes Interesse des Vereins an einer aussagekräftigen Auswertung (Art. 6 Abs. 1 lit. f DSGVO).",
+    li_data4:"<strong>Server-Logs:</strong> IP-Adresse, Zeitstempel, User-Agent, aufgerufene Seite. Diese Daten dienen ausschließlich der technischen Sicherheit, der Fehleranalyse und der Missbrauchsabwehr. Rechtsgrundlage: berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO).",
+
+    h_storage:"Speicherort und EU-Datenspeicherung",
+    p_storage:"Sämtliche Vereins- und Befragungsdaten werden in der <strong>Europäischen Union</strong> gespeichert. Die zugrundeliegende Datenbank wird über <strong>Supabase</strong> in der Region <strong>eu-central-1 (Frankfurt am Main, Deutschland)</strong> betrieben. Backups verbleiben innerhalb der EU.",
+
+    h_third:"Auftragsverarbeiter",
+    p_third:"Wir setzen folgende Dienstleister für den Betrieb von ClubCheck ein. Mit allen Dienstleistern bestehen Auftragsverarbeitungsverträge gemäß Art. 28 DSGVO. Soweit Anbieter ihren Sitz außerhalb der EU haben, gelten die EU-Standardvertragsklauseln (SCC) sowie zusätzliche technische Schutzmaßnahmen.",
+    proc1:"<strong>Supabase Inc.</strong> — Datenbank- und Authentifizierungs-Backend. Verarbeitung in der Region Frankfurt am Main (eu-central-1, Deutschland).",
+    proc2:"<strong>Vercel Inc.</strong> (USA) — Hosting der Website und Ausführung der API-Funktionen über das europäische Edge-Netzwerk. Datentransfer in die USA auf Basis der EU-Standardvertragsklauseln.",
+    proc3:"<strong>Stripe Payments Europe Ltd.</strong> (Dublin, Irland) — Zahlungsabwicklung. Karten- und Kontodaten werden ausschließlich von Stripe verarbeitet, niemals auf unseren Systemen gespeichert. Stripe Privacy Policy: <a href='https://stripe.com/at/privacy' target='_blank' rel='noopener'>stripe.com/at/privacy</a>",
+    proc4:"<strong>Resend</strong> (Resend, Inc., USA) — Versand transaktionaler E-Mails (Bestätigung der Registrierung, Bestätigung der Zahlung, Passwort-Reset). Datentransfer in die USA auf Basis der EU-Standardvertragsklauseln.",
+
+    h_payment:"Zahlung über Stripe",
+    p_payment:"Wenn Sie ein ClubCheck-Paket buchen, werden Sie zur sicheren Zahlungsseite von Stripe weitergeleitet. Sämtliche Karten- und Bankdaten geben Sie ausschließlich in der Stripe-Umgebung ein und werden direkt von Stripe verarbeitet. Wir selbst erhalten keine Karten- oder Kontodaten. Nach erfolgreicher Zahlung erhalten wir von Stripe lediglich eine Bestätigung sowie eine pseudonyme Customer-ID. Diese Daten werden für die Vertragserfüllung und steuerrechtliche Aufbewahrungspflichten gespeichert.",
+
+    h_email:"E-Mail-Versand",
+    p_email:"Wir versenden ausschließlich transaktionale E-Mails: eine Bestätigung der gestarteten Registrierung, eine Bestätigung der erfolgreichen Zahlung mit dem Mitglieder-Link sowie auf Anfrage einen Link zum Zurücksetzen des Passworts. Es werden keine Werbe- oder Newsletter-E-Mails versendet. Versanddienstleister ist Resend (siehe oben).",
+
+    h_rights:"Ihre Rechte",
+    p_rights:"Ihnen stehen grundsätzlich folgende Rechte zu:",
+    li_r1:"Recht auf Auskunft",
+    li_r2:"Recht auf Berichtigung",
+    li_r3:"Recht auf Löschung",
+    li_r4:"Recht auf Einschränkung der Verarbeitung",
+    li_r5:"Recht auf Datenübertragbarkeit",
+    li_r6:"Recht auf Widerruf erteilter Einwilligungen",
+    li_r7:"Recht auf Widerspruch gegen die Verarbeitung",
+    p_rights2:"Anfragen richten Sie bitte an <a href='mailto:bernhard@humatrix.cc'>bernhard@humatrix.cc</a>. Wenn Sie glauben, dass die Verarbeitung Ihrer Daten gegen das Datenschutzrecht verstößt, können Sie sich bei der zuständigen Aufsichtsbehörde beschweren.",
+
+    h_dsb:"Aufsichtsbehörde",
+    p_dsb:"Österreichische Datenschutzbehörde<br>Barichgasse 40–42<br>1030 Wien, Österreich<br>Web: <a href='https://www.dsb.gv.at' target='_blank' rel='noopener'>www.dsb.gv.at</a>",
+
+    h_keep:"Speicherdauer",
+    p_keep:"Vereinsdaten werden während der aktiven Vertragslaufzeit (12 Wochen pro ClubCheck) sowie für maximal 12 Monate danach gespeichert. Gesetzliche Aufbewahrungspflichten (insbesondere steuerrechtliche, BAO §132: 7 Jahre für rechnungsrelevante Daten) bleiben davon unberührt. Befragungs-Antworten werden nach Ablauf eines Jahres anonymisiert oder gelöscht.",
+
+    h_cookies:"Cookies und lokale Speicherung",
+    p_cookies:"ClubCheck setzt <strong>keine Marketing- oder Tracking-Cookies</strong>. Im Browser werden ausschließlich folgende technisch notwendige Werte im localStorage abgelegt: ein Session-Token für das Vorstand-Dashboard (zur Aufrechterhaltung der Anmeldung) sowie die gewählte Sprachpräferenz (DE oder EN). Diese Werte werden nicht an externe Dienste übertragen und können vom Nutzer jederzeit über die Browser-Einstellungen gelöscht werden.",
+
+    h_logs:"Server-Logfiles",
+    p_logs:"Beim Zugriff auf die Website werden technisch notwendige Daten (IP-Adresse, Zeitstempel, User-Agent, aufgerufene Seite, Referrer-URL) automatisch erfasst. Diese Daten dienen ausschließlich der technischen Überwachung, Sicherheit und Verbesserung. Eine Zusammenführung mit anderen Datenquellen erfolgt nicht. Die Logs werden nach 30 Tagen automatisch gelöscht.",
+
+    updated:"Stand: November 2026 · © Humatrix by Bernhard Lampl"
+  },
+  en: {
+    title:"Privacy Policy",
+    intro:"The protection of your personal data is a particular concern of ours. We therefore process your data exclusively on the basis of statutory provisions (GDPR, Austrian TKG). In this privacy policy we inform you about the most important aspects of data processing within ClubCheck.",
+    eu_banner:"All club and survey data is stored in the European Union. The database is operated via <strong>Supabase</strong> in the <strong>Frankfurt am Main, Germany</strong> region. Payments are processed via <strong>Stripe Payments Europe Ltd. (Ireland)</strong>; card and bank account data is never stored on our systems.",
+
+    h_resp:"Controller",
+    p_resp:"Controller within the meaning of GDPR:<br>Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA<br>Humatrix by Bernhard Lampl<br>Ried 80<br>6363 Westendorf<br>Tyrol, Austria<br>Phone: +43 676 916 60 20<br>Email: <a href='mailto:bernhard@humatrix.cc'>bernhard@humatrix.cc</a>",
+
+    h_data:"What data we process",
+    p_data:"As part of ClubCheck we process the following personal data:",
+    li_data1:"<strong>Club and board data:</strong> club name, contact name, email address, phone number (optional), password hash. Legal basis: contract performance (Art. 6 (1) (b) GDPR).",
+    li_data2:"<strong>Payment data:</strong> processed exclusively by Stripe Payments Europe Ltd. We receive only the payment status and a Stripe customer ID — no card, bank account or address data of the payer.",
+    li_data3:"<strong>Member responses:</strong> ratings on a scale from 1–7, optional free-text answers, optionally the self-selected role (player, coach, board, officer, parent, member) and tenure with the club. Recording is anonymous by default; a name is voluntary and is only stored if the member actively enters it. Legal basis: legitimate interest of the club in a meaningful analysis (Art. 6 (1) (f) GDPR).",
+    li_data4:"<strong>Server logs:</strong> IP address, timestamp, user agent, accessed page. These data are used exclusively for technical security, error analysis and abuse prevention. Legal basis: legitimate interest (Art. 6 (1) (f) GDPR).",
+
+    h_storage:"Storage location and EU data residency",
+    p_storage:"All club and survey data is stored within the <strong>European Union</strong>. The underlying database is operated via <strong>Supabase</strong> in the <strong>eu-central-1 (Frankfurt am Main, Germany)</strong> region. Backups remain within the EU.",
+
+    h_third:"Processors",
+    p_third:"We use the following service providers for the operation of ClubCheck. With all providers, data processing agreements pursuant to Art. 28 GDPR are in place. Where providers are based outside the EU, the EU Standard Contractual Clauses (SCC) apply, together with additional technical safeguards.",
+    proc1:"<strong>Supabase Inc.</strong> — Database and authentication backend. Processing in the Frankfurt am Main region (eu-central-1, Germany).",
+    proc2:"<strong>Vercel Inc.</strong> (USA) — Hosting of the website and execution of the API functions via the European edge network. Data transfer to the USA on the basis of the EU Standard Contractual Clauses.",
+    proc3:"<strong>Stripe Payments Europe Ltd.</strong> (Dublin, Ireland) — Payment processing. Card and bank account data is processed exclusively by Stripe and never stored on our systems. Stripe Privacy Policy: <a href='https://stripe.com/at/privacy' target='_blank' rel='noopener'>stripe.com/at/privacy</a>",
+    proc4:"<strong>Resend</strong> (Resend, Inc., USA) — Sending of transactional emails (registration confirmation, payment confirmation, password reset). Data transfer to the USA on the basis of the EU Standard Contractual Clauses.",
+
+    h_payment:"Payment via Stripe",
+    p_payment:"When you book a ClubCheck package, you are redirected to the secure Stripe payment page. All card and bank details are entered exclusively in the Stripe environment and processed directly by Stripe. We ourselves never receive card or bank account data. After successful payment we receive only a confirmation and a pseudonymous customer ID from Stripe. This data is stored for contract performance and statutory tax retention obligations.",
+
+    h_email:"Email",
+    p_email:"We send only transactional emails: a confirmation of the started registration, a confirmation of successful payment with the member link, and on request a link to reset the password. No marketing or newsletter emails are sent. The mail delivery provider is Resend (see above).",
+
+    h_rights:"Your rights",
+    p_rights:"You generally have the following rights:",
+    li_r1:"Right of access",
+    li_r2:"Right to rectification",
+    li_r3:"Right to erasure",
+    li_r4:"Right to restriction of processing",
+    li_r5:"Right to data portability",
+    li_r6:"Right to withdraw consent",
+    li_r7:"Right to object to processing",
+    p_rights2:"Please direct requests to <a href='mailto:bernhard@humatrix.cc'>bernhard@humatrix.cc</a>. If you believe that the processing of your data violates data protection law, you may lodge a complaint with the competent supervisory authority.",
+
+    h_dsb:"Supervisory authority",
+    p_dsb:"Austrian Data Protection Authority (Datenschutzbehörde)<br>Barichgasse 40–42<br>1030 Vienna, Austria<br>Web: <a href='https://www.dsb.gv.at' target='_blank' rel='noopener'>www.dsb.gv.at</a>",
+
+    h_keep:"Retention period",
+    p_keep:"Club data is stored during the active contract term (12 weeks per ClubCheck) and for a maximum of 12 months thereafter. Statutory retention obligations (in particular tax-related obligations, Austrian BAO §132: 7 years for invoice-relevant data) remain unaffected. Survey responses are anonymised or deleted after one year.",
+
+    h_cookies:"Cookies and local storage",
+    p_cookies:"ClubCheck does <strong>not set any marketing or tracking cookies</strong>. Only the following technically necessary values are stored in the browser's localStorage: a session token for the board dashboard (to maintain the login) and the chosen language preference (DE or EN). These values are not transmitted to external services and can be deleted by the user at any time via the browser settings.",
+
+    h_logs:"Server log files",
+    p_logs:"When accessing the website, technically necessary data (IP address, timestamp, user agent, accessed page, referrer URL) is automatically recorded. This data is used exclusively for technical monitoring, security and improvement. No combination with other data sources takes place. The logs are automatically deleted after 30 days.",
+
+    updated:"Last updated: November 2026 · © Humatrix by Bernhard Lampl"
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l; localStorage.setItem("clubcheck_lang", l);
+  document.documentElement.lang = l; render();
+}
+function t(k){ return I18N[LANG][k] || I18N.de[k] || k; }
+function render(){
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.title = t("title") + " — Humatrix ClubCheck";
+  document.getElementById("content").innerHTML = `
+    <h1>${t("title")}</h1>
+    <p style="color:var(--tm)">${t("intro")}</p>
+    <div class="eu-banner">${t("eu_banner")}</div>
+    <div class="box">
+      <h2>${t("h_resp")}</h2><p>${t("p_resp")}</p>
+
+      <h2>${t("h_data")}</h2>
+      <p>${t("p_data")}</p>
+      <ul>
+        <li>${t("li_data1")}</li>
+        <li>${t("li_data2")}</li>
+        <li>${t("li_data3")}</li>
+        <li>${t("li_data4")}</li>
+      </ul>
+
+      <h2>${t("h_storage")}</h2><p>${t("p_storage")}</p>
+
+      <h2>${t("h_third")}</h2>
+      <p>${t("p_third")}</p>
+      <div class="proc">${t("proc1")}</div>
+      <div class="proc">${t("proc2")}</div>
+      <div class="proc">${t("proc3")}</div>
+      <div class="proc">${t("proc4")}</div>
+
+      <h2>${t("h_payment")}</h2><p>${t("p_payment")}</p>
+
+      <h2>${t("h_email")}</h2><p>${t("p_email")}</p>
+
+      <h2>${t("h_rights")}</h2>
+      <p>${t("p_rights")}</p>
+      <ul>
+        <li>${t("li_r1")}</li><li>${t("li_r2")}</li><li>${t("li_r3")}</li>
+        <li>${t("li_r4")}</li><li>${t("li_r5")}</li><li>${t("li_r6")}</li>
+        <li>${t("li_r7")}</li>
+      </ul>
+      <p>${t("p_rights2")}</p>
+
+      <h2>${t("h_dsb")}</h2><p>${t("p_dsb")}</p>
+
+      <h2>${t("h_keep")}</h2><p>${t("p_keep")}</p>
+
+      <h2>${t("h_cookies")}</h2><p>${t("p_cookies")}</p>
+
+      <h2>${t("h_logs")}</h2><p>${t("p_logs")}</p>
+
+      <p class="muted">${t("updated")}</p>
+    </div>`;
+}
+render();
+</script>
+</body>
+</html>
