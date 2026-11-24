@@ -7,6 +7,14 @@ durchgespielt: echte API-Funktionen, echte PostgreSQL-17-Datenbank mit
 `schema.sql`, echte Stripe-Signaturprüfung, echter Chrome-Browser.
 Ergebnis: 74 Server-Tests und 43 Browser-Tests grün, keine JS-Fehler.
 
+### Nachtrag bei der Live-Schaltung
+- **Startseite zeigte auf Deutsch einen Balken mit dem Text „deOnlyBanner“.**
+  Der Hinweis „nur auf Deutsch verfügbar“ ist nur für Englisch gedacht. Auf
+  Deutsch ist der Text leer und die Übersetzungsfunktion hat dann den
+  internen Schlüssel angezeigt. Jetzt erscheint der Balken nur auf Englisch.
+  Ein neuer Browser-Test prüft alle Seiten auf Deutsch und Englisch auf
+  solche Rohschlüssel.
+
 ### Kritisch behoben
 - **Umfrage blieb bei Frage 2 hängen.** Auswahlfragen (Zugehörigkeit,
   Rolle) ließen sich nicht anklicken, weil der Antworttext Anführungszeichen
