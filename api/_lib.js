@@ -326,10 +326,142 @@ function scoreFromAnswers(answers) {
   return { intern, sport, extern, zukunft, custom, total };
 }
 
+// Rollen und Zugehörigkeit werden einheitlich (deutsch) gespeichert, egal in welcher
+// Sprache ein Mitglied antwortet. So landen "Player" und "Spieler·in" in derselben
+// Gruppe; Dashboard und PDF übersetzen die Bezeichnungen bei Bedarf wieder.
+const ROLE_CANON = {
+  "player": "Spieler·in", "coach": "Trainer·in", "board": "Vorstand",
+  "officer": "Funktionär·in", "parent": "Elternteil", "member": "Mitglied"
+};
+const TENURE_CANON = {
+  "< 1 year": "< 1 Jahr", "1–3 years": "1–3 Jahre", "3–5 years": "3–5 Jahre",
+  "5–10 years": "5–10 Jahre", "10+ years": "10+ Jahre"
+};
+
+function canonicalRole(value) {
+  const s = cleanString(value, 50);
+  return ROLE_CANON[s.toLowerCase()] || s;
+}
+
+function canonicalTenure(value) {
+  const s = cleanString(value, 30);
+  return TENURE_CANON[s.toLowerCase()] || s;
+}
+
 function normalizeAnswerValue(value) {
   if (typeof value === "number") return value;
   if (typeof value === "boolean") return value;
   return cleanString(value, 1000);
+}
+
+// ============================================================
+// Rate-Limiting & Login-Lockout
+// ============================================================
+
+function getClientIp(req) {
+  const xff = req.headers["x-forwarded-for"];
+  if (xff) {
+    const first = String(xff).split(",")[0].trim();
+    if (first) return first.slice(0, 64);
+  }
+  const xri = req.headers["x-real-ip"];
+  if (xri) return String(xri).trim().slice(0, 64);
+  if (req.socket && req.socket.remoteAddress) return String(req.socket.remoteAddress).slice(0, 64);
+  return "unknown";
+}
+
+/**
+ * Sliding-Window-Rate-Limit über Supabase.
+ * Zählt Einträge der letzten `windowSeconds` und blockiert bei >= maxRequests.
+ * Bei DB-Fehler wird NICHT blockiert (fail-open), aber geloggt.
+ */
+async function enforceRateLimit(supabase, ip, endpoint, opts) {
+  const maxRequests = (opts && opts.maxRequests) || 30;
+  const windowSeconds = (opts && opts.windowSeconds) || 60;
+  const since = new Date(Date.now() - windowSeconds * 1000).toISOString();
+
+  try {
+    const { count, error } = await supabase
+      .from("rate_limits")
+      .select("id", { count: "exact", head: true })
+      .eq("ip", ip)
+      .eq("endpoint", endpoint)
+      .gte("created_at", since);
+
+    if (error) {
+      console.error("rate_limits check failed:", error.message);
+      return { allowed: true };
+    }
+
+    if ((count || 0) >= maxRequests) {
+      return { allowed: false, retryAfterSeconds: windowSeconds };
+    }
+
+    // Wir warten auf das Insert, damit der Zähler beim direkt folgenden Request stimmt.
+    await supabase.from("rate_limits").insert({ ip, endpoint });
+
+    // Datensparsamkeit: IP-Einträge werden nach 24 Stunden gelöscht. Das läuft
+    // stichprobenartig bei ca. jedem zehnten Aufruf, damit die Tabelle klein bleibt.
+    if (Math.random() < 0.1) await purgeOldSecurityRows(supabase);
+
+    return { allowed: true };
+  } catch (e) {
+    console.error("rate_limits exception:", e.message);
+    return { allowed: true };
+  }
+}
+
+async function purgeOldSecurityRows(supabase) {
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  try {
+    await supabase.from("rate_limits").delete().lt("created_at", cutoff);
+    await supabase.from("login_attempts").delete().lt("created_at", cutoff);
+  } catch (e) {
+    console.error("purgeOldSecurityRows failed:", e.message);
+  }
+}
+
+/**
+ * Login-Lockout: prüft, ob diese IP innerhalb der letzten windowSeconds
+ * bereits maxFailures fehlerhafte Login-Versuche hatte.
+ */
+async function isIpLockedForLogin(supabase, ip, opts) {
+  const maxFailures = (opts && opts.maxFailures) || 10;
+  const windowSeconds = (opts && opts.windowSeconds) || 15 * 60;
+  const since = new Date(Date.now() - windowSeconds * 1000).toISOString();
+
+  try {
+    const { count, error } = await supabase
+      .from("login_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("ip", ip)
+      .eq("success", false)
+      .gte("created_at", since);
+
+    if (error) {
+      console.error("login_attempts check failed:", error.message);
+      return { locked: false };
+    }
+    if ((count || 0) >= maxFailures) {
+      return { locked: true, retryAfterSeconds: windowSeconds };
+    }
+    return { locked: false };
+  } catch (e) {
+    console.error("login_attempts exception:", e.message);
+    return { locked: false };
+  }
+}
+
+async function recordLoginAttempt(supabase, ip, code, success) {
+  try {
+    await supabase.from("login_attempts").insert({
+      ip,
+      code: (code || "").toUpperCase().slice(0, 12) || null,
+      success: Boolean(success)
+    });
+  } catch (e) {
+    console.error("recordLoginAttempt failed:", e.message);
+  }
 }
 
 module.exports = {
@@ -358,5 +490,11 @@ module.exports = {
   avg,
   avgFloat,
   scoreFromAnswers,
-  normalizeAnswerValue
+  normalizeAnswerValue,
+  canonicalRole,
+  canonicalTenure,
+  getClientIp,
+  enforceRateLimit,
+  isIpLockedForLogin,
+  recordLoginAttempt
 };

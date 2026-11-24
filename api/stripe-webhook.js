@@ -1,14 +1,12 @@
 const Stripe = require("stripe");
 const {
-  PLANS,
   requireEnv,
   getSupabase,
-  cleanCode,
   getRawBody,
   sendJson,
   methodNotAllowed
 } = require("./_lib");
-const { sendPurchaseConfirmationForCode } = require("./_email");
+const { isSessionPaid, codeFromSession, activateClubFromSession } = require("./_activate");
 
 const stripe = new Stripe(requireEnv("STRIPE_SECRET_KEY"));
 
@@ -19,6 +17,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const signature = req.headers["stripe-signature"];
+    // Vercel liest den Body vorab ein, stellt den Rohdatenstrom aber für den Handler
+    // wieder her. getRawBody liefert daher die unveränderten Bytes für die Signaturprüfung.
     const rawBody = await getRawBody(req);
 
     event = stripe.webhooks.constructEvent(
@@ -34,43 +34,21 @@ module.exports = async function handler(req, res) {
 
   try {
     const supabase = getSupabase();
+    const session = event.data && event.data.object;
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      const code = cleanCode(session.client_reference_id || (session.metadata && session.metadata.code));
-      const planKey = String((session.metadata && session.metadata.package) || "basic").toLowerCase();
-      const plan = PLANS[planKey] || PLANS.basic;
-
-      if (code) {
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 84);
-
-        const { error } = await supabase
-          .from("clubs")
-          .update({
-            payment_status: "paid",
-            package: plan.key,
-            max_members: plan.maxMembers,
-            max_custom_questions: plan.maxCustomQuestions,
-            expires_at: expiresAt.toISOString(),
-            stripe_session_id: session.id,
-            stripe_customer_id: session.customer || null
-          })
-          .eq("code", code);
-
-        if (error) throw error;
-
-        try {
-          await sendPurchaseConfirmationForCode(supabase, code, { plan, req });
-        } catch (emailErr) {
-          console.error("purchase confirmation email failed:", emailErr.message);
-        }
+    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+      // Nur freischalten, wenn wirklich bezahlt ist. Bei verzögerten Zahlungsarten
+      // (z. B. SEPA-Lastschrift) kommt "completed" vor dem Geldeingang; freigeschaltet
+      // wird dann erst mit "async_payment_succeeded".
+      if (isSessionPaid(session)) {
+        await activateClubFromSession(supabase, session, req);
+      } else {
+        console.log(`checkout ${session && session.id}: Zahlung noch offen (${session && session.payment_status}), noch keine Freischaltung.`);
       }
     }
 
     if (event.type === "checkout.session.expired" || event.type === "checkout.session.async_payment_failed") {
-      const session = event.data.object;
-      const code = cleanCode(session.client_reference_id || (session.metadata && session.metadata.code));
+      const code = codeFromSession(session);
       if (code) {
         await supabase
           .from("clubs")
@@ -84,11 +62,5 @@ module.exports = async function handler(req, res) {
   } catch (err) {
     console.error("stripe webhook handling failed:", err);
     return sendJson(res, 500, { received: false });
-  }
-};
-
-module.exports.config = {
-  api: {
-    bodyParser: false
   }
 };

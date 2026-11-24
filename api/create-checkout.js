@@ -53,8 +53,8 @@ module.exports = async function handler(req, res) {
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       return sendJson(res, 400, { ok: false, error: "Bitte eine gültige E-Mail-Adresse eingeben." });
     }
-    if (password.length < 8) {
-      return sendJson(res, 400, { ok: false, error: "Das Passwort muss mindestens 8 Zeichen haben." });
+    if (password.length < 10) {
+      return sendJson(res, 400, { ok: false, error: "Das Passwort muss mindestens 10 Zeichen haben." });
     }
 
     let code = cleanCode(body.code);

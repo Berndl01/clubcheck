@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f5f3ee">
 <title>ClubCheck Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="/vendor/jspdf.umd.min.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -52,6 +52,7 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 .lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
 .lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
 .lang button.on{background:var(--ac);color:#fff}
+.layout>*,.grid2>*,.grid3>*,.hero-grid>*{min-width:0}.note,.summary-value,p{overflow-wrap:anywhere}h1,h2{overflow-wrap:break-word;hyphens:auto}
 @media(max-width:980px){.hero-grid,.layout,.grid2,.grid3{grid-template-columns:1fr}.sticky{position:static!important}}
 @media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.field-row{grid-template-columns:1fr}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav{display:none}}
 
@@ -64,7 +65,7 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 <section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow" id="heroEyebrow">Vorstand-Dashboard</span><h1 id="heroTitle">Dashboard öffnen.</h1><p class="lead" id="heroLead">Melde dich an, um Rückmeldungen, Auswertungen und den PDF-Bericht zu sehen.</p></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px" id="heroSideTitle">Auswertung</h3><p id="heroSideText">Das Dashboard zeigt zentrale Kennzahlen und macht sichtbar, wo der Verein besonders stark ist und wo Handlungsbedarf entsteht.</p></div></div></div></section>
 
 <main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
-<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/register.html" id="footerReg">Registrierung</a><a href="/impressum.html" id="footerImp">Impressum</a><a href="/datenschutz.html" id="footerPrv">Datenschutz</a></div></div></footer>
+<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Dashboard.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/register.html" id="footerReg">Registrierung</a><a href="/impressum.html" id="footerImp">Impressum</a><a href="/datenschutz.html" id="footerPrv">Datenschutz</a><a href="/agb.html" id="footerAgb">AGB</a></div></div></footer>
 <script>
 // ===== I18N =====
 const I18N = {
@@ -83,7 +84,7 @@ const I18N = {
     heroLoadLead:"Bitte einen Moment Geduld.",
     heroDashLead:"Hier findest du die aktuellen Rückmeldungen, zentrale Kennzahlen und den PDF-Bericht.",
     footerCopy:"Humatrix ClubCheck — Dashboard.",
-    footerHome:"Startseite", footerReg:"Registrierung", footerImp:"Impressum", footerPrv:"Datenschutz",
+    footerHome:"Startseite", footerReg:"Registrierung", footerImp:"Impressum", footerPrv:"Datenschutz", footerAgb:"AGB",
     loginTitle:"Anmelden", loginDesc:"Verwende den Club-Code und das Passwort aus der Registrierung.",
     fCode:"Club-Code", fPwd:"Passwort",
     pCode:"z. B. SVW9791", pPwd:"Passwort",
@@ -100,13 +101,13 @@ const I18N = {
     resetCheckTitle:"Prüfe deine E-Mails",
     resetCheckText:"Du kannst danach ein neues Passwort setzen und dich erneut anmelden.",
     btnToLogin:"Zur Anmeldung",
-    resetTitle:"Neues Passwort", resetDesc:"Das Passwort muss mindestens 8 Zeichen haben.",
+    resetTitle:"Neues Passwort", resetDesc:"Das Passwort muss mindestens 10 Zeichen haben.",
     fNewPwd:"Neues Passwort", fNewPwd2:"Wiederholen",
-    pNewPwd:"Mindestens 8 Zeichen", pNewPwd2:"Wiederholen",
+    pNewPwd:"Mindestens 10 Zeichen", pNewPwd2:"Wiederholen",
     btnSavePwd:"Passwort speichern",
     sideResetTitle:"Sicherheit",
     sideResetText:"Der Link kann nur einmal verwendet werden.",
-    errPwdLen:"Das Passwort muss mindestens 8 Zeichen haben.",
+    errPwdLen:"Das Passwort muss mindestens 10 Zeichen haben.",
     errPwdMatch:"Die Passwörter stimmen nicht überein.",
     errResetFail:"Das Passwort konnte nicht gespeichert werden.",
     pwdChanged:"Das Passwort wurde geändert.",
@@ -138,7 +139,17 @@ const I18N = {
     scoreStrong:"Stark", scoreOk:"Stabil", scoreWeak:"Handlungsbedarf",
     pdfFail:"Der PDF-Bericht konnte nicht erstellt werden. Bitte später erneut versuchen.",
     copied:"Link kopiert.", copyManual:"Bitte manuell kopieren.",
-    noData:"Noch keine Daten."
+    noData:"Noch keine Daten.",
+    privacyTitle:"Auswertung geschützt",
+    privacyLowBody:"Aus Datenschutzgründen erscheinen Scores, NPS, Rollen und Freitexte erst ab 5 Rückmeldungen. Aktuell sind erst {count} Rückmeldungen eingegangen — teile den Mitglieder-Link, damit mehr Stimmen zusammenkommen.",
+    privacyFreitextBody:"Freitexte werden ab 7 Rückmeldungen angezeigt, um Einzelpersonen besser zu schützen. Aktuell: {count} Rückmeldungen.",
+    privacyNoteSmall:"Bei kleinen Gruppen vorsichtig interpretieren — einzelne Stimmen wirken stark auf den Durchschnitt.",
+    deleteTitle:"ClubCheck und alle Daten löschen",
+    deleteBody:"Diese Aktion löscht den Verein, alle Rückmeldungen, alle E-Mail-Protokolle und alle Reset-Token unwiderruflich.",
+    deleteBtn:"Verein und alle Daten löschen",
+    deleteConfirm:"Bist du sicher? Bitte den Vereinscode zur Bestätigung eingeben:",
+    deleteFail:"Die Löschung ist fehlgeschlagen.",
+    deleteDone:"Der Verein wurde gelöscht. Du wirst abgemeldet."
   },
   en: {
     navHome:"Home", navReg:"Sign up", navDash:"Dashboard",
@@ -155,7 +166,7 @@ const I18N = {
     heroLoadLead:"One moment please.",
     heroDashLead:"Here you'll find current responses, key indicators and the PDF report.",
     footerCopy:"Humatrix ClubCheck — Dashboard.",
-    footerHome:"Home", footerReg:"Sign up", footerImp:"Imprint", footerPrv:"Privacy",
+    footerHome:"Home", footerReg:"Sign up", footerImp:"Imprint", footerPrv:"Privacy", footerAgb:"Terms",
     loginTitle:"Sign in", loginDesc:"Use the club code and password from sign-up.",
     fCode:"Club code", fPwd:"Password",
     pCode:"e.g. SVW9791", pPwd:"Password",
@@ -172,13 +183,13 @@ const I18N = {
     resetCheckTitle:"Check your emails",
     resetCheckText:"You can then set a new password and sign in again.",
     btnToLogin:"Go to sign in",
-    resetTitle:"New password", resetDesc:"Password must be at least 8 characters.",
+    resetTitle:"New password", resetDesc:"Password must be at least 10 characters.",
     fNewPwd:"New password", fNewPwd2:"Repeat",
-    pNewPwd:"At least 8 characters", pNewPwd2:"Repeat",
+    pNewPwd:"At least 10 characters", pNewPwd2:"Repeat",
     btnSavePwd:"Save password",
     sideResetTitle:"Security",
     sideResetText:"The link can only be used once.",
-    errPwdLen:"Password must be at least 8 characters.",
+    errPwdLen:"Password must be at least 10 characters.",
     errPwdMatch:"Passwords do not match.",
     errResetFail:"Password could not be saved.",
     pwdChanged:"Password has been changed.",
@@ -210,7 +221,17 @@ const I18N = {
     scoreStrong:"Strong", scoreOk:"Stable", scoreWeak:"Action required",
     pdfFail:"The PDF report could not be created. Please try again later.",
     copied:"Link copied.", copyManual:"Please copy manually.",
-    noData:"No data yet."
+    noData:"No data yet.",
+    privacyTitle:"Analysis protected",
+    privacyLowBody:"For privacy reasons, scores, NPS, roles and free-text answers only appear from 5 responses onwards. So far only {count} responses have been received — share the member link to gather more voices.",
+    privacyFreitextBody:"Free-text answers are shown from 7 responses onwards to better protect individuals. Currently: {count} responses.",
+    privacyNoteSmall:"Interpret small groups with care — single voices influence the average strongly.",
+    deleteTitle:"Delete ClubCheck and all data",
+    deleteBody:"This action irrevocably deletes the club, all responses, all email logs and all reset tokens.",
+    deleteBtn:"Delete club and all data",
+    deleteConfirm:"Are you sure? Please enter the club code to confirm:",
+    deleteFail:"Deletion failed.",
+    deleteDone:"The club has been deleted. You will be logged out."
   }
 };
 
@@ -242,6 +263,7 @@ function applyStaticI18n(){
   document.getElementById("footerReg").textContent = t("footerReg");
   document.getElementById("footerImp").textContent = t("footerImp");
   document.getElementById("footerPrv").textContent = t("footerPrv");
+  var __agb = document.getElementById("footerAgb"); if(__agb) __agb.textContent = t("footerAgb");
 }
 
 const app = document.getElementById("app");
@@ -260,8 +282,15 @@ else if (token) loadDashboard();
 else renderLogin();
 
 function esc(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
-function fmt(v){return v === null || v === undefined ? "—" : String(v);}
-function pct(v){return v === null || v === undefined ? "—" : `${v}/7`;}
+function num(v){
+  if(v === null || v === undefined || v === "") return "—";
+  const n = Number(v);
+  if(!Number.isFinite(n)) return String(v);
+  const s = Number.isInteger(n) ? String(n) : n.toFixed(1);
+  return LANG === "de" ? s.replace(".", ",") : s;
+}
+function fmt(v){return num(v);}
+function pct(v){return v === null || v === undefined ? "—" : `${num(v)} / 7`;}
 
 function setHero(title, lead){
   document.getElementById("heroTitle").textContent = title;
@@ -339,7 +368,7 @@ function renderResetPassword(){
 async function resetPassword(){
   const p1 = document.getElementById("newPassword").value;
   const p2 = document.getElementById("newPassword2").value;
-  if(p1.length < 8){ error = t("errPwdLen"); return renderResetPassword(); }
+  if(p1.length < 10){ error = t("errPwdLen"); return renderResetPassword(); }
   if(p1 !== p2){ error = t("errPwdMatch"); return renderResetPassword(); }
   try{
     const res = await fetch("/api/reset-password", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({token: resetToken, password: p1}) });
@@ -381,46 +410,78 @@ function renderDashboard(){
   const mode = d.club.package === "basic" ? "pulse" : "core";
   const modeLabel = mode === "core" ? t("modeCore") : t("modePulse");
   const pkgLabel = d.club.package === "basic" ? t("pkgBasic") : d.club.package === "plus" ? t("pkgPlus") : t("pkgPremium");
+
+  const priv = d.privacy || {};
+  const lowPart = priv.lowParticipation;
+  const freitextHidden = priv.freitextHidden;
+
+  // Privacy-Banner bei kleinen Stichproben
+  let privacyBanner = "";
+  if (lowPart) {
+    privacyBanner = `<div class="note" style="margin-bottom:18px"><strong>${t("privacyTitle")}.</strong> ${t("privacyLowBody").replace("{count}", String(d.count))}</div>`;
+  } else if (d.count < 10) {
+    privacyBanner = `<div class="note" style="margin-bottom:18px">${t("privacyNoteSmall")}</div>`;
+  }
+
+  // Auswertungsblock — leer bei lowParticipation, sonst mit Daten
+  let analysisBlock;
+  if (lowPart) {
+    analysisBlock = `
+      <div class="card card-p" style="margin-top:22px">
+        <div class="section-head"><h2>${t("areasTitle")}</h2><p>${t("privacyLowBody").replace("{count}", String(d.count))}</p></div>
+      </div>`;
+  } else {
+    analysisBlock = `
+      <div class="card card-p" style="margin-top:22px">
+        <div class="section-head"><h2>${t("areasTitle")}</h2><p>${t("areasDesc")}</p></div>
+        ${scoreRow(t("areaOrg"), d.scores.intern)}
+        ${scoreRow(t("areaSport"), d.scores.sport)}
+        ${scoreRow(t("areaExt"), d.scores.extern)}
+        ${scoreRow(t("areaFut"), d.scores.zukunft)}
+        ${d.scores.custom ? scoreRow(t("areaCustom"), d.scores.custom) : ""}
+      </div>
+
+      <div class="grid2" style="margin-top:22px">
+        <div class="card card-p">
+          <h2 style="font-size:30px;margin-bottom:14px">${t("rolesTitle")}</h2>
+          ${bars(d.roles, roleLabel)}
+        </div>
+        <div class="card card-p">
+          <h2 style="font-size:30px;margin-bottom:14px">${t("recoTitle")}</h2>
+          <div class="summary-list">
+            <div class="summary-row"><div class="summary-label">${t("promoters")}</div><div class="summary-value">${d.nps.promoters}</div></div>
+            <div class="summary-row"><div class="summary-label">${t("passives")}</div><div class="summary-value">${d.nps.passives}</div></div>
+            <div class="summary-row"><div class="summary-label">${t("critics")}</div><div class="summary-value">${d.nps.critics}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-p" style="margin-top:22px">
+        <div class="section-head"><h2>${t("freitextTitle")}</h2><p>${freitextHidden ? t("privacyFreitextBody").replace("{count}", String(d.count)) : t("freitextDesc")}</p></div>
+        ${d.freitexts.length ? d.freitexts.map(x => `<div class="note"><strong>${esc(x.role ? roleLabel(x.role) : t("anonRole"))}:</strong> ${esc(x.text)}</div>`).join("") : `<p>${t("freitextEmpty")}</p>`}
+      </div>`;
+  }
+
   app.innerHTML = `
+    ${privacyBanner}
     <div class="grid3">
       <div class="kpi"><div class="num">${d.count}</div><div class="lbl">${t("kpiResp")}</div></div>
       <div class="kpi"><div class="num">${fmt(d.scores.total)}</div><div class="lbl">${t("kpiTotal")}</div></div>
       <div class="kpi"><div class="num">${fmt(d.nps.score)}</div><div class="lbl">${t("kpiNps")}</div></div>
     </div>
 
-    <div class="card card-p" style="margin-top:22px">
-      <div class="section-head"><h2>${t("areasTitle")}</h2><p>${t("areasDesc")}</p></div>
-      ${scoreRow(t("areaOrg"), d.scores.intern)}
-      ${scoreRow(t("areaSport"), d.scores.sport)}
-      ${scoreRow(t("areaExt"), d.scores.extern)}
-      ${scoreRow(t("areaFut"), d.scores.zukunft)}
-      ${d.scores.custom ? scoreRow(t("areaCustom"), d.scores.custom) : ""}
-    </div>
-
-    <div class="grid2" style="margin-top:22px">
-      <div class="card card-p">
-        <h2 style="font-size:30px;margin-bottom:14px">${t("rolesTitle")}</h2>
-        ${bars(d.roles)}
-      </div>
-      <div class="card card-p">
-        <h2 style="font-size:30px;margin-bottom:14px">${t("recoTitle")}</h2>
-        <div class="summary-list">
-          <div class="summary-row"><div class="summary-label">${t("promoters")}</div><div class="summary-value">${d.nps.promoters}</div></div>
-          <div class="summary-row"><div class="summary-label">${t("passives")}</div><div class="summary-value">${d.nps.passives}</div></div>
-          <div class="summary-row"><div class="summary-label">${t("critics")}</div><div class="summary-value">${d.nps.critics}</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card card-p" style="margin-top:22px">
-      <div class="section-head"><h2>${t("freitextTitle")}</h2><p>${t("freitextDesc")}</p></div>
-      ${d.freitexts.length ? d.freitexts.map(x => `<div class="note"><strong>${esc(x.role || t("anonRole"))}:</strong> ${esc(x.text)}</div>`).join("") : `<p>${t("freitextEmpty")}</p>`}
-    </div>
+    ${analysisBlock}
 
     <div class="btn-row">
-      <button class="btn bp" onclick="downloadPdf()">${t("btnPdf")}</button>
+      <button class="btn bp" onclick="downloadPdf()" ${lowPart ? "disabled" : ""}>${t("btnPdf")}</button>
       <button class="btn bo" onclick="copyText('${surveyUrl}')">${t("btnCopyLink")}</button>
       <button class="btn bo" onclick="logout()">${t("btnLogout")}</button>
+    </div>
+
+    <div class="card card-p" style="margin-top:34px;border-color:#e8d5d5">
+      <h3 style="font-size:22px;margin-bottom:10px;color:var(--red)">${t("deleteTitle")}</h3>
+      <p style="margin-bottom:14px">${t("deleteBody")}</p>
+      <button class="btn bo" style="border-color:var(--red);color:var(--red)" onclick="deleteClub('${esc(d.club.code)}')">${t("deleteBtn")}</button>
     </div>
   `;
 
@@ -441,16 +502,44 @@ function renderDashboard(){
     </div>`;
 }
 
+async function deleteClub(code){
+  const input = prompt(t("deleteConfirm") + " " + code);
+  if(!input) return;
+  if(String(input).trim().toUpperCase() !== String(code).toUpperCase()){
+    alert(t("deleteFail"));
+    return;
+  }
+  try{
+    const res = await fetch("/api/delete-club", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ confirmCode: code })
+    });
+    const data = await res.json();
+    if(!res.ok || !data.ok) throw new Error(data.error || t("deleteFail"));
+    alert(t("deleteDone"));
+    localStorage.removeItem(storeKey);
+    token = ""; dashboard = null;
+    location.href = "/";
+  }catch(e){
+    alert(t("deleteFail"));
+  }
+}
+
 function scoreRow(label, value){
   const width = value ? Math.max(0, Math.min(100, Math.round((value/7)*100))) : 0;
   return `<div style="margin-bottom:18px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(label)}</div><div class="summary-value">${pct(value)} · ${scoreClass(value)}</div></div><div class="bar"><span style="width:${width}%"></span></div></div>`;
 }
 
-function bars(obj){
+// Rollen werden serverseitig einheitlich (deutsch) gespeichert; hier für die Anzeige übersetzen.
+const ROLE_EN = { "Spieler·in":"Player", "Trainer·in":"Coach", "Vorstand":"Board", "Funktionär·in":"Officer", "Elternteil":"Parent", "Mitglied":"Member", "Sonstige":"Other", "Nicht angegeben":"Not specified", "Anonym":"Anonymous" };
+function roleLabel(k){ const s = String(k || ""); return LANG === "en" ? (ROLE_EN[s] || s) : s; }
+
+function bars(obj, labelFn){
   const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
   if(!entries.length) return `<p>${t("noData")}</p>`;
   const max = Math.max(...entries.map(x=>x[1]), 1);
-  return entries.map(([k,v]) => `<div style="margin-bottom:14px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(k)}</div><div class="summary-value">${v}</div></div><div class="bar"><span style="width:${Math.round((v/max)*100)}%"></span></div></div>`).join("");
+  return entries.map(([k,v]) => `<div style="margin-bottom:14px"><div class="summary-row" style="border-bottom:0;padding:0 0 8px"><div class="summary-label">${esc(labelFn ? labelFn(k) : k)}</div><div class="summary-value">${v}</div></div><div class="bar"><span style="width:${Math.round((v/max)*100)}%"></span></div></div>`).join("");
 }
 
 function copyText(text){ navigator.clipboard.writeText(text).then(()=>alert(t("copied"))).catch(()=>alert(t("copyManual"))); }
@@ -476,6 +565,37 @@ function downloadPdf(){
 // Sprache wird über die globale LANG-Variable des Dashboards gesteuert (DE/EN).
 function generateClubCheckPdf(jsPDF, d) {
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
+
+  // Die PDF-Standardschriften kennen nur den westeuropäischen Zeichensatz (Windows-1252).
+  // Texte von Mitgliedern können Emojis oder Zeichen wie č, ć, ł enthalten, die sonst als
+  // Zeichensalat erscheinen. Wir übertragen sie lesbar (č -> c) und lassen Emojis weg.
+  const CP1252_EXTRA = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+  const PDF_CHAR_MAP = { "đ": "d", "Đ": "D", "ł": "l", "Ł": "L", "ı": "i", "ő": "ö", "Ő": "Ö", "ű": "ü", "Ű": "Ü", "−": "-", "‐": "-", "‑": "-", " ": " ", " ": " ", " ": " " };
+  function pdfCharOk(c) {
+    const p = c.codePointAt(0);
+    return (p >= 32 && p <= 126) || (p >= 160 && p <= 255) || CP1252_EXTRA.indexOf(c) !== -1;
+  }
+  function pdfSafe(input) {
+    if (input === null || input === undefined) return "";
+    let out = "";
+    for (const ch of String(input)) {
+      if (ch === "\n" || ch === "\r") { out += ch; continue; }
+      if (ch === "\t") { out += " "; continue; }
+      if (PDF_CHAR_MAP[ch]) { out += PDF_CHAR_MAP[ch]; continue; }
+      if (pdfCharOk(ch)) { out += ch; continue; }
+      const base = ch.normalize("NFD").replace(/[̀-ͯ]/g, "");
+      if (base && base !== ch && Array.from(base).every(pdfCharOk)) out += base;
+    }
+    return out.replace(/ {2,}/g, " ");
+  }
+  const rawText = doc.text.bind(doc);
+  doc.text = function(t, x, y, opts, transform) {
+    return rawText(Array.isArray(t) ? t.map(pdfSafe) : pdfSafe(t), x, y, opts, transform);
+  };
+  const rawSplit = doc.splitTextToSize.bind(doc);
+  doc.splitTextToSize = function(t, w, o) { return rawSplit(pdfSafe(t), w, o); };
+  const rawWidth = doc.getTextWidth.bind(doc);
+  doc.getTextWidth = function(t) { return rawWidth(pdfSafe(t)); };
 
   // ============================================================
   // SPRACH-TEXTE
@@ -694,6 +814,11 @@ function generateClubCheckPdf(jsPDF, d) {
   };
   // LANG ist eine globale Variable des Dashboards (de/en)
   const T = TEXTS[(typeof LANG !== "undefined" && TEXTS[LANG]) ? LANG : "de"];
+  const IS_EN = T === TEXTS.en;
+  const PDF_ROLE_EN = { "Spieler·in":"Player", "Trainer·in":"Coach", "Vorstand":"Board", "Funktionär·in":"Officer", "Elternteil":"Parent", "Mitglied":"Member", "Sonstige":"Other", "Nicht angegeben":"Not specified", "Anonym":"Anonymous" };
+  const QO = IS_EN ? "\u201C" : "\u201E";
+  const QC = IS_EN ? "\u201D" : "\u201C";
+  function pdfRole(k) { const s = String(k || ""); return IS_EN ? (PDF_ROLE_EN[s] || s) : s; }
 
   const C = {
     bg:        [245, 243, 238],
@@ -752,7 +877,13 @@ function generateClubCheckPdf(jsPDF, d) {
   function serif(text, x, y, size, weight, color, align) {
     rgb(color || C.ink, "text");
     font("times", weight || "normal");
-    doc.setFontSize(size);
+    let s = size;
+    doc.setFontSize(s);
+    // Überschriften nie über den rechten Rand laufen lassen: notfalls Schrift verkleinern.
+    if (!align) {
+      const maxW = W - M - x;
+      while (s > size * 0.6 && doc.getTextWidth(String(text)) > maxW) { s -= 0.5; doc.setFontSize(s); }
+    }
     doc.text(String(text), x, y, align ? { align: align } : undefined);
   }
   function sans(text, x, y, size, weight, color, align) {
@@ -1006,10 +1137,10 @@ function generateClubCheckPdf(jsPDF, d) {
   // ============================================================
   // SECTION: SCORES (always — Basic combines with NPS, Plus/Premium standalone)
   // ============================================================
-  function renderScores(includeNps) {
+  function renderScores(includeNps, sectionLabel) {
     startPage();
     let y = 32;
-    caps("01 — " + T.scoresTitle, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
+    caps((sectionLabel || "01") + " — " + T.scoresTitle, M, y, { color: C.gold, size: 8.5, charSpace: 1.6 });
     y += 9;
     serif(T.scoresHead, M, y, 28, "normal", C.ink);
     y += 8;
@@ -1205,7 +1336,7 @@ function generateClubCheckPdf(jsPDF, d) {
         rgb(C.inkLight, "text"); doc.text(sepText, valX + valW, y);
         y += 5;
         rgb(C.ink, "text"); font("times", "italic"); doc.setFontSize(11);
-        const qLines = doc.splitTextToSize("\u201E" + (q.text || T.customQFallback) + "\u201C", CW - 4);
+        const qLines = doc.splitTextToSize(QO + (q.text || T.customQFallback) + QC, CW - 4);
         qLines.forEach(function(ln, idx) { doc.text(ln, M, y + idx * 5.2); });
         y += qLines.length * 5.2 + 3;
         rgb(C.lineSoft, "fill"); doc.rect(M, y, CW, 4, "F");
@@ -1242,7 +1373,7 @@ function generateClubCheckPdf(jsPDF, d) {
       const roleTotal = roleEntries.reduce(function(s, p) { return s + p[1]; }, 0);
       roleEntries.forEach(function(pair) {
         const role = pair[0], count = pair[1];
-        caps(role, M, y, { color: C.ink, size: 9.5, charSpace: 0.6 });
+        caps(pdfRole(role), M, y, { color: C.ink, size: 9.5, charSpace: 0.6 });
         const pct = roleTotal ? Math.round((count / roleTotal) * 100) : 0;
         sans(count + "  ·  " + pct + "%", M + CW, y, 9.5, "bold", C.inkSoft, "right");
         y += 4;
@@ -1270,8 +1401,8 @@ function generateClubCheckPdf(jsPDF, d) {
       paragraph(T.voicesIntro, M, y, CW - 30, { size: 10, color: C.inkSoft });
       y += 12;
       freitexts.forEach(function(ft) {
-        const text = "\u201E" + ft.text + "\u201C";
-        const role = (ft.role || T.voicesAnonym);
+        const text = QO + ft.text + QC;
+        const role = ft.role ? pdfRole(ft.role) : T.voicesAnonym;
         font("times", "italic"); doc.setFontSize(11);
         const lines = doc.splitTextToSize(text, CW - 14);
         const blockH = 6 + lines.length * 5.2 + 3;
@@ -1452,7 +1583,7 @@ function generateClubCheckPdf(jsPDF, d) {
     caps(T.contactEmail, M + 6,                  y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
     caps(T.contactWeb,   M + 6 + colW,           y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
     caps(T.contactSeat,  M + 6 + 2 * colW,       y + 9, { color: C.inkLight, size: 7, charSpace: 1.2 });
-    sans("office@humatrix.cc",          M + 6,            y + 18, 10.5, "bold", C.ink);
+    sans("bernhard@humatrix.cc",        M + 6,            y + 18, 10.5, "bold", C.ink);
     sans("humatrix.cc",                 M + 6 + colW,     y + 18, 10.5, "bold", C.ink);
     sans(T.contactSeatVal,              M + 6 + 2 * colW, y + 18, 10.5, "bold", C.ink);
   }
@@ -1476,7 +1607,7 @@ function generateClubCheckPdf(jsPDF, d) {
     // PREMIUM
     renderCover();                                  // P1
     renderExecutiveSummary();                       // P2
-    renderScores(false);                            // P3
+    renderScores(false, "02");                      // P3
     renderNpsDetailed("03");                        // P4
     renderCustomQuestions("04");                    // P5
     renderRolesVoices("05", "06", 8);               // P6

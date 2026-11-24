@@ -1,6 +1,62 @@
 # ClubCheck — Audit & Fixes (Go-Live-Vorbereitung)
 
-Datum: 2026-05-07
+## Version 2.1.0 — Verkaufsprüfung (24. November 2026)
+
+Diesmal nicht nur Code gelesen, sondern den kompletten Ablauf lokal echt
+durchgespielt: echte API-Funktionen, echte PostgreSQL-17-Datenbank mit
+`schema.sql`, echte Stripe-Signaturprüfung, echter Chrome-Browser.
+Ergebnis: 74 Server-Tests und 43 Browser-Tests grün, keine JS-Fehler.
+
+### Kritisch behoben
+- **Umfrage blieb bei Frage 2 hängen.** Auswahlfragen (Zugehörigkeit,
+  Rolle) ließen sich nicht anklicken, weil der Antworttext Anführungszeichen
+  im Klick-Handler erzeugte. Mitglieder hätten die Befragung nicht
+  abschließen können. Jetzt robust über Index gelöst.
+- **Handy-Ansicht der Umfrage.** Die Skala 1–7 und vor allem 0–10 lief
+  seitlich aus dem Bildschirm (9 und 10 waren unsichtbar, das verfälscht
+  den Empfehlungswert). Jetzt passen alle Werte, 0–10 bricht in zwei
+  Reihen um, die Frage steht immer oben.
+- **Dashboard am Handy** war 540 px breit (Kacheln, lange Wörter/Links in
+  Freitexten). Jetzt einspaltig ohne seitliches Scrollen. Gleiches für
+  Startseite, Datenschutz und AGB.
+
+### Zahlung
+- Laufzeit ließ sich durch erneutes Laden der Erfolgsseite oder
+  Stripe-Wiederholungen beliebig verlängern. Jetzt startet sie einmalig
+  mit der ersten Freischaltung.
+- 100-%-Gutscheine (`no_payment_required`) werden korrekt freigeschaltet.
+- Freischaltung nur bei bestätigter Zahlung, verzögerte Zahlungsarten
+  über `checkout.session.async_payment_succeeded` vorbereitet.
+- Gemeinsame Logik in `api/_activate.js`.
+
+### Auswertung
+- Bereichswerte jetzt mit einer Nachkommastelle (z. B. 4,3 / 7) direkt aus
+  den Einzelantworten berechnet. Vorher wurde doppelt gerundet, Werte
+  knapp unter einer Schwelle landeten in der falschen Ampelfarbe.
+- Englische Antworten landen in denselben Gruppen (Player = Spieler·in),
+  Dashboard und PDF übersetzen die Rollen wieder.
+- PDF: Sonderzeichen wie č, ć, ł werden lesbar übertragen, Emojis
+  entfernt (vorher Zeichensalat). Premium-Kapitelnummern korrigiert,
+  englische Anführungszeichen im EN-Bericht, Überschriften laufen nie
+  über den Rand. Kontakt im PDF: bernhard@humatrix.cc.
+
+### Sicherheit und Datenschutz
+- Antworten werden serverseitig geprüft (nur Werte 1–7 bzw. 0–10,
+  nur bekannte Felder). Manipulierte Anfragen verfälschen nichts mehr und
+  erzeugen keinen Serverfehler.
+- Dashboard-API liefert keine Einzelantworten und keine Zeitstempel bei
+  Freitexten mehr. Kleine Zugehörigkeitsgruppen werden wie Rollen
+  zusammengefasst.
+- IP-Einträge für den Missbrauchsschutz werden nach 24 Stunden gelöscht
+  (in der Datenschutzerklärung ergänzt).
+- Abhängigkeiten aktualisiert (ws, qs): `npm audit` meldet 0 Lücken.
+- Schema: drei zusätzliche Indizes, mehrfach ausführbar.
+
+### Doku
+- Supabase stellt die alten Schlüssel bis Ende 2026 ein: in Vercel den
+  neuen Secret Key (`sb_secret_…`) verwenden.
+
+Datum der ersten Prüfrunde: 2026-05-07
 
 ## Was geändert wurde
 
@@ -78,6 +134,62 @@ Beide Seiten erstellt und mit den echten Humatrix-Daten befüllt:
 - `loadDashboard()` nutzt jetzt konsistent den `Authorization`-Header
   (war bereits so, jetzt mit i18n-Fehlertexten).
 
+## Sicherheits- und Datenschutz-Härtung (auf Basis externer Code-Review)
+
+### Rate-Limiting auf allen kritischen Endpoints
+Neue Tabelle `rate_limits` plus Helper `enforceRateLimit()` in `api/_lib.js`.
+Sliding-Window-Implementierung über Supabase (fail-open bei DB-Fehler).
+Konkrete Limits pro IP / Minute:
+- `submit-response`: 30
+- `dashboard-login`: 10
+- `request-password-reset`: 5
+- `get-club-config`: 60
+- `delete-club`: 5
+
+Bei Überschreitung wird HTTP 429 + `Retry-After`-Header zurückgegeben.
+
+### Login-Lockout
+Neue Tabelle `login_attempts` protokolliert fehlgeschlagene Anmeldungen.
+Nach 10 Fehlversuchen pro IP innerhalb von 15 Minuten antwortet
+`dashboard-login` mit HTTP 423 (Locked). Erfolgreiche Logins werden
+ebenfalls protokolliert. Aus Datenschutzgründen wird in der Fehlermeldung
+nicht offengelegt, ob Code oder Passwort falsch war.
+
+### Passwort-Mindestlänge auf 10 Zeichen (vorher 8)
+Erzwungen in `create-checkout.js`, `reset-password.js` sowie clientseitig
+in `register.html` und `dashboard.html` (Reset-Formular). i18n-Texte
+beider Sprachen entsprechend aktualisiert.
+
+### Privacy-Schwellen im Dashboard
+Aggregierte Auswertungen erscheinen erst ab fünf Rückmeldungen, Freitexte
+erst ab sieben. Bei Stichproben unter zehn werden Rollen-Labels aus
+Freitexten entfernt (zur Re-Identifikationsvermeidung). Rollen-Gruppen
+mit weniger als drei Einträgen werden zu „Sonstige" aggregiert. Im UI
+erscheinen entsprechende Hinweis-Banner; der PDF-Download-Button ist
+deaktiviert, solange noch keine belastbare Datenbasis vorliegt.
+
+### Löschfunktion pro Verein
+Neuer Endpoint `/api/delete-club` (POST, Bearer-Token, Code-Bestätigung
+nötig). Löscht den Verein und alle abhängigen Daten (responses,
+password_resets, email_logs) per ON DELETE CASCADE. UI-Button im
+Dashboard mit Bestätigungs-Dialog.
+
+### jsPDF lokal statt CDN
+`jspdf.umd.min.js` (Version 2.5.1) wird aus dem CDN entfernt und lokal
+unter `/public/vendor/` ausgeliefert. Damit funktioniert der
+PDF-Download auch wenn cdnjs.cloudflare.com nicht erreichbar ist.
+
+### AGB-Seite
+Neue Seite `public/agb.html` (DE/EN) mit allen wesentlichen
+Vertragsklauseln: Vertragspartner, Leistungsbeschreibung, Preise +
+Laufzeit, Widerrufsrecht für Verbraucher inkl. FAGG-§18-Hinweis zur
+sofortigen digitalen Leistungserbringung, Gewährleistung, Haftung
+(mit ausdrücklichem Hinweis, dass ClubCheck KEIN psychologisches
+oder medizinisches Diagnoseinstrument ist), Datenschutz-Verweis,
+Vertragsdauer, Gerichtsstand. AGB-Link im Footer aller Seiten.
+Checkbox-Text bei der Bestellung verlangt jetzt ausdrückliche
+Zustimmung zur sofortigen digitalen Leistungserbringung.
+
 ## Was du vor dem Go-Live noch tun solltest
 
 1. **Stripe von Test- auf Live-Modus umstellen** und neuen
@@ -102,7 +214,20 @@ Beide Seiten erstellt und mit den echten Humatrix-Daten befüllt:
 
 ## Optionale Phase 2
 
+- **E-Mail-Templates (Registrierung, Kaufbestätigung, Passwort-Reset)
+  sind aktuell nur in Deutsch verfasst.** Für englischsprachige Vereine
+  würde sich eine Spalte `language` in der `clubs`-Tabelle anbieten,
+  die beim Sign-up gespeichert wird, plus zweisprachige Templates
+  in `api/_email.js`. Das ist eine eigene, fokussierte Phase 2 — für den
+  DACH-Markt heute nicht blockierend.
+- **Stripe Payment Methods optimieren:** aktuell `payment_method_types: ["card"]`
+  in `api/create-checkout.js`. Für österreichische Kunden könnte
+  `automatic_payment_methods: { enabled: true }` (statt der card-Liste)
+  zusätzliche Methoden wie EPS, SEPA und Apple Pay automatisch aktivieren —
+  abhängig davon, was im Stripe-Dashboard freigeschaltet ist.
 - Vollständige EN-Übersetzung der Detail-Sektionen auf der Landing-Page
-  (Problem, Architektur, FAQ, Testimonials).
+  (Problem, Architektur, FAQ, Testimonials). Diese Sektionen sind bei
+  englischer Sprachwahl deutsch und werden über einen Hinweis-Banner
+  erklärt.
 - Rate-Limiting auf `request-password-reset` (aktuell unbeschränkt —
-  Spam-Risiko).
+  Spam-Risiko, in der Praxis aber niedrig).

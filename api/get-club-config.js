@@ -3,7 +3,9 @@ const {
   cleanCode,
   sendJson,
   methodNotAllowed,
-  clubQuestionsFromRow
+  clubQuestionsFromRow,
+  getClientIp,
+  enforceRateLimit
 } = require("./_lib");
 
 // Pulse = Einstiegstest (basic). Core = Premium-Test (plus, premium).
@@ -15,10 +17,19 @@ module.exports = async function handler(req, res) {
   if (req.method !== "GET") return methodNotAllowed(res);
 
   try {
+    const supabase = getSupabase();
+
+    // Rate-Limit: 60 Aufrufe pro Minute pro IP (lesender Endpoint, Survey
+    // ruft beim Laden + beim Sprachwechsel ggf. erneut auf).
+    const ip = getClientIp(req);
+    const rl = await enforceRateLimit(supabase, ip, "get-club-config", { maxRequests: 60, windowSeconds: 60 });
+    if (!rl.allowed) {
+      res.setHeader("Retry-After", String(rl.retryAfterSeconds || 60));
+      return sendJson(res, 429, { ok: false, error: "Zu viele Anfragen. Bitte einen Moment warten." });
+    }
+
     const code = cleanCode(req.query.code || req.query.c);
     if (!code) return sendJson(res, 400, { ok: false, error: "Bitte einen gültigen Club-Code eingeben." });
-
-    const supabase = getSupabase();
 
     const { data: club, error } = await supabase
       .from("clubs")

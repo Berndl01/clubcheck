@@ -162,7 +162,8 @@
     .member-error{margin-top:10px;color:#9c3030;font-size:13px;background:rgba(156,48,48,.08);border:1px solid rgba(156,48,48,.22);border-radius:10px;padding:10px 12px}
     .member-hint{margin-top:12px;font-size:13px;color:#6e6256;line-height:1.6}
     @media(max-width:980px){.member-card{grid-template-columns:1fr;gap:32px;padding:32px}.member-text h2{font-size:30px}}
-    @media(max-width:640px){.member-row{flex-direction:column}.member-btn{width:100%;padding:14px}}
+    .member-card>*{min-width:0}.member-input{min-width:0;width:100%}
+    @media(max-width:640px){.member-row{flex-direction:column}.member-btn{width:100%;padding:14px}.member-card{padding:24px}}
     .footer-grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start}.footer-links{display:flex;gap:20px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
     @media(max-width:980px){.hero-grid,.section-head,.report-grid,.architecture{grid-template-columns:1fr}.stats-grid,.steps{grid-template-columns:repeat(2,1fr)}.packages,.problem-grid,.testimonials{grid-template-columns:1fr}.hero{padding-top:48px}h1{font-size:clamp(52px,13vw,88px)}.nav-links a:not(.nav-cta){display:none}}
     @media(max-width:640px){.wrap{padding:0 18px}.nav-in{height:68px}.brand-mark{width:36px;height:36px}.brand-name{font-size:16px}.hero{padding:44px 0 24px}.cta-row .btn{width:100%}.stats-grid{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid var(--line2)}.stat:last-child{border-bottom:0}.package{min-height:auto}.module{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}section{padding:68px 0}.score-main{font-size:62px}.quote{font-size:22px}.axis-row{grid-template-columns:90px 1fr 36px}}
@@ -451,6 +452,7 @@
         <a href="/dashboard.html" id="footerLogin">Login</a>
         <a href="/impressum.html" id="footerImp">Impressum</a>
         <a href="/datenschutz.html" id="footerPrv">Datenschutz</a>
+        <a href="/agb.html" id="footerAgb">AGB</a>
       </div>
     </div>
   </footer>
@@ -516,7 +518,7 @@ const I18N = {
     finalP:"Starte jetzt mit ClubCheck und erhalte eine klare Grundlage für bessere Kommunikation, bessere Entscheidungen und gezielte Vereinsentwicklung.",
     finalCta1:"Jetzt registrieren →", finalCta2:"Pakete vergleichen",
     footerText:"Digitale Vereinsdiagnostik für Kommunikation, Führung, Teamklima und Entwicklung. Made in Tyrol, Austria.",
-    footerPakete:"Pakete", footerReg:"Registrierung", footerLogin:"Login", footerImp:"Impressum", footerPrv:"Datenschutz",
+    footerPakete:"Pakete", footerReg:"Registrierung", footerLogin:"Login", footerImp:"Impressum", footerPrv:"Datenschutz", footerAgb:"AGB",
     deOnlyBanner:""
   },
   en: {
@@ -578,7 +580,7 @@ const I18N = {
     finalP:"Start ClubCheck now and get a clear basis for better communication, better decisions and targeted club development.",
     finalCta1:"Sign up now →", finalCta2:"Compare packages",
     footerText:"Digital club diagnostics for communication, leadership, team climate and development. Made in Tyrol, Austria.",
-    footerPakete:"Packages", footerReg:"Sign up", footerLogin:"Login", footerImp:"Imprint", footerPrv:"Privacy",
+    footerPakete:"Packages", footerReg:"Sign up", footerLogin:"Login", footerImp:"Imprint", footerPrv:"Privacy", footerAgb:"Terms",
     deOnlyBanner:"Some detail sections (\u201CProblem\u201D, \u201CWhat ClubCheck makes visible\u201D, \u201CFAQ\u201D) are currently only available in German."
   }
 };
@@ -628,7 +630,7 @@ function applyI18n(){
   // Ablauf
   ["ablSecNo","ablH2","ablIntro","step1H","step1P","step2H","step2P","step3H","step3P","step4H","step4P"].forEach(id=>setText(id, t(id)));
   // Final + Footer
-  ["finalKicker","finalH2","finalP","finalCta1","finalCta2","footerText","footerPakete","footerReg","footerLogin","footerImp","footerPrv"].forEach(id=>setText(id, t(id)));
+  ["finalKicker","finalH2","finalP","finalCta1","finalCta2","footerText","footerPakete","footerReg","footerLogin","footerImp","footerPrv","footerAgb"].forEach(id=>setText(id, t(id)));
   // DE-only Hinweis bei EN
   let banner = document.getElementById("deOnlyBanner");
   const msg = t("deOnlyBanner");

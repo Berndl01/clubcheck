@@ -17,8 +17,8 @@ module.exports = async function handler(req, res) {
     const token = cleanString(body.token, 300);
     const password = String(body.password || "");
 
-    if (!token || password.length < 8) {
-      return sendJson(res, 400, { ok: false, error: "Bitte ein neues Passwort mit mindestens 8 Zeichen eingeben." });
+    if (!token || password.length < 10) {
+      return sendJson(res, 400, { ok: false, error: "Bitte ein Passwort mit mindestens 10 Zeichen wählen." });
     }
 
     const supabase = getSupabase();

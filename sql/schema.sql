@@ -134,3 +134,42 @@ CREATE INDEX IF NOT EXISTS idx_email_logs_event ON email_logs(event_type);
 ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
 
 -- Keine Public Policy: E-Mail-Protokolle bleiben ausschließlich serverseitig zugänglich.
+
+-- ============================================================
+-- Rate-Limit-Tabelle (für submit-response, dashboard-login,
+-- request-password-reset, get-club-config). Jeder Aufruf legt
+-- eine Zeile an. Ältere Einträge werden über einen Zeitfilter
+-- (z. B. letzte 60 Sekunden) gezählt.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS rate_limits (
+  id BIGSERIAL PRIMARY KEY,
+  ip VARCHAR(64) NOT NULL,
+  endpoint VARCHAR(60) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_rate_limits_lookup ON rate_limits(ip, endpoint, created_at DESC);
+
+ALTER TABLE rate_limits ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================
+-- Login-Fehlversuche (für Lockout nach 10 Versuchen pro IP
+-- innerhalb von 15 Minuten).
+-- ============================================================
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id BIGSERIAL PRIMARY KEY,
+  ip VARCHAR(64) NOT NULL,
+  code VARCHAR(12),
+  success BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_lookup ON login_attempts(ip, success, created_at DESC);
+
+ALTER TABLE login_attempts ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================
+-- Zusätzliche Indizes (idempotent): schnelles Zählen der Antworten
+-- pro Club-Code und schnelles Löschen alter IP-Einträge (24 h).
+-- ============================================================
+CREATE INDEX IF NOT EXISTS idx_responses_code_plain ON responses(code);
+CREATE INDEX IF NOT EXISTS idx_rate_limits_created ON rate_limits(created_at);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_created ON login_attempts(created_at);

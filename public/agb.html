@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AGB — Humatrix ClubCheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--brd:#e5e2da;--tx:#1a1a1a;--tm:#5a5650;--ac:#1a1a1a;--gold:#8a6d3b;--fd:'Fraunces','Georgia',serif;--fn:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:15px;line-height:1.7}
+h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.02em}
+a{color:var(--gold)}
+.wrap{max-width:780px;margin:0 auto;padding:0 28px}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(245,243,238,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd)}
+.hdr-in{max-width:1180px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-sym{width:40px;height:40px;border:1px solid var(--brd);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px}
+.logo-mark{font-size:9px;letter-spacing:.28em;font-weight:500;color:var(--tm);text-transform:uppercase}
+.logo-name{font-family:var(--fd);font-size:16px;margin-top:2px}
+.lang{display:inline-flex;border:1px solid var(--brd);overflow:hidden}
+.lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
+.lang button.on{background:var(--ac);color:#fff}
+main{padding:54px 0 80px}
+body{overflow-wrap:break-word}h1,h2{hyphens:auto}
+h1{font-size:clamp(30px,8.5vw,42px);margin-bottom:20px}
+h2{font-size:22px;margin:30px 0 10px}
+h3{font-size:16px;margin:18px 0 6px}
+p{color:var(--tm);margin-bottom:14px}
+ul,ol{margin:8px 0 18px 24px;color:var(--tm)}
+li{margin-bottom:6px}
+.box{background:var(--card);border:1px solid var(--brd);padding:28px;margin-top:6px}
+.muted{color:#9c978d;font-size:13px;margin-top:30px}
+.note{background:#fff8e6;border-left:3px solid var(--gold);padding:16px 18px;margin:18px 0;color:#6b5418;font-size:14px}
+.footer{border-top:1px solid var(--brd);padding:24px 0;color:var(--tm);font-size:13px;margin-top:40px;text-align:center}
+.footer a{color:var(--tm);margin:0 10px}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="hdr-in"><a class="logo" href="/" style="text-decoration:none;color:inherit"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></div></header>
+
+<main><div class="wrap"><div id="content"></div></div></main>
+<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a> · <a href="/agb.html">AGB</a></div></footer>
+
+<script>
+const I18N = {
+  de: {
+    title:"Allgemeine Geschäftsbedingungen",
+    intro:"Diese AGB regeln die Nutzung der Webanwendung „Humatrix ClubCheck“ und alle damit zusammenhängenden Leistungen. Anbieter ist Humatrix by Bernhard Lampl. Mit der kostenpflichtigen Bestellung eines ClubCheck-Pakets erkennt der Kunde diese AGB ausdrücklich an.",
+
+    h1:"1. Vertragspartner und Anwendungsbereich",
+    p1:"Vertragspartner ist Humatrix by Bernhard Lampl, Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA, Ried 80, 6363 Westendorf, Tirol, Österreich, GISA-Nummer 39461841 (im Folgenden „Anbieter“). Kunde ist die natürliche oder juristische Person bzw. der Verein, der den ClubCheck bestellt. Diese AGB gelten in der zum Zeitpunkt der Bestellung gültigen Fassung.",
+
+    h2:"2. Leistungsumfang",
+    p2:"ClubCheck ist ein digitales Werkzeug zur strukturierten Mitgliederbefragung und Vereinsdiagnostik. Der Funktionsumfang richtet sich nach dem gebuchten Paket (Basic, Plus oder Premium). Der Anbieter stellt dem Kunden eine zeitlich begrenzte Nutzungsmöglichkeit der Anwendung über das Internet zur Verfügung. Es handelt sich ausdrücklich nicht um ein psychologisch oder medizinisch validiertes Diagnoseverfahren; die Auswertungen sind als Reflexions- und Entwicklungshilfe für Vereinsverantwortliche zu verstehen.",
+
+    h3:"3. Pakete, Preise, Laufzeit",
+    p3a:"Der Anbieter bietet folgende Pakete zu einmaligen Preisen an (Endpreise, Umsatzsteuer fällt nach österreichischem Recht ggf. an):",
+    p3a_basic:"<strong>Basic — 199 €</strong> · bis 100 Mitglieder · 1 eigene Vereinsfrage · 12 Wochen Laufzeit",
+    p3a_plus:"<strong>Plus — 299 €</strong> · bis 250 Mitglieder · bis zu 3 eigene Vereinsfragen · 12 Wochen Laufzeit",
+    p3a_prem:"<strong>Premium — 499 €</strong> · bis 500 Mitglieder · bis zu 5 eigene Vereinsfragen · 12 Wochen Laufzeit",
+    p3b:"Die Laufzeit beginnt mit erfolgreicher Zahlungsbestätigung. Nach Ablauf der 12 Wochen ist die Erfassung neuer Rückmeldungen nicht mehr möglich, der Zugriff auf das Dashboard und das Herunterladen des PDF-Berichts bleibt jedoch nach Maßgabe der Speicherdauer (siehe Datenschutzerklärung) weiterhin möglich.",
+
+    h4:"4. Vertragsabschluss und Zahlung",
+    p4:"Der Vertrag kommt durch die Bestellung im Online-Formular und die anschließende erfolgreiche Zahlungsabwicklung über Stripe Payments Europe Ltd. zustande. Die Zahlung erfolgt sofort und einmalig per Kreditkarte oder anderer von Stripe angebotener Zahlungsmethoden. Eine Rechnung wird per E-Mail bereitgestellt.",
+
+    h5:"5. Widerrufsrecht für Verbraucher",
+    p5a:"Verbrauchern im Sinne des Konsumentenschutzgesetzes (KSchG) steht nach §11 des österreichischen Fern- und Auswärtsgeschäfte-Gesetzes (FAGG) ein Widerrufsrecht von 14 Tagen ab Vertragsabschluss zu.",
+    p5b:"<strong>Wichtig:</strong> Da es sich bei ClubCheck um eine sofort bereitgestellte digitale Dienstleistung handelt, erlischt das Widerrufsrecht gemäß §18 Abs. 1 Z 11 FAGG, sobald der Kunde mit der Nutzung beginnt (Aufruf des Mitglieder-Links zur Erfassung der ersten Antwort), nachdem er der vorzeitigen Vertragserfüllung ausdrücklich zugestimmt hat. Die Zustimmung erfolgt durch die Bestätigung der Allgemeinen Geschäftsbedingungen vor der Zahlung.",
+    p5c:"Für reine B2B-Geschäfte zwischen Unternehmern bzw. mit Vereinen, die als Unternehmer auftreten, gilt das FAGG nicht; ein gesetzliches Widerrufsrecht besteht in diesem Fall nicht.",
+
+    h6:"6. Mitwirkungspflichten des Kunden",
+    p6:"Der Kunde verpflichtet sich, korrekte Vereins- und Kontaktdaten anzugeben, das Passwort für das Dashboard sicher zu verwahren und nicht an Dritte weiterzugeben. Der Kunde ist verantwortlich für die Information seiner Mitglieder über die Mitgliederbefragung und stellt sicher, dass die Verarbeitung der Antworten innerhalb des Vereins zulässig ist.",
+
+    h7:"7. Nutzungsrechte",
+    p7:"Der Kunde erhält ein nicht ausschließliches, nicht übertragbares Nutzungsrecht an der ClubCheck-Anwendung für die Dauer der vereinbarten Laufzeit. Eine Weitergabe der Zugangsdaten an Dritte ist nicht gestattet. Der vom Anbieter erzeugte PDF-Bericht darf vom Kunden für interne Zwecke (Vorstandsarbeit, Sportleitung, Mitgliederversammlung) frei verwendet werden.",
+
+    h8:"8. Verfügbarkeit",
+    p8:"Der Anbieter ist bemüht, eine möglichst hohe Verfügbarkeit der Anwendung zu gewährleisten, schuldet aber keine ununterbrochene Verfügbarkeit. Wartungsarbeiten, Aktualisierungen oder Störungen bei den eingesetzten Dienstleistern (Hosting, Datenbank, Zahlungsabwicklung, E-Mail-Versand) können kurzfristige Unterbrechungen verursachen.",
+
+    h9:"9. Gewährleistung und Haftung",
+    p9a:"Es gelten die gesetzlichen Gewährleistungsregeln. Die Haftung des Anbieters für leichte Fahrlässigkeit bei Vermögensschäden ist ausgeschlossen, soweit gesetzlich zulässig. Für vorhersehbare, vertragstypische Schäden haftet der Anbieter höchstens in Höhe des für das jeweilige Paket gezahlten Entgelts. Die Haftung für grobe Fahrlässigkeit und Vorsatz sowie für Schäden an Leben, Körper und Gesundheit bleibt unberührt.",
+    p9b:"ClubCheck ist ausdrücklich kein psychologisches oder medizinisches Diagnoseinstrument. Die Auswertungen ersetzen keine fachliche Beratung, Therapie oder Diagnose. Der Anbieter haftet nicht für Entscheidungen, die der Kunde auf Basis der Auswertungen trifft.",
+
+    h10:"10. Datenschutz",
+    p10:"Der Schutz personenbezogener Daten ist in der separaten Datenschutzerklärung geregelt, die unter <a href='/datenschutz.html'>/datenschutz.html</a> abrufbar ist. Vereins- und Befragungsdaten werden in der Europäischen Union (Frankfurt am Main) gespeichert.",
+
+    h11:"11. Vertragsdauer und Kündigung",
+    p11:"Es besteht kein laufendes Abonnement. Mit Ablauf der 12-wöchigen Laufzeit endet der Erhebungszeitraum automatisch; eine gesonderte Kündigung ist nicht erforderlich. Der Kunde kann seinen ClubCheck und alle damit verbundenen Daten jederzeit aus dem Dashboard heraus selbst löschen.",
+
+    h12:"12. Schlussbestimmungen",
+    p12a:"Es gilt österreichisches Recht unter Ausschluss des UN-Kaufrechts und der Verweisungsnormen des Internationalen Privatrechts. Für Verbraucher bleibt die Anwendbarkeit zwingender Schutzbestimmungen ihres Wohnsitzstaates unberührt.",
+    p12b:"Gerichtsstand für Streitigkeiten zwischen dem Anbieter und einem Unternehmer/Verein ist das sachlich zuständige Gericht in Kitzbühel, Österreich. Für Verbraucher gilt der gesetzliche Gerichtsstand.",
+    p12c:"Sollten einzelne Bestimmungen dieser AGB unwirksam oder undurchführbar sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. Anstelle der unwirksamen Bestimmung tritt die gesetzliche Regelung.",
+
+    note:"<strong>Hinweis:</strong> Diese AGB sind eine sorgfältig erstellte Standardvorlage. Vor breitem Verkauf wird empfohlen, sie kurz von einem auf E-Commerce-Recht spezialisierten Anwalt prüfen zu lassen, insbesondere im Hinblick auf die konkret gewählten Zahlungs- und Widerrufs-Klauseln.",
+
+    updated:"Stand: November 2026 · © Humatrix by Bernhard Lampl"
+  },
+  en: {
+    title:"Terms and Conditions",
+    intro:"These Terms and Conditions govern the use of the web application \u201CHumatrix ClubCheck\u201D and all related services. The provider is Humatrix by Bernhard Lampl. By placing a paid order for a ClubCheck package, the customer expressly acknowledges these terms.",
+
+    h1:"1. Contracting parties and scope",
+    p1:"The contracting party is Humatrix by Bernhard Lampl, Mag. Bernhard Lampl, PhD, BSc, MBA, LL.M., MBA, Ried 80, 6363 Westendorf, Tyrol, Austria, GISA number 39461841 (hereinafter \u201Cprovider\u201D). The customer is the natural or legal person or association ordering the ClubCheck. These terms apply in the version valid at the time of ordering.",
+
+    h2:"2. Scope of services",
+    p2:"ClubCheck is a digital tool for structured member surveys and club diagnostics. The scope of functions depends on the booked package (Basic, Plus or Premium). The provider grants the customer a time-limited right to use the application over the internet. This is expressly not a psychologically or medically validated diagnostic procedure; the analyses are to be understood as reflection and development support for club leaders.",
+
+    h3:"3. Packages, prices, term",
+    p3a:"The provider offers the following packages at one-off prices (final prices; Austrian VAT may apply where legally required):",
+    p3a_basic:"<strong>Basic — €199</strong> · up to 100 members · 1 custom club question · 12-week term",
+    p3a_plus:"<strong>Plus — €299</strong> · up to 250 members · up to 3 custom questions · 12-week term",
+    p3a_prem:"<strong>Premium — €499</strong> · up to 500 members · up to 5 custom questions · 12-week term",
+    p3b:"The term starts on successful payment confirmation. After the 12-week term, capturing new responses is no longer possible; access to the dashboard and PDF report download remains possible in accordance with the retention period (see privacy policy).",
+
+    h4:"4. Conclusion of contract and payment",
+    p4:"The contract is concluded by the customer's order in the online form and the subsequent successful payment via Stripe Payments Europe Ltd. Payment is made immediately and as a one-off via credit card or other payment methods offered by Stripe. An invoice is provided by email.",
+
+    h5:"5. Right of withdrawal for consumers",
+    p5a:"Consumers within the meaning of the Austrian Consumer Protection Act (KSchG) have a 14-day right of withdrawal from the conclusion of the contract under §11 of the Austrian Distance and Off-Premises Contracts Act (FAGG).",
+    p5b:"<strong>Important:</strong> Since ClubCheck is an immediately provided digital service, the right of withdrawal expires under §18 (1) (11) FAGG once the customer begins using the service (opening the member link to record the first response) after having expressly consented to early performance. Such consent is given by accepting these Terms before payment.",
+    p5c:"For pure B2B transactions between entrepreneurs or with clubs acting as entrepreneurs, the FAGG does not apply; there is no statutory right of withdrawal in this case.",
+
+    h6:"6. Customer obligations",
+    p6:"The customer undertakes to provide correct club and contact data, to keep the dashboard password safely and not to pass it on to third parties. The customer is responsible for informing their members about the survey and ensures that the processing of responses within the club is permissible.",
+
+    h7:"7. Rights of use",
+    p7:"The customer receives a non-exclusive, non-transferable right to use the ClubCheck application for the duration of the agreed term. Passing access credentials to third parties is not permitted. The PDF report generated by the provider may be used freely by the customer for internal purposes (board work, coaching staff, member assembly).",
+
+    h8:"8. Availability",
+    p8:"The provider endeavours to ensure the highest possible availability of the application but does not owe uninterrupted availability. Maintenance, updates or disruptions at the service providers used (hosting, database, payment processing, email delivery) may cause short-term interruptions.",
+
+    h9:"9. Warranty and liability",
+    p9a:"Statutory warranty rules apply. Liability of the provider for slight negligence for property damage is excluded to the extent legally permissible. For foreseeable damage typical of the contract, the provider is liable at most in the amount of the fee paid for the respective package. Liability for gross negligence and intent as well as for damage to life, body and health remains unaffected.",
+    p9b:"ClubCheck is expressly not a psychological or medical diagnostic instrument. The analyses do not replace professional advice, therapy or diagnosis. The provider is not liable for decisions the customer makes based on the analyses.",
+
+    h10:"10. Data protection",
+    p10:"The protection of personal data is regulated in the separate privacy policy, available at <a href='/datenschutz.html'>/datenschutz.html</a>. Club and survey data is stored within the European Union (Frankfurt am Main).",
+
+    h11:"11. Contract duration and termination",
+    p11:"There is no running subscription. With expiry of the 12-week term, the survey period ends automatically; separate termination is not required. The customer can delete their ClubCheck and all associated data at any time directly from the dashboard.",
+
+    h12:"12. Final provisions",
+    p12a:"Austrian law applies, excluding the UN Convention on Contracts for the International Sale of Goods and the conflict-of-laws rules of private international law. For consumers, the applicability of mandatory protective provisions of their country of residence remains unaffected.",
+    p12b:"Place of jurisdiction for disputes between the provider and an entrepreneur/club is the competent court in Kitzbühel, Austria. For consumers, the statutory place of jurisdiction applies.",
+    p12c:"Should individual provisions of these terms be invalid or unenforceable, the validity of the remaining provisions remains unaffected. The statutory rule shall apply in place of the invalid provision.",
+
+    note:"<strong>Note:</strong> These terms are a carefully prepared standard template. Before wide-scale sale, it is recommended to have them briefly reviewed by a lawyer specialised in e-commerce law, in particular with regard to the specifically chosen payment and withdrawal clauses.",
+
+    updated:"Last updated: November 2026 · © Humatrix by Bernhard Lampl"
+  }
+};
+
+let LANG = localStorage.getItem("clubcheck_lang") || (navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "de");
+function setLang(l){ if(!I18N[l]) return; LANG = l; localStorage.setItem("clubcheck_lang", l); document.documentElement.lang = l; render(); }
+function t(k){ return I18N[LANG][k] || I18N.de[k] || k; }
+function render(){
+  document.getElementById("langDe").classList.toggle("on", LANG==="de");
+  document.getElementById("langEn").classList.toggle("on", LANG==="en");
+  document.title = t("title") + " — Humatrix ClubCheck";
+  document.getElementById("content").innerHTML = `
+    <h1>${t("title")}</h1>
+    <p>${t("intro")}</p>
+    <div class="box">
+      <h2>${t("h1")}</h2><p>${t("p1")}</p>
+      <h2>${t("h2")}</h2><p>${t("p2")}</p>
+      <h2>${t("h3")}</h2>
+      <p>${t("p3a")}</p>
+      <ul><li>${t("p3a_basic")}</li><li>${t("p3a_plus")}</li><li>${t("p3a_prem")}</li></ul>
+      <p>${t("p3b")}</p>
+      <h2>${t("h4")}</h2><p>${t("p4")}</p>
+      <h2>${t("h5")}</h2><p>${t("p5a")}</p><p>${t("p5b")}</p><p>${t("p5c")}</p>
+      <h2>${t("h6")}</h2><p>${t("p6")}</p>
+      <h2>${t("h7")}</h2><p>${t("p7")}</p>
+      <h2>${t("h8")}</h2><p>${t("p8")}</p>
+      <h2>${t("h9")}</h2><p>${t("p9a")}</p><p>${t("p9b")}</p>
+      <h2>${t("h10")}</h2><p>${t("p10")}</p>
+      <h2>${t("h11")}</h2><p>${t("p11")}</p>
+      <h2>${t("h12")}</h2><p>${t("p12a")}</p><p>${t("p12b")}</p><p>${t("p12c")}</p>
+      <div class="note">${t("note")}</div>
+      <p class="muted">${t("updated")}</p>
+    </div>`;
+}
+render();
+</script>
+</body>
+</html>
