@@ -24,7 +24,8 @@ a{color:var(--gold)}
 .lang button.on{background:var(--ac);color:#fff}
 main{padding:54px 0 80px}
 .eu-banner{background:var(--green2);border-left:3px solid var(--green);padding:16px 18px;margin:18px 0 26px;color:#1f4226;font-size:14px;line-height:1.65}
-h1{font-size:42px;margin-bottom:18px}
+body{overflow-wrap:break-word}h1,h2{hyphens:auto}
+h1{font-size:clamp(30px,8.5vw,42px);margin-bottom:18px}
 h2{font-size:22px;margin:30px 0 10px}
 h3{font-size:16px;margin:18px 0 6px;color:var(--tx)}
 p{color:var(--tm);margin-bottom:14px}
@@ -42,7 +43,7 @@ li{margin-bottom:6px}
 <header class="hdr"><div class="hdr-in"><a class="logo" href="/" style="text-decoration:none;color:inherit"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></div></header>
 
 <main><div class="wrap"><div id="content"></div></div></main>
-<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></div></footer>
+<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a> · <a href="/agb.html">AGB</a></div></footer>
 
 <script>
 const I18N = {
@@ -59,7 +60,7 @@ const I18N = {
     li_data1:"<strong>Vereins- und Vorstandsdaten:</strong> Vereinsname, Kontaktname, E-Mail-Adresse, Telefonnummer (optional), Passwort-Hash. Rechtsgrundlage: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO).",
     li_data2:"<strong>Zahlungsdaten:</strong> werden ausschließlich von Stripe Payments Europe Ltd. verarbeitet. Wir erhalten lediglich den Zahlungsstatus und eine Stripe-Customer-ID — keine Karten-, Konto- oder Adressdaten der Zahlenden.",
     li_data3:"<strong>Antworten der Vereinsmitglieder:</strong> Bewertungen auf einer Skala von 1–7, optionale Freitexte, optional die selbst gewählte Rolle (Spieler:in, Trainer:in, Vorstand, Funktionär:in, Elternteil, Mitglied) und Vereinszugehörigkeitsdauer. Standardmäßig erfolgt die Erfassung anonym; ein Name ist freiwillig und wird nur gespeichert, wenn das Mitglied ihn aktiv eingibt. Rechtsgrundlage: berechtigtes Interesse des Vereins an einer aussagekräftigen Auswertung (Art. 6 Abs. 1 lit. f DSGVO).",
-    li_data4:"<strong>Server-Logs:</strong> IP-Adresse, Zeitstempel, User-Agent, aufgerufene Seite. Diese Daten dienen ausschließlich der technischen Sicherheit, der Fehleranalyse und der Missbrauchsabwehr. Rechtsgrundlage: berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO).",
+    li_data4:"<strong>Server-Logs:</strong> IP-Adresse, Zeitstempel, User-Agent, aufgerufene Seite. Diese Daten dienen ausschließlich der technischen Sicherheit, der Fehleranalyse und der Missbrauchsabwehr. Zum Schutz vor automatisierten Anmelde- und Absendeversuchen speichern wir IP-Adressen zusätzlich höchstens 24 Stunden. Rechtsgrundlage: berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO).",
 
     h_storage:"Speicherort und EU-Datenspeicherung",
     p_storage:"Sämtliche Vereins- und Befragungsdaten werden in der <strong>Europäischen Union</strong> gespeichert. Die zugrundeliegende Datenbank wird über <strong>Supabase</strong> in der Region <strong>eu-central-1 (Frankfurt am Main, Deutschland)</strong> betrieben. Backups verbleiben innerhalb der EU.",
@@ -115,7 +116,7 @@ const I18N = {
     li_data1:"<strong>Club and board data:</strong> club name, contact name, email address, phone number (optional), password hash. Legal basis: contract performance (Art. 6 (1) (b) GDPR).",
     li_data2:"<strong>Payment data:</strong> processed exclusively by Stripe Payments Europe Ltd. We receive only the payment status and a Stripe customer ID — no card, bank account or address data of the payer.",
     li_data3:"<strong>Member responses:</strong> ratings on a scale from 1–7, optional free-text answers, optionally the self-selected role (player, coach, board, officer, parent, member) and tenure with the club. Recording is anonymous by default; a name is voluntary and is only stored if the member actively enters it. Legal basis: legitimate interest of the club in a meaningful analysis (Art. 6 (1) (f) GDPR).",
-    li_data4:"<strong>Server logs:</strong> IP address, timestamp, user agent, accessed page. These data are used exclusively for technical security, error analysis and abuse prevention. Legal basis: legitimate interest (Art. 6 (1) (f) GDPR).",
+    li_data4:"<strong>Server logs:</strong> IP address, timestamp, user agent, accessed page. These data are used exclusively for technical security, error analysis and abuse prevention. To protect against automated login and submission attempts, IP addresses are additionally stored for no longer than 24 hours. Legal basis: legitimate interest (Art. 6 (1) (f) GDPR).",
 
     h_storage:"Storage location and EU data residency",
     p_storage:"All club and survey data is stored within the <strong>European Union</strong>. The underlying database is operated via <strong>Supabase</strong> in the <strong>eu-central-1 (Frankfurt am Main, Germany)</strong> region. Backups remain within the EU.",

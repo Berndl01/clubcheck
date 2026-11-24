@@ -23,7 +23,8 @@ a{color:var(--gold)}
 .lang button{background:transparent;border:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;font-weight:600;color:var(--tm);cursor:pointer;font-family:var(--fn)}
 .lang button.on{background:var(--ac);color:#fff}
 main{padding:54px 0 80px}
-h1{font-size:42px;margin-bottom:28px}
+body{overflow-wrap:break-word}h1,h2{hyphens:auto}
+h1{font-size:clamp(30px,8.5vw,42px);margin-bottom:28px}
 h2{font-size:22px;margin:30px 0 10px}
 p{color:var(--tm);margin-bottom:14px}
 .box{background:var(--card);border:1px solid var(--brd);padding:28px;margin-top:6px}
@@ -36,7 +37,7 @@ p{color:var(--tm);margin-bottom:14px}
 <header class="hdr"><div class="hdr-in"><a class="logo" href="/" style="text-decoration:none;color:inherit"><div class="logo-sym">H</div><div><div class="logo-mark">Humatrix</div><div class="logo-name">ClubCheck</div></div></a><span class="lang"><button id="langDe" onclick="setLang('de')">DE</button><button id="langEn" onclick="setLang('en')">EN</button></span></div></header>
 
 <main><div class="wrap"><div id="content"></div></div></main>
-<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></div></footer>
+<footer class="footer"><div class="wrap"><a href="/">Home</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a> · <a href="/agb.html">AGB</a></div></footer>
 
 <script>
 const I18N = {

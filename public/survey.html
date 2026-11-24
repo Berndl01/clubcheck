@@ -50,8 +50,14 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 .summary-list{border-top:1px solid var(--brd);margin-top:10px}.summary-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--brd);padding:14px 0}.summary-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);min-width:110px}.summary-value{text-align:right;line-height:1.55}
 .bar{height:8px;background:var(--brd2);overflow:hidden}.bar>span{display:block;height:100%;background:var(--ac)}
 .footer{background:var(--card2);border-top:1px solid var(--brd);padding:38px 0;margin-top:48px}.footer-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--tm);font-size:13px}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--tm)}
-@media(max-width:980px){.hero-grid,.layout,.grid2{grid-template-columns:1fr}.sticky{position:static!important}}
-@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav .pill{display:none}}
+.scale{display:grid;gap:8px;grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+.scale .price-card{padding:16px 0;text-align:center;min-width:0}
+.scale .price-name{font-size:24px}
+.layout>*,.grid2>*,.hero-grid>*{min-width:0}.note,.textarea,.summary-value{overflow-wrap:anywhere}
+.qtitle{font-size:34px;margin:8px 0 10px;overflow-wrap:break-word;hyphens:auto}
+h1{overflow-wrap:break-word;hyphens:auto}
+@media(max-width:980px){.hero-grid,.layout,.grid2{grid-template-columns:1fr}.sticky{position:static!important}body.answering .hero{display:none}body.answering main.section{padding-top:18px}}
+@media(max-width:640px){.wrap,.hdr-in{padding-left:18px;padding-right:18px}.hero{padding-top:34px}.card-p{padding:22px}.btn-row{flex-direction:column}.btn-row .btn{width:100%}.summary-row{flex-direction:column}.summary-value{text-align:left}.nav .pill{display:none}.qtitle{font-size:26px}.scale{gap:6px}.scale .price-card{padding:12px 0}.scale .price-name{font-size:20px}.scale.nps{grid-template-columns:repeat(6,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -60,7 +66,7 @@ h1{font-size:clamp(36px,5vw,64px);line-height:.97;margin-bottom:18px}.lead{font-
 <section class="hero"><div class="wrap narrow"><div class="hero-grid"><div><span class="eyebrow" id="heroEyebrow">Mitgliederbefragung</span><h1 id="heroTitle">ClubCheck Rückmeldung abgeben.</h1><p class="lead" id="heroLead">Gib deine persönliche Einschätzung ab und hilf deinem Verein, die wichtigsten Entwicklungsfelder zu erkennen.</p><div class="meta" id="heroChips"></div></div><div class="card soft card-p"><h3 style="font-size:26px;margin-bottom:12px" id="heroSideTitle">Wichtig</h3><p id="heroSideText">Bitte antworte ehrlich aus deiner eigenen Perspektive. Es geht nicht um Kontrolle, sondern um ein besseres gemeinsames Bild des Vereins.</p></div></div></div></section>
 
 <main class="section" style="padding-top:6px"><div class="wrap narrow"><div class="layout"><section><div id="app"></div></section><aside class="sticky" style="position:sticky;top:92px"><div id="side"></div></aside></div></div></main>
-<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Mitgliederbefragung.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/impressum.html" id="footerImpressum">Impressum</a><a href="/datenschutz.html" id="footerPrivacy">Datenschutz</a></div></div></footer>
+<footer class="footer"><div class="wrap footer-in"><div id="footerCopy">Humatrix ClubCheck — Mitgliederbefragung.</div><div class="footer-links"><a href="/" id="footerHome">Startseite</a><a href="/impressum.html" id="footerImpressum">Impressum</a><a href="/datenschutz.html" id="footerPrivacy">Datenschutz</a><a href="/agb.html" id="footerAgb">AGB</a></div></div></footer>
 <script>
 // ===== I18N =====
 const I18N = {
@@ -73,7 +79,7 @@ const I18N = {
     heroSideTitle:"Wichtig",
     heroSideText:"Bitte antworte ehrlich aus deiner eigenen Perspektive. Es geht nicht um Kontrolle, sondern um ein besseres gemeinsames Bild des Vereins.",
     footerCopy:"Humatrix ClubCheck — Mitgliederbefragung.",
-    footerHome:"Startseite", footerImpressum:"Impressum", footerPrivacy:"Datenschutz",
+    footerHome:"Startseite", footerImpressum:"Impressum", footerPrivacy:"Datenschutz", footerAgb:"AGB",
     codeTitle:"Club-Code eingeben",
     codeDesc:"Der Club-Code steht im Mitglieder-Link oder wurde vom Verein geteilt.",
     codeLabel:"Club-Code",
@@ -138,7 +144,7 @@ const I18N = {
     heroSideTitle:"Important",
     heroSideText:"Please answer honestly from your own perspective. This is not about control, but about a shared, clearer picture of the club.",
     footerCopy:"Humatrix ClubCheck — Member survey.",
-    footerHome:"Home", footerImpressum:"Imprint", footerPrivacy:"Privacy",
+    footerHome:"Home", footerImpressum:"Imprint", footerPrivacy:"Privacy", footerAgb:"Terms",
     codeTitle:"Enter club code",
     codeDesc:"The club code is in the member link or was shared by your club.",
     codeLabel:"Club code",
@@ -215,6 +221,7 @@ function applyStaticI18n(){
   document.getElementById("footerHome").textContent = t("footerHome");
   document.getElementById("footerImpressum").textContent = t("footerImpressum");
   document.getElementById("footerPrivacy").textContent = t("footerPrivacy");
+  var __agb = document.getElementById("footerAgb"); if(__agb) __agb.textContent = t("footerAgb");
   document.getElementById("heroSideTitle").textContent = t("heroSideTitle");
   document.getElementById("heroSideText").textContent = t("heroSideText");
   document.getElementById("heroChips").innerHTML = `<div class="chip">${t("chip1")}</div><div class="chip">${t("chip2")}</div><div class="chip">${t("chip3")}</div>`;
@@ -266,6 +273,7 @@ if (code) loadClub();
 function esc(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
 
 function render(){
+  document.body.classList.toggle("answering", view === "question");
   if(view==="code") return renderCode();
   if(view==="loading") return renderLoading();
   if(view==="intro") return renderIntro();
@@ -379,7 +387,7 @@ function makeQuestions(){
 function startSurvey(){
   name = document.getElementById("nameInput").value;
   questions = makeQuestions();
-  idx = 0; view = "question"; setError(""); render();
+  idx = 0; view = "question"; setError(""); render(); toQuestionTop();
 }
 
 function sectionLabel(q){
@@ -392,14 +400,15 @@ function renderQuestion(){
   const pct = Math.round((idx / Math.max(1, questions.length)) * 100);
   let input = "";
   if(q.type === "choice"){
-    input = `<div class="grid2">${q.opts.map(opt => `<button class="price-card ${answers[q.key]===opt ? "selected" : ""}" onclick="answers['${q.key}']=${JSON.stringify(opt)};renderQuestion()">${esc(opt)}</button>`).join("")}</div>`;
+    input = `<div class="grid2">${q.opts.map((opt, i) => `<button type="button" class="price-card ${answers[q.key]===opt ? "selected" : ""}" onclick="pickOption(${i})">${esc(opt)}</button>`).join("")}</div>`;
   }else if(q.type === "text"){
     input = `<textarea class="textarea" id="textAnswer" placeholder="${esc(t("optional"))}">${esc(answers[q.key] || "")}</textarea>`;
   }else{
     const min = q.min ?? 1, max = q.max ?? 7;
     let buttons = "";
-    for(let v=min; v<=max; v++) buttons += `<button class="price-card ${Number(answers[q.key])===v ? "selected" : ""}" style="text-align:center;padding:16px" onclick="answers['${q.key}']=${v};renderQuestion()"><div class="price-name">${v}</div></button>`;
-    input = `<div style="display:grid;grid-template-columns:repeat(${max-min+1},1fr);gap:8px">${buttons}</div>`;
+    for(let v=min; v<=max; v++) buttons += `<button type="button" class="price-card ${Number(answers[q.key])===v ? "selected" : ""}" onclick="pickValue(${v})" aria-label="${v}"><div class="price-name">${v}</div></button>`;
+    // Auf dem Handy passen alle Werte ohne seitliches Scrollen; 0–10 bricht in zwei Reihen um.
+    input = `<div class="scale ${q.type === "nps" ? "nps" : ""}" style="--n:${max-min+1}">${buttons}</div>`;
   }
 
   app.innerHTML = `
@@ -407,7 +416,7 @@ function renderQuestion(){
     <div class="card card-p">
       <div class="bar" style="margin-bottom:22px"><span style="width:${pct}%"></span></div>
       <span class="eyebrow">${sectionLabel(q)}</span>
-      <h2 style="font-size:34px;margin:8px 0 10px">${esc(q.text)}</h2>
+      <h2 class="qtitle">${esc(q.text)}</h2>
       ${q.sub ? `<p style="margin-bottom:22px">${esc(q.sub)}</p>` : ""}
       ${input}
       <div class="btn-row">
@@ -421,6 +430,23 @@ function renderQuestion(){
   renderSide();
 }
 
+// Antworten per Index bzw. Zahl übernehmen. Antworttexte werden nie in HTML-Attribute
+// geschrieben, damit Anführungszeichen oder Apostrophe in Optionen nichts kaputt machen.
+function pickOption(i){
+  const q = questions[idx];
+  if(!q || !q.opts || q.opts[i] === undefined) return;
+  answers[q.key] = q.opts[i];
+  setError("");
+  renderQuestion();
+}
+function pickValue(v){
+  const q = questions[idx];
+  if(!q) return;
+  answers[q.key] = Number(v);
+  setError("");
+  renderQuestion();
+}
+
 function nextQuestion(){
   const q = questions[idx];
   if(q.type === "text"){
@@ -432,11 +458,16 @@ function nextQuestion(){
     return renderQuestion();
   }
   setError("");
-  if(idx < questions.length - 1){ idx++; return renderQuestion(); }
+  if(idx < questions.length - 1){ idx++; renderQuestion(); return toQuestionTop(); }
   submitSurvey();
 }
 
-function prevQuestion(){ if(idx>0){ idx--; setError(""); renderQuestion(); } }
+function prevQuestion(){ if(idx>0){ idx--; setError(""); renderQuestion(); toQuestionTop(); } }
+
+// Auf kleinen Bildschirmen nach jedem Schritt zur neuen Frage springen.
+function toQuestionTop(){
+  if(window.innerWidth <= 980) window.scrollTo({ top: 0, behavior: "auto" });
+}
 
 async function submitSurvey(){
   app.innerHTML = `<div class="card card-p"><h2>${t("saving")}</h2><p>${t("savingDesc")}</p></div>`;
