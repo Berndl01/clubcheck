@@ -633,7 +633,9 @@ function applyI18n(){
   ["finalKicker","finalH2","finalP","finalCta1","finalCta2","footerText","footerPakete","footerReg","footerLogin","footerImp","footerPrv","footerAgb"].forEach(id=>setText(id, t(id)));
   // DE-only Hinweis bei EN
   let banner = document.getElementById("deOnlyBanner");
-  const msg = t("deOnlyBanner");
+  // Direkt aus dem Wörterbuch lesen: t() liefert bei leerem Text den Schlüssel
+  // zurück, dann stand auf Deutsch "deOnlyBanner" als Balken über der Seite.
+  const msg = (I18N[LANG] && I18N[LANG].deOnlyBanner) || "";
   if(msg){
     if(!banner){
       banner = document.createElement("div");
