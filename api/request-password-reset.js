@@ -7,7 +7,9 @@ const {
   sha256,
   parseBody,
   sendJson,
-  methodNotAllowed
+  methodNotAllowed,
+  getClientIp,
+  enforceRateLimit
 } = require("./_lib");
 const { sendPasswordResetEmail } = require("./_email");
 
@@ -15,6 +17,17 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return methodNotAllowed(res);
 
   try {
+    const supabase = getSupabase();
+
+    // Rate-Limit: 5 Reset-Anfragen pro Minute pro IP. Strikt, weil dieser
+    // Endpoint kostspielig ist (E-Mail-Versand) und nicht oft legitim aufgerufen wird.
+    const ip = getClientIp(req);
+    const rl = await enforceRateLimit(supabase, ip, "request-password-reset", { maxRequests: 5, windowSeconds: 60 });
+    if (!rl.allowed) {
+      res.setHeader("Retry-After", String(rl.retryAfterSeconds || 60));
+      return sendJson(res, 429, { ok: false, error: "Zu viele Anfragen. Bitte einen Moment warten." });
+    }
+
     const body = await parseBody(req);
     const code = cleanCode(body.code || body.c);
     const email = cleanString(body.email, 200).toLowerCase();
@@ -24,7 +37,6 @@ module.exports = async function handler(req, res) {
 
     if (!code || !email) return sendJson(res, 200, neutral);
 
-    const supabase = getSupabase();
     const { data: club, error } = await supabase
       .from("clubs")
       .select("id,code,name,contact_email,payment_status")
